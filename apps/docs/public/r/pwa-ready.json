@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "pwa-ready",
   "title": "PWA Ready",
-  "description": "A small proof component for verifying the PWA UI registry workflow.",
+  "description": "A small proof component for verifying the registry workflow.",
   "files": [
     {
       "path": "registry/components/pwa-ready/pwa-ready.tsx",

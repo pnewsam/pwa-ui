@@ -8,14 +8,18 @@
     "build": "pnpm registry:build && pnpm --filter @pwa-ui/docs build",
     "lint": "pnpm --filter @pwa-ui/docs lint",
     "typecheck": "pnpm --filter @pwa-ui/docs typecheck",
+    "test": "pnpm --filter @pwa-ui/docs test",
+    "test:e2e": "playwright test",
     "registry:build": "shadcn build registry.json --output apps/docs/public/r",
     "registry:validate": "shadcn registry validate ./registry.json",
-    "check": "pnpm lint && pnpm typecheck && pnpm registry:validate && pnpm build"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm registry:validate && pnpm build"
   },
   "dependencies": {
+    "@base-ui/react": "^1.7.0",
     "react": "^19.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.0",
     "@types/react": "^19.0.0",
     "shadcn": "latest"
   }

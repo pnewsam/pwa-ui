@@ -33,7 +33,7 @@ export default function HomePage() {
         </a>
         <nav className="desktop-nav" aria-label="Primary navigation">
           <a href="#principles">Principles</a>
-          <a href="#registry">Registry</a>
+          <a href="/components">Components</a>
           <a href="#roadmap">Roadmap</a>
         </nav>
         <a className="icon-link focus-ring" href="https://github.com/pwa-ui/pwa-ui" aria-label="View PWA UI on GitHub">
@@ -52,8 +52,8 @@ export default function HomePage() {
               keyboards, and the details that make a PWA feel installed.
             </p>
             <div className="hero-actions">
-              <a className="button button-primary focus-ring" href="#registry">
-                Explore the registry <ArrowRight size={17} />
+              <a className="button button-primary focus-ring" href="/components">
+                Explore components <ArrowRight size={17} />
               </a>
               <a className="button button-secondary focus-ring" href="#roadmap">
                 Read the plan

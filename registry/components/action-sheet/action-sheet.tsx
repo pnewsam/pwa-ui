@@ -1,0 +1,59 @@
+"use client";
+
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
+import {
+  BottomSheetClose,
+  BottomSheetContent,
+  BottomSheetDescription,
+  BottomSheetHeader,
+  BottomSheetRoot,
+  BottomSheetTitle,
+  BottomSheetTrigger,
+} from "@/components/ui/bottom-sheet";
+
+export const ActionSheetRoot = BottomSheetRoot;
+export const ActionSheetTrigger = BottomSheetTrigger;
+
+export function ActionSheetContent({ className, ...props }: React.ComponentProps<typeof BottomSheetContent>) {
+  return <BottomSheetContent data-slot="action-sheet-content" className={cn("bg-muted/95 sm:max-w-md", className)} contentClassName="px-3" {...props} />;
+}
+
+export const ActionSheetHeader = BottomSheetHeader;
+export const ActionSheetTitle = BottomSheetTitle;
+export const ActionSheetDescription = BottomSheetDescription;
+
+export function ActionSheetGroup({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  return <div data-slot="action-sheet-group" role="group" className={cn("mb-2 overflow-hidden rounded-2xl border border-border/70 bg-background shadow-sm", className)} {...props} />;
+}
+
+export type ActionSheetItemProps = React.ComponentPropsWithoutRef<"button"> & {
+  variant?: "default" | "destructive";
+  closeOnSelect?: boolean;
+};
+
+export function ActionSheetItem({ variant = "default", closeOnSelect = true, className, ...props }: ActionSheetItemProps) {
+  const classes = cn(
+    "flex min-h-14 w-full items-center justify-center border-b border-border/70 px-4 text-[0.95rem] font-medium outline-none transition-colors last:border-b-0 hover:bg-accent focus-visible:bg-accent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:bg-accent/80",
+    variant === "destructive" && "text-destructive",
+    className,
+  );
+
+  return closeOnSelect ? <BottomSheetClose className={classes} {...props} /> : <button type="button" className={classes} {...props} />;
+}
+
+export function ActionSheetCancel({ className, ...props }: React.ComponentProps<typeof BottomSheetClose>) {
+  return <BottomSheetClose data-slot="action-sheet-cancel" className={cn("mt-2 min-h-14 w-full rounded-2xl border border-border/70 bg-background px-4 text-[0.95rem] font-semibold shadow-sm outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:bg-accent/80", typeof className === "string" ? className : undefined)} {...props} />;
+}
+
+export const ActionSheet = Object.assign(ActionSheetRoot, {
+  Trigger: ActionSheetTrigger,
+  Content: ActionSheetContent,
+  Header: ActionSheetHeader,
+  Title: ActionSheetTitle,
+  Description: ActionSheetDescription,
+  Group: ActionSheetGroup,
+  Item: ActionSheetItem,
+  Cancel: ActionSheetCancel,
+});

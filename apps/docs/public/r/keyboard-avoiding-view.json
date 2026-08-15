@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "keyboard-avoiding-view",
+  "title": "Keyboard Avoiding View",
+  "description": "Visual Viewport-aware layout for forms and fixed composers.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/components/keyboard-avoiding-view/keyboard-avoiding-view.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nimport { cn } from \"@/lib/utils\";\nimport { useVisualViewport } from \"@/hooks/use-visual-viewport\";\n\nexport type KeyboardAvoidingViewProps = React.ComponentPropsWithoutRef<\"div\"> & {\n  behavior?: \"padding\" | \"height\" | \"position\";\n  keyboardOffset?: number;\n};\n\nexport function KeyboardAvoidingView({\n  behavior = \"padding\",\n  keyboardOffset = 0,\n  className,\n  style,\n  ...props\n}: KeyboardAvoidingViewProps) {\n  const viewport = useVisualViewport();\n  const keyboardHeight = Math.max(0, viewport.keyboardHeight - keyboardOffset);\n  const variables = {\n    \"--pwa-keyboard-height\": `${keyboardHeight}px`,\n    \"--pwa-visual-viewport-height\": viewport.height ? `${viewport.height}px` : \"100dvh\",\n  } as React.CSSProperties;\n\n  const behaviorStyle: React.CSSProperties =\n    behavior === \"height\"\n      ? { height: \"var(--pwa-visual-viewport-height, 100dvh)\" }\n      : behavior === \"position\"\n        ? { transform: \"translateY(calc(var(--pwa-keyboard-height, 0px) * -1))\" }\n        : { paddingBottom: \"var(--pwa-keyboard-height, 0px)\" };\n\n  return (\n    <div\n      data-keyboard-open={keyboardHeight > 0 ? \"\" : undefined}\n      data-slot=\"keyboard-avoiding-view\"\n      className={cn(\"transition-[height,padding,transform] duration-200\", className)}\n      style={{ ...variables, ...behaviorStyle, ...style }}\n      {...props}\n    />\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/ui/keyboard-avoiding-view.tsx"
+    },
+    {
+      "path": "registry/hooks/use-visual-viewport.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport type VisualViewportState = {\n  width: number;\n  height: number;\n  offsetTop: number;\n  offsetLeft: number;\n  scale: number;\n  keyboardHeight: number;\n  supported: boolean;\n};\n\nconst serverState: VisualViewportState = {\n  width: 0,\n  height: 0,\n  offsetTop: 0,\n  offsetLeft: 0,\n  scale: 1,\n  keyboardHeight: 0,\n  supported: false,\n};\n\nfunction readViewport(): VisualViewportState {\n  if (typeof window === \"undefined\") return serverState;\n\n  const viewport = window.visualViewport;\n  if (!viewport) {\n    return {\n      width: window.innerWidth,\n      height: window.innerHeight,\n      offsetTop: 0,\n      offsetLeft: 0,\n      scale: 1,\n      keyboardHeight: 0,\n      supported: false,\n    };\n  }\n\n  const keyboardHeight = Math.max(\n    0,\n    window.innerHeight - viewport.height - viewport.offsetTop,\n  );\n\n  return {\n    width: viewport.width,\n    height: viewport.height,\n    offsetTop: viewport.offsetTop,\n    offsetLeft: viewport.offsetLeft,\n    scale: viewport.scale,\n    keyboardHeight: keyboardHeight > 80 ? keyboardHeight : 0,\n    supported: true,\n  };\n}\n\nexport function useVisualViewport(): VisualViewportState {\n  const [state, setState] = React.useState<VisualViewportState>(serverState);\n\n  React.useEffect(() => {\n    const viewport = window.visualViewport;\n    let frame = 0;\n    const update = () => {\n      window.cancelAnimationFrame(frame);\n      frame = window.requestAnimationFrame(() => setState(readViewport()));\n    };\n\n    update();\n    viewport?.addEventListener(\"resize\", update);\n    viewport?.addEventListener(\"scroll\", update);\n    window.addEventListener(\"resize\", update);\n    window.addEventListener(\"orientationchange\", update);\n\n    return () => {\n      window.cancelAnimationFrame(frame);\n      viewport?.removeEventListener(\"resize\", update);\n      viewport?.removeEventListener(\"scroll\", update);\n      window.removeEventListener(\"resize\", update);\n      window.removeEventListener(\"orientationchange\", update);\n    };\n  }, []);\n\n  return state;\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-visual-viewport.ts"
+    }
+  ],
+  "type": "registry:component"
+}

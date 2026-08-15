@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "app-shell",
+  "title": "App Shell",
+  "description": "A dynamic-viewport application frame with independently scrolling content.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/components/app-shell/app-shell.tsx",
+      "content": "import * as React from \"react\";\n\nimport { cn } from \"@/lib/utils\";\n\nexport function AppShellRoot({ className, ...props }: React.ComponentPropsWithoutRef<\"div\">) {\n  return (\n    <div\n      data-slot=\"app-shell\"\n      className={cn(\n        \"isolate flex h-[var(--pwa-viewport-height,100dvh)] min-h-[100svh] w-full flex-col overflow-hidden bg-background text-foreground\",\n        className,\n      )}\n      {...props}\n    />\n  );\n}\n\nexport function AppShellHeader({ className, style, ...props }: React.ComponentPropsWithoutRef<\"header\">) {\n  return (\n    <header\n      data-slot=\"app-shell-header\"\n      className={cn(\"z-20 shrink-0\", className)}\n      style={{ paddingTop: \"var(--pwa-safe-top, env(safe-area-inset-top, 0px))\", ...style }}\n      {...props}\n    />\n  );\n}\n\nexport function AppShellMain({ className, ...props }: React.ComponentPropsWithoutRef<\"main\">) {\n  return (\n    <main\n      data-slot=\"app-shell-main\"\n      className={cn(\"min-h-0 flex-1 overflow-y-auto overscroll-contain\", className)}\n      {...props}\n    />\n  );\n}\n\nexport function AppShellFooter({ className, style, ...props }: React.ComponentPropsWithoutRef<\"footer\">) {\n  return (\n    <footer\n      data-slot=\"app-shell-footer\"\n      className={cn(\"z-20 shrink-0\", className)}\n      style={{ paddingBottom: \"var(--pwa-safe-bottom, env(safe-area-inset-bottom, 0px))\", ...style }}\n      {...props}\n    />\n  );\n}\n\nexport const AppShell = Object.assign(AppShellRoot, {\n  Header: AppShellHeader,\n  Main: AppShellMain,\n  Footer: AppShellFooter,\n});\n",
+      "type": "registry:component",
+      "target": "components/ui/app-shell.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -6,7 +6,7 @@
     {
       "name": "pwa-base",
       "title": "PWA UI Base",
-      "description": "Safe-area, viewport, and touch tokens shared by PWA UI components.",
+      "description": "Safe-area, viewport, keyboard, app chrome, and touch-target tokens.",
       "dependencies": [
         "@base-ui/react"
       ],
@@ -22,12 +22,208 @@
     {
       "name": "pwa-ready",
       "title": "PWA Ready",
-      "description": "A small proof component for verifying the PWA UI registry workflow.",
+      "description": "A small proof component for verifying the registry workflow.",
       "files": [
         {
           "path": "registry/components/pwa-ready/pwa-ready.tsx",
           "type": "registry:component",
           "target": "components/pwa-ready.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "use-display-mode",
+      "title": "useDisplayMode",
+      "description": "SSR-safe browser and installed-PWA display-mode detection.",
+      "files": [
+        {
+          "path": "registry/hooks/use-display-mode.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-display-mode.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
+      "name": "use-visual-viewport",
+      "title": "useVisualViewport",
+      "description": "A throttled, SSR-safe view of the Visual Viewport API.",
+      "files": [
+        {
+          "path": "registry/hooks/use-visual-viewport.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-visual-viewport.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
+      "name": "use-media-query",
+      "title": "useMediaQuery",
+      "description": "An SSR-safe media-query subscription hook.",
+      "files": [
+        {
+          "path": "registry/hooks/use-media-query.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-media-query.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
+      "name": "safe-area",
+      "title": "Safe Area",
+      "description": "Explicit CSS environment-variable safe-area padding.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/safe-area/safe-area.tsx",
+          "type": "registry:component",
+          "target": "components/ui/safe-area.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "keyboard-avoiding-view",
+      "title": "Keyboard Avoiding View",
+      "description": "Visual Viewport-aware layout for forms and fixed composers.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/keyboard-avoiding-view/keyboard-avoiding-view.tsx",
+          "type": "registry:component",
+          "target": "components/ui/keyboard-avoiding-view.tsx"
+        },
+        {
+          "path": "registry/hooks/use-visual-viewport.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-visual-viewport.ts"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "app-shell",
+      "title": "App Shell",
+      "description": "A dynamic-viewport application frame with independently scrolling content.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/app-shell/app-shell.tsx",
+          "type": "registry:component",
+          "target": "components/ui/app-shell.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "navigation-bar",
+      "title": "Navigation Bar",
+      "description": "Safe-area-aware top application chrome with a truly centered title.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/navigation-bar/navigation-bar.tsx",
+          "type": "registry:component",
+          "target": "components/ui/navigation-bar.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "tab-bar",
+      "title": "Tab Bar",
+      "description": "Router-agnostic bottom navigation with touch targets, labels, and badges.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/tab-bar/tab-bar.tsx",
+          "type": "registry:component",
+          "target": "components/ui/tab-bar.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "bottom-sheet",
+      "title": "Bottom Sheet",
+      "description": "A swipeable, keyboard-aware mobile bottom sheet built on Base UI Drawer.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/bottom-sheet/bottom-sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ui/bottom-sheet.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "responsive-dialog",
+      "title": "Responsive Dialog",
+      "description": "One content tree rendered as a desktop dialog or mobile bottom sheet.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/responsive-dialog/responsive-dialog.tsx",
+          "type": "registry:component",
+          "target": "components/ui/responsive-dialog.tsx"
+        },
+        {
+          "path": "registry/components/bottom-sheet/bottom-sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ui/bottom-sheet.tsx"
+        },
+        {
+          "path": "registry/hooks/use-media-query.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-media-query.ts"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "action-sheet",
+      "title": "Action Sheet",
+      "description": "Grouped, touch-first actions presented in a mobile bottom sheet.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/action-sheet/action-sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ui/action-sheet.tsx"
+        },
+        {
+          "path": "registry/components/bottom-sheet/bottom-sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ui/bottom-sheet.tsx"
         }
       ],
       "type": "registry:component"

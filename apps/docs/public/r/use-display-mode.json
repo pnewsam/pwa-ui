@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-display-mode",
+  "title": "useDisplayMode",
+  "description": "SSR-safe browser and installed-PWA display-mode detection.",
+  "files": [
+    {
+      "path": "registry/hooks/use-display-mode.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport type DisplayMode =\n  | \"browser\"\n  | \"standalone\"\n  | \"fullscreen\"\n  | \"minimal-ui\"\n  | \"unknown\";\n\nfunction readDisplayMode(): DisplayMode {\n  if (typeof window === \"undefined\") return \"unknown\";\n\n  const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };\n  if (navigatorWithStandalone.standalone) return \"standalone\";\n  if (window.matchMedia(\"(display-mode: fullscreen)\").matches) return \"fullscreen\";\n  if (window.matchMedia(\"(display-mode: standalone)\").matches) return \"standalone\";\n  if (window.matchMedia(\"(display-mode: minimal-ui)\").matches) return \"minimal-ui\";\n  return \"browser\";\n}\n\nexport function useDisplayMode(): DisplayMode {\n  const [mode, setMode] = React.useState<DisplayMode>(\"unknown\");\n\n  React.useEffect(() => {\n    const queries = [\"fullscreen\", \"standalone\", \"minimal-ui\"].map((value) =>\n      window.matchMedia(`(display-mode: ${value})`),\n    );\n    const update = () => setMode(readDisplayMode());\n\n    update();\n    queries.forEach((query) => query.addEventListener(\"change\", update));\n    return () => queries.forEach((query) => query.removeEventListener(\"change\", update));\n  }, []);\n\n  return mode;\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-display-mode.ts"
+    }
+  ],
+  "type": "registry:hook"
+}

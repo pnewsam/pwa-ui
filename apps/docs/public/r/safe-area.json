@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "safe-area",
+  "title": "Safe Area",
+  "description": "Explicit CSS environment-variable safe-area padding.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/components/safe-area/safe-area.tsx",
+      "content": "import * as React from \"react\";\n\nimport { cn } from \"@/lib/utils\";\n\ntype SafeAreaEdge = \"top\" | \"right\" | \"bottom\" | \"left\";\n\nexport type SafeAreaProps = React.ComponentPropsWithoutRef<\"div\"> & {\n  edges?: readonly SafeAreaEdge[];\n};\n\nconst insets: Record<SafeAreaEdge, string> = {\n  top: \"var(--pwa-safe-top, env(safe-area-inset-top, 0px))\",\n  right: \"var(--pwa-safe-right, env(safe-area-inset-right, 0px))\",\n  bottom: \"var(--pwa-safe-bottom, env(safe-area-inset-bottom, 0px))\",\n  left: \"var(--pwa-safe-left, env(safe-area-inset-left, 0px))\",\n};\n\nexport function SafeArea({\n  edges = [\"top\", \"right\", \"bottom\", \"left\"],\n  className,\n  style,\n  ...props\n}: SafeAreaProps) {\n  const edgeSet = new Set(edges);\n\n  return (\n    <div\n      data-slot=\"safe-area\"\n      className={cn(\"box-border\", className)}\n      style={{\n        paddingTop: edgeSet.has(\"top\") ? insets.top : undefined,\n        paddingRight: edgeSet.has(\"right\") ? insets.right : undefined,\n        paddingBottom: edgeSet.has(\"bottom\") ? insets.bottom : undefined,\n        paddingLeft: edgeSet.has(\"left\") ? insets.left : undefined,\n        ...style,\n      }}\n      {...props}\n    />\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/ui/safe-area.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-media-query",
+  "title": "useMediaQuery",
+  "description": "An SSR-safe media-query subscription hook.",
+  "files": [
+    {
+      "path": "registry/hooks/use-media-query.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport function useMediaQuery(query: string, defaultValue = false) {\n  const [matches, setMatches] = React.useState(defaultValue);\n\n  React.useEffect(() => {\n    const media = window.matchMedia(query);\n    const update = () => setMatches(media.matches);\n\n    update();\n    media.addEventListener(\"change\", update);\n    return () => media.removeEventListener(\"change\", update);\n  }, [query]);\n\n  return matches;\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-media-query.ts"
+    }
+  ],
+  "type": "registry:hook"
+}

@@ -2,8 +2,5 @@
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "pwa-ui",
   "homepage": "https://github.com/pwa-ui/pwa-ui",
-  "include": [
-    "registry/styles/registry.json",
-    "registry/components/pwa-ready/registry.json"
-  ]
+  "include": ["registry/registry.json"]
 }

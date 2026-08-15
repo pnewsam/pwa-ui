@@ -4,7 +4,10 @@
     "plugins": [{ "name": "next" }],
     "incremental": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/components/ui/bottom-sheet": ["../../registry/components/bottom-sheet/bottom-sheet.tsx"],
+      "@/hooks/use-media-query": ["../../registry/hooks/use-media-query.ts"],
+      "@/hooks/use-visual-viewport": ["../../registry/hooks/use-visual-viewport.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

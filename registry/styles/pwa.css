@@ -7,11 +7,24 @@
   --pwa-navigation-bar-height: 3.5rem;
   --pwa-tab-bar-height: 4rem;
   --pwa-touch-target: 2.75rem;
+  --pwa-visual-viewport-height: 100dvh;
+  --pwa-viewport-height: 100dvh;
 }
 
 @supports (height: 100dvh) {
   :root {
     --pwa-viewport-height: 100dvh;
+  }
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+@media (display-mode: standalone) {
+  :root {
+    --pwa-is-standalone: 1;
   }
 }
 
