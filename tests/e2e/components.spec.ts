@@ -40,3 +40,12 @@ test("shows copyable source alongside each live example", async ({ page }) => {
   await expect(page.locator("#preview").getByText('import { Home, Search, User } from "lucide-react"')).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy code" }).first()).toBeVisible();
 });
+
+test("opens both documentation resources", async ({ page }) => {
+  await page.goto("/resources/device-qa");
+  await expect(page.getByRole("heading", { name: "Device QA", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /Registry source/ }).last().click();
+  await expect(page).toHaveURL(/\/resources\/registry$/);
+  await expect(page.getByRole("heading", { name: "Registry source", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Registry index/ })).toHaveAttribute("href", "/r/registry.json");
+});
