@@ -7,13 +7,26 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("renders the documentation index and all eight component links", async ({ page, isMobile }) => {
+test("renders the documentation index with component and hook links", async ({ page, isMobile }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Build mobile web apps/ })).toBeVisible();
   if (isMobile) await page.getByRole("button", { name: "Open navigation" }).click();
   for (const name of ["AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView"]) {
     await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
+  for (const name of ["useDisplayMode", "useVisualViewport", "useMediaQuery"]) {
+    await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
+  }
+});
+
+test("documents installable hook usage and source", async ({ page }) => {
+  await page.goto("/hooks/use-display-mode");
+  await expect(page.getByRole("heading", { name: "useDisplayMode", exact: true })).toBeVisible();
+  await expect(page.locator("#installation").getByText("pnpm dlx shadcn@latest add https://pwaui.com/r/use-display-mode.json")).toBeVisible();
+
+  await page.locator("#installation").getByRole("button", { name: "Manual", exact: true }).click();
+  await expect(page.locator("#installation").getByText("Copy and paste the hook into your project.")).toBeVisible();
+  await expect(page.locator("#installation").getByRole("button", { name: "Copy hooks/use-display-mode.ts" })).toBeVisible();
 });
 
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {

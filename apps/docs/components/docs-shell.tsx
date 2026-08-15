@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Braces, Menu, X } from "lucide-react";
 
 import { componentDocs } from "@/lib/component-docs";
+import { hookDocs } from "@/lib/hook-docs";
 
 export function DocsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -43,6 +44,13 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
               {componentDocs.map((component) => {
                 const href = `/components/${component.slug}`;
                 return <a key={component.slug} className={pathname === href ? "is-active" : ""} href={href} onClick={() => setMenuOpen(false)}>{component.name}</a>;
+              })}
+            </div>
+            <div className="docs-nav-group">
+              <p>Hooks</p>
+              {hookDocs.map((hook) => {
+                const href = `/hooks/${hook.slug}`;
+                return <a key={hook.slug} className={pathname === href ? "is-active" : ""} href={href} onClick={() => setMenuOpen(false)}>{hook.name}</a>;
               })}
             </div>
             <div className="docs-nav-group">

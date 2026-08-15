@@ -4,11 +4,10 @@ import * as React from "react";
 
 import { CodeBlock } from "@/components/code-block";
 import { ComponentSource } from "@/components/component-source";
-import type { ComponentSlug } from "@/lib/component-docs";
 
 type InstallationMethod = "command" | "manual";
 
-export function ComponentInstallation({ slug, command }: { slug: ComponentSlug; command: string }) {
+export function ComponentInstallation({ slug, command, kind = "component" }: { slug: string; command: string; kind?: "component" | "hook" }) {
   const [method, setMethod] = React.useState<InstallationMethod>("command");
 
   return (
@@ -27,8 +26,8 @@ export function ComponentInstallation({ slug, command }: { slug: ComponentSlug; 
       ) : (
         <div className="installation-manual">
           <div className="installation-manual-intro">
-            <strong>Copy and paste the component into your project.</strong>
-            <p>Use the destination shown for each file. Composed primitives are included as separate files.</p>
+            <strong>Copy and paste the {kind} into your project.</strong>
+            <p>Use the destination shown for each file. Any supporting source is included as a separate file.</p>
           </div>
           <ComponentSource slug={slug} />
         </div>

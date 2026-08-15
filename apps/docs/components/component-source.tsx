@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import { CodeBlock } from "@/components/code-block";
-import type { ComponentSlug } from "@/lib/component-docs";
 
 type RegistryFile = {
   path: string;
@@ -18,15 +17,15 @@ type RegistryItem = {
 };
 
 type SourceState =
-  | { status: "loading"; slug: ComponentSlug }
-  | { status: "error"; slug: ComponentSlug; message: string }
-  | { status: "ready"; slug: ComponentSlug; files: RegistryFile[]; dependencies: string[] };
+  | { status: "loading"; slug: string }
+  | { status: "error"; slug: string; message: string }
+  | { status: "ready"; slug: string; files: RegistryFile[]; dependencies: string[] };
 
 function fileLabel(file: RegistryFile) {
   return file.target ?? file.path.replace(/^registry\//, "");
 }
 
-export function ComponentSource({ slug }: { slug: ComponentSlug }) {
+export function ComponentSource({ slug }: { slug: string }) {
   const [requestKey, setRequestKey] = React.useState(0);
   const [state, setState] = React.useState<SourceState>({ status: "loading", slug });
   const [activeFile, setActiveFile] = React.useState<string | null>(null);
@@ -41,7 +40,7 @@ export function ComponentSource({ slug }: { slug: ComponentSlug }) {
 
         const item = await response.json() as RegistryItem;
         const files = (item.files ?? []).filter((file) => typeof file.content === "string");
-        if (files.length === 0) throw new Error("No component source was included in this registry item.");
+        if (files.length === 0) throw new Error("No source was included in this registry item.");
 
         const dependencies = [
           ...(item.dependencies ?? []),
@@ -64,7 +63,7 @@ export function ComponentSource({ slug }: { slug: ComponentSlug }) {
   }, [requestKey, slug]);
 
   if (state.slug !== slug || state.status === "loading") {
-    return <div className="component-source-status" role="status">Loading component source…</div>;
+    return <div className="component-source-status" role="status">Loading source…</div>;
   }
 
   if (state.status === "error") {

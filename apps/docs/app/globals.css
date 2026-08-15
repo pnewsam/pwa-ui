@@ -121,6 +121,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .docs-component-list > a > svg { color: #a1a1aa; }
 .docs-anatomy { display: flex; flex-wrap: wrap; gap: 8px; }
 .docs-anatomy code { border: 1px solid var(--docs-line); border-radius: 6px; background: #fafafa; padding: 6px 9px; color: #3f3f46; font: 12px var(--font-mono); }
+.docs-api-list { display: grid; overflow: hidden; margin: 0; border: 1px solid var(--docs-line); border-radius: 10px; background: white; }
+.docs-api-list > div { display: grid; grid-template-columns: minmax(150px, .42fr) 1fr; gap: 20px; padding: 15px 17px; }
+.docs-api-list > div + div { border-top: 1px solid var(--docs-line); }
+.docs-api-list dt, .docs-api-list dd { margin: 0; }
+.docs-api-list code { color: #3f3f46; font: 12px var(--font-mono); }
+.docs-api-list dd { color: #62626a; font-size: 13px; line-height: 1.55; }
 .docs-pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--docs-line); }
 .docs-pagination a { display: grid; gap: 5px; border: 1px solid var(--docs-line); border-radius: 9px; padding: 15px 17px; }
 .docs-pagination a:last-child { text-align: right; }
@@ -182,6 +188,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .example-tabs button[aria-pressed="true"]::after { content: ""; position: absolute; inset: auto 0 -1px; height: 2px; background: #18181b; }
 .example-content { min-width: 0; }
 .example-preview { display: grid; min-height: 430px; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 45%, #fff 0, #fafafa 62%, #f6f6f7 100%); padding: 38px; }
+.hook-demo { display: grid; width: min(100%, 390px); justify-items: center; gap: 13px; border: 1px solid #e4e4e7; border-radius: 16px; background: white; padding: 28px; text-align: center; box-shadow: 0 12px 30px rgb(24 24 27 / 7%); }
+.hook-demo-label { color: #71717a; font: 500 10px/1.5 var(--font-mono); }
+.hook-demo > output { color: #18181b; font-size: 27px; font-weight: 570; letter-spacing: -.035em; }
+.hook-demo > p { max-width: 300px; margin: 0; color: #71717a; font-size: 12px; line-height: 1.55; }
+.hook-demo-wide { width: min(100%, 470px); }
+.hook-demo-grid { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden; border: 1px solid #e7e7ea; border-radius: 10px; }
+.hook-demo-grid > div { display: grid; gap: 5px; padding: 15px; }
+.hook-demo-grid > div:nth-child(even) { border-left: 1px solid #e7e7ea; }
+.hook-demo-grid > div:nth-child(n + 3) { border-top: 1px solid #e7e7ea; }
+.hook-demo-grid span { color: #8b8b93; font-size: 10px; }
+.hook-demo-grid output { color: #27272a; font: 570 14px var(--font-mono); }
 
 .demo-button, .demo-primary-button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; border: 1px solid #18181b; border-radius: 8px; background: #18181b; padding: 0 16px; color: white; font-size: 13px; font-weight: 620; cursor: pointer; transition: background-color 150ms ease, transform 150ms cubic-bezier(.23, 1, .32, 1); }
 .demo-button:active, .demo-primary-button:active { transform: scale(.97); }
@@ -273,6 +290,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
   .docs-principles > div + div { border-top: 1px solid var(--docs-line); border-left: 0; }
   .docs-component-list small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; }
   .docs-component-list > a { min-height: 78px; }
+  .docs-api-list > div { grid-template-columns: 1fr; gap: 7px; }
   .example-preview { min-height: 400px; padding: 24px 14px; }
   .code-block pre { padding: 17px; font-size: 11px; }
   .component-source-meta { align-items: flex-start; flex-direction: column; }
