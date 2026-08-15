@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-page-visibility",
+  "title": "usePageVisibility",
+  "description": "Observe page visibility, suspension boundaries, and discarded restoration.",
+  "files": [
+    {
+      "path": "registry/hooks/use-page-visibility.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport type PageVisibilityState = \"unknown\" | DocumentVisibilityState;\n\nfunction subscribe(callback: () => void) {\n  document.addEventListener(\"visibilitychange\", callback);\n  window.addEventListener(\"pageshow\", callback);\n  window.addEventListener(\"pagehide\", callback);\n\n  return () => {\n    document.removeEventListener(\"visibilitychange\", callback);\n    window.removeEventListener(\"pageshow\", callback);\n    window.removeEventListener(\"pagehide\", callback);\n  };\n}\n\nfunction getSnapshot(): PageVisibilityState {\n  return document.visibilityState;\n}\n\nfunction getServerSnapshot(): PageVisibilityState {\n  return \"unknown\";\n}\n\nfunction getWasDiscarded() {\n  return Boolean((document as Document & { wasDiscarded?: boolean }).wasDiscarded);\n}\n\nexport function usePageVisibility() {\n  const visibilityState = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);\n  const wasDiscarded = visibilityState === \"unknown\" ? false : getWasDiscarded();\n\n  return React.useMemo(() => ({\n    visibilityState,\n    isVisible: visibilityState === \"unknown\" ? null : visibilityState === \"visible\",\n    wasDiscarded,\n  }), [visibilityState, wasDiscarded]);\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-page-visibility.ts"
+    }
+  ],
+  "type": "registry:hook"
+}

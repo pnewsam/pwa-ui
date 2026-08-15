@@ -123,6 +123,48 @@ Purpose: keep application-level forms and fixed composers clear of the software 
 
 Behaviors are `padding`, `height`, and `position`. The component exposes `--pwa-keyboard-height` and `--pwa-visual-viewport-height`, ignores sub-80px viewport changes, cleans up all listeners, and becomes an effective no-op without Visual Viewport support. Inside BottomSheet, prefer the built-in Base UI keyboard provider.
 
+## InstallPrompt
+
+Purpose: present app installation as an explicit, user-initiated choice after the browser reports that installation is available.
+
+```tsx
+const { canPrompt, prompt } = useInstallPrompt();
+
+return canPrompt ? <InstallPrompt onInstall={() => void prompt()} /> : null;
+```
+
+The component never opens browser UI on its own. The paired hook retains the browser event, prevents concurrent prompts, and reports accepted, dismissed, unavailable, installed, and error states.
+
+## UpdatePrompt
+
+Purpose: let a user apply or defer a waiting service worker update without surprise activation or reloads.
+
+```tsx
+const update = useServiceWorkerUpdate();
+
+return update.updateAvailable ? (
+  <UpdatePrompt onUpdate={() => update.applyUpdate({ reload: true })} />
+) : null;
+```
+
+The hook observes an existing service worker registration; it does not register one. The worker must handle the `SKIP_WAITING` message if the application uses the provided update action.
+
+## OfflineBanner
+
+Purpose: provide persistent, non-blocking connectivity feedback with an optional recovery action.
+
+```tsx
+const { status } = useNetworkStatus();
+
+return status === "offline" ? <OfflineBanner /> : null;
+```
+
+`navigator.onLine` is only a platform hint, not proof that the application server is reachable. Keep request-level failures and retry behavior close to the affected content.
+
+## Lifecycle hooks
+
+`usePageVisibility` exposes foreground and background transitions so an application can pause expensive work, persist state, or refresh stale data. Like the other hooks, it preserves an `unknown` server-rendering state and attaches browser listeners only after mount.
+
 ## PWA base styles
 
 `pwa-base` installs conservative tokens for safe areas, dynamic viewport height, keyboard height, navigation and tab bars, and touch targets. It does not overwrite shadcn color tokens or require a runtime provider. Import `styles/pwa.css` once from the application stylesheet or layout.

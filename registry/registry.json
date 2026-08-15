@@ -38,6 +38,34 @@
       "files": [{ "path": "hooks/use-media-query.ts", "type": "registry:hook", "target": "hooks/use-media-query.ts" }]
     },
     {
+      "name": "use-install-prompt",
+      "type": "registry:hook",
+      "title": "useInstallPrompt",
+      "description": "A guarded interface for the one-shot browser PWA install prompt.",
+      "files": [{ "path": "hooks/use-install-prompt.ts", "type": "registry:hook", "target": "hooks/use-install-prompt.ts" }]
+    },
+    {
+      "name": "use-service-worker-update",
+      "type": "registry:hook",
+      "title": "useServiceWorkerUpdate",
+      "description": "Observe, check, and explicitly activate service-worker updates.",
+      "files": [{ "path": "hooks/use-service-worker-update.ts", "type": "registry:hook", "target": "hooks/use-service-worker-update.ts" }]
+    },
+    {
+      "name": "use-network-status",
+      "type": "registry:hook",
+      "title": "useNetworkStatus",
+      "description": "An SSR-safe hint from the browser's online and offline events.",
+      "files": [{ "path": "hooks/use-network-status.ts", "type": "registry:hook", "target": "hooks/use-network-status.ts" }]
+    },
+    {
+      "name": "use-page-visibility",
+      "type": "registry:hook",
+      "title": "usePageVisibility",
+      "description": "Observe page visibility, suspension boundaries, and discarded restoration.",
+      "files": [{ "path": "hooks/use-page-visibility.ts", "type": "registry:hook", "target": "hooks/use-page-visibility.ts" }]
+    },
+    {
       "name": "safe-area",
       "type": "registry:component",
       "title": "Safe Area",
@@ -112,6 +140,39 @@
       "files": [
         { "path": "components/action-sheet/action-sheet.tsx", "type": "registry:component", "target": "components/ui/action-sheet.tsx" },
         { "path": "components/bottom-sheet/bottom-sheet.tsx", "type": "registry:component", "target": "components/ui/bottom-sheet.tsx" }
+      ]
+    },
+    {
+      "name": "install-prompt",
+      "type": "registry:component",
+      "title": "Install Prompt",
+      "description": "An accessible, persistent invitation to install a supported PWA.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "components/install-prompt/install-prompt.tsx", "type": "registry:component", "target": "components/ui/install-prompt.tsx" },
+        { "path": "hooks/use-install-prompt.ts", "type": "registry:hook", "target": "hooks/use-install-prompt.ts" }
+      ]
+    },
+    {
+      "name": "update-prompt",
+      "type": "registry:component",
+      "title": "Update Prompt",
+      "description": "A persistent update notice with explicit activation and deferral actions.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "components/update-prompt/update-prompt.tsx", "type": "registry:component", "target": "components/ui/update-prompt.tsx" },
+        { "path": "hooks/use-service-worker-update.ts", "type": "registry:hook", "target": "hooks/use-service-worker-update.ts" }
+      ]
+    },
+    {
+      "name": "offline-banner",
+      "type": "registry:component",
+      "title": "Offline Banner",
+      "description": "Persistent, non-blocking feedback when the browser reports an offline state.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "components/offline-banner/offline-banner.tsx", "type": "registry:component", "target": "components/ui/offline-banner.tsx" },
+        { "path": "hooks/use-network-status.ts", "type": "registry:hook", "target": "hooks/use-network-status.ts" }
       ]
     }
   ]

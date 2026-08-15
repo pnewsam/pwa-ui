@@ -15,9 +15,12 @@ The MVP registry contains:
 - `ActionSheet` — grouped touch actions with destructive and cancel treatments;
 - `NavigationBar` — safe-area-aware top application chrome;
 - `TabBar` — router-agnostic bottom navigation with labels and badges;
-- `KeyboardAvoidingView` — Visual Viewport-aware form and composer layout.
+- `KeyboardAvoidingView` — Visual Viewport-aware form and composer layout;
+- `InstallPrompt` — an explicit, user-initiated app installation prompt;
+- `UpdatePrompt` — a persistent choice to apply or defer a service worker update;
+- `OfflineBanner` — non-blocking connectivity feedback with an optional recovery action.
 
-Supporting registry hooks expose display mode, Visual Viewport state, and media queries. The installable documentation app includes settings, mobile-form, and content-feed demos using the canonical registry source.
+Supporting registry hooks expose display mode, Visual Viewport state, media queries, install availability, service worker updates, network status, and page visibility. The installable documentation app includes settings, mobile-form, and content-feed demos using the canonical registry source.
 
 ## Develop
 

@@ -193,6 +193,88 @@ export function Composer() {
     notes: ["Behaviors: padding, height, and position.", "Exposes --pwa-keyboard-height and --pwa-visual-viewport-height.", "Inside BottomSheet, prefer Base UI's dedicated keyboard provider."],
     accessibility: "The component is layout-only. Preserve normal focus order and label all form controls inside it.",
   },
+  {
+    slug: "install-prompt",
+    name: "InstallPrompt",
+    summary: "A persistent, accessible invitation to install the PWA when the browser allows it.",
+    description: "InstallPrompt presents the value and action clearly without triggering browser UI on its own. Pair it with useInstallPrompt and only render it when the browser supplies an install prompt.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/install-prompt.json`,
+    usage: `"use client"
+
+import { InstallPrompt } from "@/components/ui/install-prompt"
+import { useInstallPrompt } from "@/hooks/use-install-prompt"
+
+export function AppInstallPrompt() {
+  const { status, prompt } = useInstallPrompt()
+
+  if (status !== "available" && status !== "prompting") return null
+
+  async function install() {
+    await prompt()
+  }
+
+  return (
+    <InstallPrompt
+      installing={status === "prompting"}
+      onInstall={install}
+    />
+  )
+}`,
+    anatomy: ["InstallPrompt", "title", "description", "install action", "optional dismiss action"],
+    notes: ["Render only after useInstallPrompt reports available.", "The component never requests installation during render or without a user action.", "Use product-specific copy that explains the value of installing."],
+    accessibility: "The prompt is a labelled section with visible text and touch-sized native buttons. Browser installation remains tied to an explicit user action.",
+  },
+  {
+    slug: "update-prompt",
+    name: "UpdatePrompt",
+    summary: "A persistent notice for service-worker updates that are ready to activate.",
+    description: "UpdatePrompt gives users an explicit choice to apply or defer an update. Pair it with useServiceWorkerUpdate so activation and reload behavior remain under application control.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/update-prompt.json`,
+    usage: `"use client"
+
+import { UpdatePrompt } from "@/components/ui/update-prompt"
+import { useServiceWorkerUpdate } from "@/hooks/use-service-worker-update"
+
+export function AppUpdatePrompt() {
+  const { status, applyUpdate } = useServiceWorkerUpdate({
+    checkOnMount: true,
+  })
+
+  if (status !== "waiting" && status !== "activating") return null
+
+  return (
+    <UpdatePrompt
+      updating={status === "activating"}
+      onUpdate={() => applyUpdate({ reload: true })}
+    />
+  )
+}`,
+    anatomy: ["UpdatePrompt", "title", "status description", "update action", "optional defer action"],
+    notes: ["Use a persistent inline notice because the update remains available until activated.", "reload is opt-in so the application can protect unsaved work.", "The service worker must respond to the SKIP_WAITING message."],
+    accessibility: "Status changes are announced politely, actions remain available to keyboard and touch users, and the notice does not steal focus.",
+  },
+  {
+    slug: "offline-banner",
+    name: "OfflineBanner",
+    summary: "Persistent, non-blocking feedback when the browser reports an offline state.",
+    description: "OfflineBanner keeps connectivity context close to the application without blocking work. Pair it with useNetworkStatus and treat the signal as a hint rather than proof that a server is reachable.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/offline-banner.json`,
+    usage: `"use client"
+
+import { OfflineBanner } from "@/components/ui/offline-banner"
+import { useNetworkStatus } from "@/hooks/use-network-status"
+
+export function ConnectivityBanner() {
+  const { status } = useNetworkStatus()
+
+  if (status !== "offline") return null
+
+  return <OfflineBanner />
+}`,
+    anatomy: ["OfflineBanner", "status indicator", "message", "optional action"],
+    notes: ["Place it in normal document flow so it pushes content rather than covering it.", "Do not disable important actions solely because navigator.onLine reports offline.", "Use an action slot for a contextual retry or troubleshooting link when appropriate."],
+    accessibility: "The message uses a polite status live region, includes visible text rather than color alone, and does not interrupt the current task.",
+  },
 ] as const;
 
 export type ComponentDoc = (typeof componentDocs)[number];

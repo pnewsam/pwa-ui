@@ -72,6 +72,58 @@
       "type": "registry:hook"
     },
     {
+      "name": "use-install-prompt",
+      "title": "useInstallPrompt",
+      "description": "A guarded interface for the one-shot browser PWA install prompt.",
+      "files": [
+        {
+          "path": "registry/hooks/use-install-prompt.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-install-prompt.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
+      "name": "use-service-worker-update",
+      "title": "useServiceWorkerUpdate",
+      "description": "Observe, check, and explicitly activate service-worker updates.",
+      "files": [
+        {
+          "path": "registry/hooks/use-service-worker-update.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-service-worker-update.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
+      "name": "use-network-status",
+      "title": "useNetworkStatus",
+      "description": "An SSR-safe hint from the browser's online and offline events.",
+      "files": [
+        {
+          "path": "registry/hooks/use-network-status.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-network-status.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
+      "name": "use-page-visibility",
+      "title": "usePageVisibility",
+      "description": "Observe page visibility, suspension boundaries, and discarded restoration.",
+      "files": [
+        {
+          "path": "registry/hooks/use-page-visibility.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-page-visibility.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
       "name": "safe-area",
       "title": "Safe Area",
       "description": "Explicit CSS environment-variable safe-area padding.",
@@ -224,6 +276,69 @@
           "path": "registry/components/bottom-sheet/bottom-sheet.tsx",
           "type": "registry:component",
           "target": "components/ui/bottom-sheet.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "install-prompt",
+      "title": "Install Prompt",
+      "description": "An accessible, persistent invitation to install a supported PWA.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/install-prompt/install-prompt.tsx",
+          "type": "registry:component",
+          "target": "components/ui/install-prompt.tsx"
+        },
+        {
+          "path": "registry/hooks/use-install-prompt.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-install-prompt.ts"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "update-prompt",
+      "title": "Update Prompt",
+      "description": "A persistent update notice with explicit activation and deferral actions.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/update-prompt/update-prompt.tsx",
+          "type": "registry:component",
+          "target": "components/ui/update-prompt.tsx"
+        },
+        {
+          "path": "registry/hooks/use-service-worker-update.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-service-worker-update.ts"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "name": "offline-banner",
+      "title": "Offline Banner",
+      "description": "Persistent, non-blocking feedback when the browser reports an offline state.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/offline-banner/offline-banner.tsx",
+          "type": "registry:component",
+          "target": "components/ui/offline-banner.tsx"
+        },
+        {
+          "path": "registry/hooks/use-network-status.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-network-status.ts"
         }
       ],
       "type": "registry:component"

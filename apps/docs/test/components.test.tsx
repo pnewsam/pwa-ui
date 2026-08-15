@@ -1,13 +1,16 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { ActionSheet } from "../../../registry/components/action-sheet/action-sheet";
 import { AppShell } from "../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
+import { InstallPrompt } from "../../../registry/components/install-prompt/install-prompt";
+import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
+import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
 import { CodeBlock } from "@/components/code-block";
 
 describe("PWA UI components", () => {
@@ -77,5 +80,29 @@ describe("PWA UI components", () => {
     expect(await screen.findByRole("dialog")).toHaveAccessibleName("Filters");
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("keeps installation behind an explicit action", async () => {
+    const user = userEvent.setup();
+    const onInstall = vi.fn();
+
+    render(<InstallPrompt title="Install Field Notes" onInstall={onInstall} />);
+    expect(screen.getByRole("region", { name: "Install Field Notes" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Install" }));
+    expect(onInstall).toHaveBeenCalledOnce();
+  });
+
+  it("announces an update without taking focus", () => {
+    const view = render(<UpdatePrompt updating onUpdate={() => undefined} />);
+    const prompt = within(view.container);
+    expect(prompt.getByRole("status")).toHaveTextContent("Applying the update");
+    expect(prompt.getByRole("button", { name: "Updating…" })).toBeDisabled();
+  });
+
+  it("renders offline feedback as a persistent status", () => {
+    const view = render(<OfflineBanner action={<button>Retry</button>} />);
+    const banner = within(view.container);
+    expect(banner.getByRole("status")).toHaveTextContent("You're offline");
+    expect(banner.getByRole("button", { name: "Retry" })).toBeVisible();
   });
 });

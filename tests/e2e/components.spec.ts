@@ -11,10 +11,10 @@ test("renders the documentation index with component and hook links", async ({ p
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Build mobile web apps/ })).toBeVisible();
   if (isMobile) await page.getByRole("button", { name: "Open navigation" }).click();
-  for (const name of ["AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView"]) {
+  for (const name of ["AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView", "InstallPrompt", "UpdatePrompt", "OfflineBanner"]) {
     await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
-  for (const name of ["useDisplayMode", "useVisualViewport", "useMediaQuery"]) {
+  for (const name of ["useDisplayMode", "useVisualViewport", "useMediaQuery", "useInstallPrompt", "useServiceWorkerUpdate", "useNetworkStatus", "usePageVisibility"]) {
     await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
 });
@@ -27,6 +27,19 @@ test("documents installable hook usage and source", async ({ page }) => {
   await page.locator("#installation").getByRole("button", { name: "Manual", exact: true }).click();
   await expect(page.locator("#installation").getByText("Copy and paste the hook into your project.")).toBeVisible();
   await expect(page.locator("#installation").getByRole("button", { name: "Copy hooks/use-display-mode.ts" })).toBeVisible();
+});
+
+test("documents the priority-one install prompt composition", async ({ page }) => {
+  await page.goto("/components/install-prompt");
+  await expect(page.getByRole("heading", { name: "InstallPrompt", exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Install Field Notes" })).toBeVisible();
+  await page.getByRole("button", { name: "Install", exact: true }).click();
+  await expect(page.getByText("Install action selected.")).toBeVisible();
+
+  const installation = page.locator("#installation");
+  await installation.getByRole("button", { name: "Manual", exact: true }).click();
+  await installation.getByRole("button", { name: "hooks/use-install-prompt.ts", exact: true }).click();
+  await expect(installation.getByRole("button", { name: "Copy hooks/use-install-prompt.ts" })).toBeVisible();
 });
 
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {

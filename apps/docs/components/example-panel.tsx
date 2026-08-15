@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   Bell,
   Check,
+  Download,
   Home,
   MoreHorizontal,
   Search,
@@ -19,10 +20,13 @@ import { ActionSheet } from "../../../registry/components/action-sheet/action-sh
 import { AppShell } from "../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
 import { KeyboardAvoidingView } from "../../../registry/components/keyboard-avoiding-view/keyboard-avoiding-view";
+import { InstallPrompt } from "../../../registry/components/install-prompt/install-prompt";
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
+import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
+import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
 import type { ComponentSlug } from "@/lib/component-docs";
 
 function DemoButton({ children }: { children: React.ReactNode }) {
@@ -185,6 +189,56 @@ function KeyboardAvoidingViewDemo() {
   );
 }
 
+function InstallPromptDemo() {
+  const [state, setState] = React.useState<"visible" | "installed" | "dismissed">("visible");
+
+  if (state !== "visible") {
+    return (
+      <div className="demo-center">
+        <p className="demo-caption">{state === "installed" ? "Install action selected." : "Prompt dismissed."}</p>
+        <button className="demo-secondary-button" onClick={() => setState("visible")}>Show again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="prompt-demo">
+      <InstallPrompt
+        icon={<Download />}
+        title="Install Field Notes"
+        description="Open notes faster in a focused app window."
+        onInstall={() => setState("installed")}
+        onDismiss={() => setState("dismissed")}
+      />
+    </div>
+  );
+}
+
+function UpdatePromptDemo() {
+  const [updating, setUpdating] = React.useState(false);
+
+  return (
+    <div className="prompt-demo">
+      <UpdatePrompt
+        updating={updating}
+        onUpdate={() => setUpdating(true)}
+        onDismiss={() => setUpdating(false)}
+      />
+    </div>
+  );
+}
+
+function OfflineBannerDemo() {
+  const [visible, setVisible] = React.useState(true);
+
+  return (
+    <div className="offline-banner-demo">
+      {visible ? <OfflineBanner action={<button onClick={() => setVisible(false)}>Retry</button>} /> : <p>Connection check requested.</p>}
+      <div className="offline-banner-demo-body"><span /><span /><span /></div>
+    </div>
+  );
+}
+
 function ComponentDemo({ slug }: { slug: ComponentSlug }) {
   switch (slug) {
     case "app-shell": return <AppShellDemo />;
@@ -195,6 +249,9 @@ function ComponentDemo({ slug }: { slug: ComponentSlug }) {
     case "navigation-bar": return <NavigationBarDemo />;
     case "tab-bar": return <TabBarDemo />;
     case "keyboard-avoiding-view": return <KeyboardAvoidingViewDemo />;
+    case "install-prompt": return <InstallPromptDemo />;
+    case "update-prompt": return <UpdatePromptDemo />;
+    case "offline-banner": return <OfflineBannerDemo />;
   }
 }
 

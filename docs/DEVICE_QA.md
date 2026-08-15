@@ -37,6 +37,16 @@ Run this checklist against a production build. Record the device, OS/browser ver
 - Closing the keyboard restores the layout without a jump or permanent blank space.
 - Repeat with rotation while a field is focused.
 
+## Installation, updates, and lifecycle
+
+- The install prompt appears only when the browser reports availability and after a user action.
+- Accepting, dismissing, and completing installation each leave the interface in the correct state.
+- A waiting service worker displays one update prompt and never reloads without an explicit choice.
+- Applying an update activates the waiting worker; deferring it keeps the current session usable.
+- Offline feedback appears and clears as connectivity changes without blocking application content.
+- Backgrounding and restoring the app do not duplicate listeners, prompts, or network work.
+- Unsupported browsers and unregistered service workers fail quietly with an accurate state.
+
 ## Accessibility and motion
 
 - Tab and Shift+Tab remain inside open overlays.

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "offline-banner",
+  "title": "Offline Banner",
+  "description": "Persistent, non-blocking feedback when the browser reports an offline state.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/components/offline-banner/offline-banner.tsx",
+      "content": "import * as React from \"react\";\n\nimport { cn } from \"@/lib/utils\";\n\nexport type OfflineBannerProps = React.ComponentPropsWithoutRef<\"div\"> & {\n  action?: React.ReactNode;\n};\n\nexport function OfflineBanner({\n  children = \"You're offline. Some information may be out of date.\",\n  action,\n  className,\n  ...props\n}: OfflineBannerProps) {\n  return (\n    <div\n      data-slot=\"offline-banner\"\n      role=\"status\"\n      aria-live=\"polite\"\n      className={cn(\"flex min-h-11 items-center justify-center gap-2 border-b border-border/70 bg-muted px-4 py-2 text-center text-sm text-muted-foreground\", className)}\n      {...props}\n    >\n      <span aria-hidden=\"true\" className=\"size-2 shrink-0 rounded-full bg-muted-foreground\" />\n      <span>{children}</span>\n      {action ? <span data-slot=\"offline-banner-action\" className=\"ml-1 shrink-0 font-medium text-foreground [&>a]:underline [&>button]:cursor-pointer [&>button]:underline\">{action}</span> : null}\n    </div>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/ui/offline-banner.tsx"
+    },
+    {
+      "path": "registry/hooks/use-network-status.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport type NetworkStatus = \"unknown\" | \"online\" | \"offline\";\n\nfunction subscribe(callback: () => void) {\n  window.addEventListener(\"online\", callback);\n  window.addEventListener(\"offline\", callback);\n\n  return () => {\n    window.removeEventListener(\"online\", callback);\n    window.removeEventListener(\"offline\", callback);\n  };\n}\n\nfunction getSnapshot(): NetworkStatus {\n  return window.navigator.onLine ? \"online\" : \"offline\";\n}\n\nfunction getServerSnapshot(): NetworkStatus {\n  return \"unknown\";\n}\n\nexport function useNetworkStatus() {\n  const status = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);\n\n  return React.useMemo(() => ({\n    status,\n    isOnline: status === \"unknown\" ? null : status === \"online\",\n  }), [status]);\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-network-status.ts"
+    }
+  ],
+  "type": "registry:component"
+}

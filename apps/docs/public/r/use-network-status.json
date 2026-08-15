@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-network-status",
+  "title": "useNetworkStatus",
+  "description": "An SSR-safe hint from the browser's online and offline events.",
+  "files": [
+    {
+      "path": "registry/hooks/use-network-status.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport type NetworkStatus = \"unknown\" | \"online\" | \"offline\";\n\nfunction subscribe(callback: () => void) {\n  window.addEventListener(\"online\", callback);\n  window.addEventListener(\"offline\", callback);\n\n  return () => {\n    window.removeEventListener(\"online\", callback);\n    window.removeEventListener(\"offline\", callback);\n  };\n}\n\nfunction getSnapshot(): NetworkStatus {\n  return window.navigator.onLine ? \"online\" : \"offline\";\n}\n\nfunction getServerSnapshot(): NetworkStatus {\n  return \"unknown\";\n}\n\nexport function useNetworkStatus() {\n  const status = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);\n\n  return React.useMemo(() => ({\n    status,\n    isOnline: status === \"unknown\" ? null : status === \"online\",\n  }), [status]);\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-network-status.ts"
+    }
+  ],
+  "type": "registry:hook"
+}

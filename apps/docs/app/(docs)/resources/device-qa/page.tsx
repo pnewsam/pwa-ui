@@ -49,6 +49,18 @@ const sections = [
     ],
   },
   {
+    title: "Installation, updates, and lifecycle",
+    items: [
+      "The install prompt appears only after the browser reports availability and the user chooses to install.",
+      "Accepting, dismissing, and completing installation each leave the interface in the correct state.",
+      "A waiting service worker displays one update prompt and never reloads without an explicit choice.",
+      "Applying an update activates the waiting worker; deferring it keeps the current session usable.",
+      "Offline feedback appears and clears as connectivity changes without blocking application content.",
+      "Backgrounding and restoring the app do not duplicate listeners, prompts, or network work.",
+      "Unsupported browsers and unregistered service workers fail quietly with an accurate state.",
+    ],
+  },
+  {
     title: "Accessibility and motion",
     items: [
       "Tab and Shift+Tab remain inside open overlays.",
