@@ -38,7 +38,7 @@ export default function RegistryResourcePage() {
       <section className="docs-section">
         <h2>Install a component</h2>
         <p>Use the public site URL as the registry origin and replace the final filename with the item you need.</p>
-        <CodeBlock code="pnpm dlx shadcn@latest add https://pwa-ui-docs.paul666490.chatgpt.site/r/app-shell.json" language="bash" />
+        <CodeBlock code="pnpm dlx shadcn@latest add https://pwaui.com/r/app-shell.json" language="bash" />
       </section>
 
       <section className="docs-section">

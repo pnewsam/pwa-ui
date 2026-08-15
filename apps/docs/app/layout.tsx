@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pwaui.com"),
   title: "PWA UI — Documentation",
   description:
     "Documentation and examples for source-owned React components built for mobile-first PWAs.",

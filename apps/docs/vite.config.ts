@@ -25,6 +25,13 @@ export default defineConfig(async () => {
           main: "./worker/index.ts",
           compatibility_date: "2026-08-15",
           compatibility_flags: ["nodejs_compat"],
+          workers_dev: true,
+          routes: [
+            {
+              pattern: "pwaui.com",
+              custom_domain: true,
+            },
+          ],
         },
       }),
     ],

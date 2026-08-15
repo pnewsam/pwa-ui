@@ -20,6 +20,7 @@ test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => 
   await page.goto("/components/bottom-sheet");
   await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Installation" })).toBeVisible();
+  await expect(page.locator("#installation").getByText("pnpm dlx shadcn@latest add https://pwaui.com/r/bottom-sheet.json")).toBeVisible();
   await page.getByRole("button", { name: "Open bottom sheet" }).click();
   await expect(page.getByRole("dialog", { name: "Choose a workspace" })).toBeVisible();
   await page.keyboard.press("Escape");

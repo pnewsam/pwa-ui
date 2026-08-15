@@ -1,10 +1,12 @@
+const registryUrl = "https://pwaui.com/r";
+
 export const componentDocs = [
   {
     slug: "app-shell",
     name: "AppShell",
     summary: "A dynamic-viewport frame for fixed application chrome and independently scrolling content.",
     description: "AppShell provides placement regions for mobile application chrome and a separately scrolling body. Put visual components such as NavigationBar and TabBar inside its header and footer regions.",
-    install: "pnpm dlx shadcn@latest add <registry>/app-shell",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/app-shell.json`,
     usage: `import { Home } from "lucide-react"
 import { AppShell } from "@/components/ui/app-shell"
 import { NavigationBar } from "@/components/ui/navigation-bar"
@@ -36,7 +38,7 @@ export function Screen() {
     name: "SafeArea",
     summary: "Explicit safe-area padding powered by CSS environment variables.",
     description: "SafeArea applies only the requested platform insets. It gracefully resolves to zero in ordinary browser tabs and never relies on model-specific device detection.",
-    install: "pnpm dlx shadcn@latest add <registry>/safe-area",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/safe-area.json`,
     usage: `import { SafeArea } from "@/components/ui/safe-area"
 
 export function Footer() {
@@ -55,7 +57,7 @@ export function Footer() {
     name: "BottomSheet",
     summary: "A swipeable, keyboard-aware mobile bottom sheet built on Base UI Drawer.",
     description: "BottomSheet preserves Base UI's focus, dismissal, nesting, gesture, and snap-point behavior while providing a polished bottom presentation and safe-area handling.",
-    install: "pnpm dlx shadcn@latest add <registry>/bottom-sheet",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/bottom-sheet.json`,
     usage: `import { BottomSheet } from "@/components/ui/bottom-sheet"
 
 export function Filters() {
@@ -80,7 +82,7 @@ export function Filters() {
     name: "ResponsiveDialog",
     summary: "One content tree rendered as a desktop dialog or mobile bottom sheet.",
     description: "ResponsiveDialog automatically selects the interaction appropriate to the current media query while retaining one owner for open state.",
-    install: "pnpm dlx shadcn@latest add <registry>/responsive-dialog",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/responsive-dialog.json`,
     usage: `import { ResponsiveDialog } from "@/components/ui/responsive-dialog"
 
 export function EditProfile() {
@@ -105,7 +107,7 @@ export function EditProfile() {
     name: "ActionSheet",
     summary: "Grouped, touch-first actions with destructive and cancel treatments.",
     description: "ActionSheet is intentionally narrower than a general context menu. Use it for short, immediate action sets on touch surfaces.",
-    install: "pnpm dlx shadcn@latest add <registry>/action-sheet",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/action-sheet.json`,
     usage: `import { ActionSheet } from "@/components/ui/action-sheet"
 
 export function Actions() {
@@ -131,7 +133,7 @@ export function Actions() {
     name: "NavigationBar",
     summary: "Safe-area-aware top application chrome with an optically centered title.",
     description: "NavigationBar uses a balanced three-column grid so the title remains centered even when leading and trailing controls have different widths.",
-    install: "pnpm dlx shadcn@latest add <registry>/navigation-bar",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/navigation-bar.json`,
     usage: `import { NavigationBar } from "@/components/ui/navigation-bar"
 
 export function Header() {
@@ -154,7 +156,7 @@ export function Header() {
     name: "TabBar",
     summary: "Router-agnostic bottom navigation with labels, active state, and badges.",
     description: "TabBar provides touch-sized app navigation for three to five destinations without coupling the component to Next.js or React Router.",
-    install: "pnpm dlx shadcn@latest add <registry>/tab-bar",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/tab-bar.json`,
     usage: `import { Home, Search, User } from "lucide-react"
 import { TabBar } from "@/components/ui/tab-bar"
 
@@ -176,7 +178,7 @@ export function Navigation() {
     name: "KeyboardAvoidingView",
     summary: "Visual Viewport-aware layout for forms and fixed composers.",
     description: "KeyboardAvoidingView handles application layouts outside Base UI drawers by exposing stable viewport and keyboard CSS variables.",
-    install: "pnpm dlx shadcn@latest add <registry>/keyboard-avoiding-view",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/keyboard-avoiding-view.json`,
     usage: `import { KeyboardAvoidingView } from "@/components/ui/keyboard-avoiding-view"
 
 export function Composer() {

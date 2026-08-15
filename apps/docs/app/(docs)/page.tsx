@@ -28,8 +28,8 @@ export default function IntroductionPage() {
       <section className="docs-section" id="installation">
         <h2>Installation</h2>
         <p>Start with the shared platform tokens, then install only the components required by your screen.</p>
-        <CodeBlock code="pnpm dlx shadcn@latest add <registry>/pwa-base" language="bash" />
-        <CodeBlock code="pnpm dlx shadcn@latest add <registry>/app-shell\npnpm dlx shadcn@latest add <registry>/bottom-sheet\npnpm dlx shadcn@latest add <registry>/tab-bar" language="bash" />
+        <CodeBlock code="pnpm dlx shadcn@latest add https://pwaui.com/r/pwa-base.json" language="bash" />
+        <CodeBlock code="pnpm dlx shadcn@latest add https://pwaui.com/r/app-shell.json\npnpm dlx shadcn@latest add https://pwaui.com/r/bottom-sheet.json\npnpm dlx shadcn@latest add https://pwaui.com/r/tab-bar.json" language="bash" />
       </section>
 
       <section className="docs-section" id="components">
