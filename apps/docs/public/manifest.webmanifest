@@ -1,0 +1,17 @@
+{
+  "name": "PWA UI",
+  "short_name": "PWA UI",
+  "description": "Source-owned React components for app-like mobile web applications.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f4ee",
+  "theme_color": "#f3f4ee",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

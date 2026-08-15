@@ -1,0 +1,22 @@
+{
+  "name": "pwa-ui",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "dev": "pnpm --filter @pwa-ui/docs dev",
+    "build": "pnpm registry:build && pnpm --filter @pwa-ui/docs build",
+    "lint": "pnpm --filter @pwa-ui/docs lint",
+    "typecheck": "pnpm --filter @pwa-ui/docs typecheck",
+    "registry:build": "shadcn build registry.json --output apps/docs/public/r",
+    "registry:validate": "shadcn registry validate ./registry.json",
+    "check": "pnpm lint && pnpm typecheck && pnpm registry:validate && pnpm build"
+  },
+  "dependencies": {
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "shadcn": "latest"
+  }
+}

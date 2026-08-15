@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "pwa-base",
+      "type": "registry:style",
+      "title": "PWA UI Base",
+      "description": "Safe-area, viewport, and touch tokens shared by PWA UI components.",
+      "dependencies": ["@base-ui/react"],
+      "files": [
+        {
+          "path": "pwa.css",
+          "type": "registry:style",
+          "target": "styles/pwa.css"
+        }
+      ]
+    }
+  ]
+}

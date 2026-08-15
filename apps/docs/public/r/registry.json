@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "pwa-ui",
+  "homepage": "https://github.com/pwa-ui/pwa-ui",
+  "items": [
+    {
+      "name": "pwa-base",
+      "title": "PWA UI Base",
+      "description": "Safe-area, viewport, and touch tokens shared by PWA UI components.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
+      "files": [
+        {
+          "path": "registry/styles/pwa.css",
+          "type": "registry:style",
+          "target": "styles/pwa.css"
+        }
+      ],
+      "type": "registry:style"
+    },
+    {
+      "name": "pwa-ready",
+      "title": "PWA Ready",
+      "description": "A small proof component for verifying the PWA UI registry workflow.",
+      "files": [
+        {
+          "path": "registry/components/pwa-ready/pwa-ready.tsx",
+          "type": "registry:component",
+          "target": "components/pwa-ready.tsx"
+        }
+      ],
+      "type": "registry:component"
+    }
+  ]
+}

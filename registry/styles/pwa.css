@@ -1,0 +1,22 @@
+:root {
+  --pwa-safe-top: env(safe-area-inset-top, 0px);
+  --pwa-safe-right: env(safe-area-inset-right, 0px);
+  --pwa-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --pwa-safe-left: env(safe-area-inset-left, 0px);
+  --pwa-keyboard-height: 0px;
+  --pwa-navigation-bar-height: 3.5rem;
+  --pwa-tab-bar-height: 4rem;
+  --pwa-touch-target: 2.75rem;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --pwa-viewport-height: 100dvh;
+  }
+}
+
+@supports not (height: 100dvh) {
+  :root {
+    --pwa-viewport-height: 100vh;
+  }
+}
