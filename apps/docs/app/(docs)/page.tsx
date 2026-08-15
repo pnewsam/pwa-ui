@@ -2,7 +2,7 @@
 
 import { ArrowRight, Check, Copy, Layers3, Smartphone } from "lucide-react";
 
-import { CodeBlock } from "@/components/example-panel";
+import { CodeBlock } from "@/components/code-block";
 import { componentDocs } from "@/lib/component-docs";
 
 export default function IntroductionPage() {

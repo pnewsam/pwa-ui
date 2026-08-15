@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowUpRight, Braces, PackageOpen } from "lucide-react";
 
-import { CodeBlock } from "@/components/example-panel";
+import { CodeBlock } from "@/components/code-block";
 
 export const metadata: Metadata = {
   title: "Registry source — PWA UI",

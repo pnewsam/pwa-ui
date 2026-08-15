@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { CodeBlock, ExamplePanel } from "@/components/example-panel";
+import { CodeBlock } from "@/components/code-block";
+import { ComponentInstallation } from "@/components/component-installation";
+import { ExamplePanel } from "@/components/example-panel";
 import { componentDocs, getComponentDoc } from "@/lib/component-docs";
 
 export function generateStaticParams() {
@@ -39,7 +41,7 @@ export default async function ComponentPage({ params }: PageProps<"/components/[
 
       <section className="docs-section" id="installation">
         <h2>Installation</h2>
-        <CodeBlock code={component.install} language="bash" />
+        <ComponentInstallation slug={component.slug} command={component.install} />
       </section>
 
       <section className="docs-section" id="usage">

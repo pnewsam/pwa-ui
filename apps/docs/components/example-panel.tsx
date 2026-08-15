@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   Bell,
   Check,
-  Copy,
   Home,
   MoreHorizontal,
   Search,
@@ -15,6 +14,7 @@ import {
   User,
 } from "lucide-react";
 
+import { CodeBlock } from "@/components/code-block";
 import { ActionSheet } from "../../../registry/components/action-sheet/action-sheet";
 import { AppShell } from "../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
@@ -24,35 +24,6 @@ import { ResponsiveDialog } from "../../../registry/components/responsive-dialog
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
 import type { ComponentSlug } from "@/lib/component-docs";
-
-type CodeBlockProps = {
-  code: string;
-  language?: string;
-  compact?: boolean;
-};
-
-export function CodeBlock({ code, language = "tsx", compact = false }: CodeBlockProps) {
-  const [copied, setCopied] = React.useState(false);
-
-  async function copyCode() {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1600);
-  }
-
-  return (
-    <div className={`code-block ${compact ? "is-compact" : ""}`}>
-      <div className="code-block-toolbar">
-        <span>{language}</span>
-        <button type="button" onClick={copyCode} aria-label="Copy code">
-          {copied ? <Check size={14} /> : <Copy size={14} />}
-          <span>{copied ? "Copied" : "Copy"}</span>
-        </button>
-      </div>
-      <pre tabIndex={0}><code>{code}</code></pre>
-    </div>
-  );
-}
 
 function DemoButton({ children }: { children: React.ReactNode }) {
   return <span className="demo-button">{children}</span>;
