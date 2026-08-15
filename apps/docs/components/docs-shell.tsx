@@ -1,7 +1,8 @@
 "use client";
 
+/* eslint-disable @next/next/no-html-link-for-pages -- Hosted vinext navigation requires native document requests. */
+
 import * as React from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Github, Menu, X } from "lucide-react";
 
@@ -14,11 +15,11 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="docs-root">
       <header className="docs-header">
-        <Link href="/" className="docs-brand" aria-label="PWA UI documentation home">
+        <a href="/" className="docs-brand" aria-label="PWA UI documentation home">
           <span className="docs-brand-mark" aria-hidden="true">P</span>
           <span>PWA UI</span>
           <span className="docs-version">v0.1</span>
-        </Link>
+        </a>
         <div className="docs-header-center">
           <span className="docs-section-label">Documentation</span>
         </div>
@@ -35,13 +36,13 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
           <nav>
             <div className="docs-nav-group">
               <p>Getting started</p>
-              <Link className={pathname === "/" ? "is-active" : ""} href="/" onClick={() => setMenuOpen(false)}>Introduction</Link>
+              <a className={pathname === "/" ? "is-active" : ""} href="/" onClick={() => setMenuOpen(false)}>Introduction</a>
             </div>
             <div className="docs-nav-group">
               <p>Components</p>
               {componentDocs.map((component) => {
                 const href = `/components/${component.slug}`;
-                return <Link key={component.slug} className={pathname === href ? "is-active" : ""} href={href} onClick={() => setMenuOpen(false)}>{component.name}</Link>;
+                return <a key={component.slug} className={pathname === href ? "is-active" : ""} href={href} onClick={() => setMenuOpen(false)}>{component.name}</a>;
               })}
             </div>
             <div className="docs-nav-group">

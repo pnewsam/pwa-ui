@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CodeBlock, ExamplePanel } from "@/components/example-panel";
@@ -64,8 +63,8 @@ export default async function ComponentPage({ params }: PageProps<"/components/[
       </section>
 
       <nav className="docs-pagination" aria-label="Documentation pagination">
-        {previous ? <Link href={`/components/${previous.slug}`}><small>Previous</small><strong>← {previous.name}</strong></Link> : <span />}
-        {next ? <Link href={`/components/${next.slug}`}><small>Next</small><strong>{next.name} →</strong></Link> : <span />}
+        {previous ? <a href={`/components/${previous.slug}`}><small>Previous</small><strong>← {previous.name}</strong></a> : <span />}
+        {next ? <a href={`/components/${next.slug}`}><small>Next</small><strong>{next.name} →</strong></a> : <span />}
       </nav>
     </article>
   );

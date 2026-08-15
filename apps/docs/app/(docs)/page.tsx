@@ -1,4 +1,5 @@
-import Link from "next/link";
+/* eslint-disable @next/next/no-html-link-for-pages -- Hosted vinext navigation requires native document requests. */
+
 import { ArrowRight, Check, Copy, Layers3, Smartphone } from "lucide-react";
 
 import { CodeBlock } from "@/components/example-panel";
@@ -36,18 +37,18 @@ export default function IntroductionPage() {
         <p>The MVP is deliberately small: eight primitives that form a coherent mobile application layer.</p>
         <div className="docs-component-list">
           {componentDocs.map((component) => (
-            <Link href={`/components/${component.slug}`} key={component.slug}>
+            <a href={`/components/${component.slug}`} key={component.slug}>
               <span className="docs-list-icon"><Check size={14} /></span>
               <span><strong>{component.name}</strong><small>{component.summary}</small></span>
               <ArrowRight size={15} />
-            </Link>
+            </a>
           ))}
         </div>
       </section>
 
       <nav className="docs-pagination" aria-label="Documentation pagination">
         <span />
-        <Link href="/components/app-shell"><small>Next</small><strong>AppShell →</strong></Link>
+        <a href="/components/app-shell"><small>Next</small><strong>AppShell →</strong></a>
       </nav>
     </article>
   );
