@@ -38,6 +38,7 @@ test("shows copyable usage alongside each live example", async ({ page }) => {
   await page.goto("/components/tab-bar");
   await page.getByRole("button", { name: "Code", exact: true }).click();
   await expect(page.locator("#preview").getByText('import { Home, Search, User } from "lucide-react"')).toBeVisible();
+  await expect(page.locator("#preview .token.keyword").filter({ hasText: "import" }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy code" }).first()).toBeVisible();
 });
 

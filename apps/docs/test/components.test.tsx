@@ -8,8 +8,17 @@ import { AppShell } from "../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
+import { CodeBlock } from "@/components/code-block";
 
 describe("PWA UI components", () => {
+  it("syntax highlights code without changing its contents", () => {
+    const code = 'const label: string = "Save";';
+    const { container } = render(<CodeBlock code={code} language="tsx" />);
+
+    expect(screen.getByText("const")).toHaveClass("token", "keyword");
+    expect(container.querySelector("pre")).toHaveTextContent(code);
+  });
+
   it("renders an application frame with semantic regions", () => {
     render(
       <AppShell>

@@ -145,6 +145,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .code-block-toolbar button:hover { background: #27272a; color: white; }
 .code-block pre { max-height: 510px; margin: 0; overflow: auto; padding: 20px; font: 12px/1.72 var(--font-mono); tab-size: 2; }
 .code-block code { font: inherit; white-space: pre; }
+.code-block .code-line { display: block; min-height: 1.72em; }
 .code-block.is-compact { margin: 0; border: 0; border-radius: 0; }
 .installation-panel { overflow: hidden; margin: 18px 0 24px; border: 1px solid var(--docs-line); border-radius: 11px; background: white; }
 .installation-tabs { display: flex; gap: 5px; border-bottom: 1px solid var(--docs-line); background: #fafafa; padding: 7px; }
