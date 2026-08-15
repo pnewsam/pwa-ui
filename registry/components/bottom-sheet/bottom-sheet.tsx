@@ -55,7 +55,7 @@ export function BottomSheetContent({
           <Drawer.Popup
             data-slot="bottom-sheet-content"
             className={cn(
-              "pointer-events-auto relative flex max-h-[min(92dvh,56rem)] w-full flex-col overflow-hidden rounded-t-[1.75rem] border border-border/80 bg-background text-foreground shadow-[0_-18px_60px_rgb(0_0_0/0.2)] outline-none transition-[transform,translate] duration-[calc(var(--drawer-swipe-strength,1)*320ms)] ease-out data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full data-[swiping]:duration-0 sm:max-w-xl",
+              "pointer-events-auto relative flex max-h-[min(92dvh,56rem)] w-full flex-col overflow-hidden rounded-t-[1.75rem] border border-border/80 bg-background text-foreground shadow-[0_-18px_60px_rgb(0_0_0/0.18)] outline-none transition-[transform,translate] duration-[calc(var(--drawer-swipe-strength,1)*300ms)] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full data-[swiping]:duration-0 sm:max-w-xl",
               className,
             )}
             style={{

@@ -35,7 +35,7 @@ export function KeyboardAvoidingView({
     <div
       data-keyboard-open={keyboardHeight > 0 ? "" : undefined}
       data-slot="keyboard-avoiding-view"
-      className={cn("transition-[height,padding,transform] duration-200", className)}
+      className={cn(className)}
       style={{ ...variables, ...behaviorStyle, ...style }}
       {...props}
     />

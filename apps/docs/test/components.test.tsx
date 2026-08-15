@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
+import { ActionSheet } from "../../../registry/components/action-sheet/action-sheet";
 import { AppShell } from "../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
@@ -35,6 +36,20 @@ describe("PWA UI components", () => {
   it("marks the active tab semantically", () => {
     render(<TabBar><TabBar.Item icon={<span />} label="Home" active /></TabBar>);
     expect(screen.getByRole("button", { name: "Home" })).toHaveAttribute("aria-current", "page");
+  });
+
+  it("identifies action sheet items for consistent styling", () => {
+    const { unmount } = render(
+      <ActionSheet defaultOpen>
+        <ActionSheet.Content>
+          <ActionSheet.Title>Actions</ActionSheet.Title>
+          <ActionSheet.Item>Share project</ActionSheet.Item>
+        </ActionSheet.Content>
+      </ActionSheet>,
+    );
+
+    expect(screen.getByRole("button", { name: "Share project" })).toHaveAttribute("data-slot", "action-sheet-item");
+    unmount();
   });
 
   it("opens a titled bottom sheet and closes it with Escape", async () => {

@@ -7,8 +7,12 @@ export default defineConfig({
     setupFiles: ["./test/setup.ts"],
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "."),
-    },
+    alias: [
+      {
+        find: "@/components/ui/bottom-sheet",
+        replacement: path.resolve(__dirname, "../../registry/components/bottom-sheet/bottom-sheet.tsx"),
+      },
+      { find: "@", replacement: path.resolve(__dirname, ".") },
+    ],
   },
 });

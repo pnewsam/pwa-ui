@@ -91,7 +91,7 @@ export function ResponsiveDialogContent({ className, children, ...props }: Respo
         <Dialog.Popup
           data-slot="responsive-dialog-content"
           className={cn(
-            "w-full max-w-lg rounded-2xl border border-border bg-background p-6 text-foreground shadow-2xl outline-none transition-[opacity,transform] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+            "w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background p-6 text-foreground shadow-[0_24px_70px_rgb(0_0_0/0.18)] outline-none transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
             className,
           )}
           {...props}

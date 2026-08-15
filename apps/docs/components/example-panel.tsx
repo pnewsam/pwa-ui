@@ -231,12 +231,12 @@ export function ExamplePanel({ slug, code }: { slug: ComponentSlug; code: string
   const [tab, setTab] = React.useState<"preview" | "code">("preview");
   return (
     <div className="example-panel">
-      <div className="example-tabs" role="tablist" aria-label="Component example">
-        <button type="button" role="tab" aria-selected={tab === "preview"} onClick={() => setTab("preview")}>Preview</button>
-        <button type="button" role="tab" aria-selected={tab === "code"} onClick={() => setTab("code")}>Code</button>
+      <div className="example-tabs" aria-label="Example view">
+        <button type="button" aria-pressed={tab === "preview"} onClick={() => setTab("preview")}>Preview</button>
+        <button type="button" aria-pressed={tab === "code"} onClick={() => setTab("code")}>Code</button>
       </div>
       <div className="example-content">
-        {tab === "preview" ? <div className="example-preview" role="tabpanel"><ComponentDemo slug={slug} /></div> : <div role="tabpanel"><CodeBlock code={code} compact /></div>}
+        {tab === "preview" ? <div className="example-preview"><ComponentDemo slug={slug} /></div> : <div><CodeBlock code={code} compact /></div>}
       </div>
     </div>
   );

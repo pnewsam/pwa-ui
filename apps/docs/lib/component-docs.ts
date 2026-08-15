@@ -3,21 +3,32 @@ export const componentDocs = [
     slug: "app-shell",
     name: "AppShell",
     summary: "A dynamic-viewport frame for fixed application chrome and independently scrolling content.",
-    description: "AppShell solves the layout conflict between mobile browser chrome, safe areas, fixed navigation, and a scrollable application body without modifying document.body.",
+    description: "AppShell provides placement regions for mobile application chrome and a separately scrolling body. Put visual components such as NavigationBar and TabBar inside its header and footer regions.",
     install: "pnpm dlx shadcn@latest add <registry>/app-shell",
-    usage: `import { AppShell } from "@/components/ui/app-shell"
+    usage: `import { Home } from "lucide-react"
+import { AppShell } from "@/components/ui/app-shell"
+import { NavigationBar } from "@/components/ui/navigation-bar"
+import { TabBar } from "@/components/ui/tab-bar"
 
 export function Screen() {
   return (
     <AppShell>
-      <AppShell.Header>Header</AppShell.Header>
+      <AppShell.Header>
+        <NavigationBar>
+          <NavigationBar.Title>Today</NavigationBar.Title>
+        </NavigationBar>
+      </AppShell.Header>
       <AppShell.Main>Scrollable content</AppShell.Main>
-      <AppShell.Footer>Tab bar</AppShell.Footer>
+      <AppShell.Footer>
+        <TabBar>
+          <TabBar.Item icon={<Home />} label="Home" active />
+        </TabBar>
+      </AppShell.Footer>
     </AppShell>
   )
 }`,
     anatomy: ["AppShell", "AppShell.Header", "AppShell.Main", "AppShell.Footer"],
-    notes: ["Uses 100dvh with a 100svh floor.", "Main content owns scrolling and overscroll containment.", "Header and footer consume the shared safe-area variables."],
+    notes: ["Header and Footer are placement regions, not styled navigation components.", "The usual composition is NavigationBar inside Header and TabBar inside Footer.", "Header and Footer apply the relevant safe-area inset; do not wrap their children in another SafeArea for the same edge.", "Main owns scrolling and overscroll containment."],
     accessibility: "Uses semantic header, main, and footer elements. Provide accessible navigation landmarks inside the chrome regions.",
   },
   {
@@ -135,7 +146,7 @@ export function Header() {
   )
 }`,
     anatomy: ["NavigationBar", "Leading", "Title", "Trailing", "BackButton"],
-    notes: ["Router state is deliberately out of scope.", "Place consumer-supplied links in Leading or Trailing.", "Long titles truncate without displacing adjacent controls."],
+    notes: ["Inside AppShell, place NavigationBar within AppShell.Header.", "Router state is deliberately out of scope.", "Place consumer-supplied links in Leading or Trailing.", "Long titles truncate without displacing adjacent controls."],
     accessibility: "The root is a named navigation landmark. Icon-only controls require an aria-label.",
   },
   {
@@ -157,7 +168,7 @@ export function Navigation() {
   )
 }`,
     anatomy: ["TabBar", "TabBar.Item"],
-    notes: ["Items render buttons by default and anchors when href is supplied.", "Active items expose aria-current=page.", "Use three to five stable application destinations."],
+    notes: ["Inside AppShell, place TabBar within AppShell.Footer.", "Items render buttons by default and anchors when href is supplied.", "Active items expose aria-current=page.", "Use three to five stable application destinations."],
     accessibility: "Every item requires a visible label. Badges remain part of the accessible name and should be concise.",
   },
   {

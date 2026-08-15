@@ -7,7 +7,7 @@ export function TabBarRoot({ className, ...props }: React.ComponentPropsWithoutR
     <nav
       aria-label="Primary"
       data-slot="tab-bar"
-      className={cn("grid min-h-[var(--pwa-tab-bar-height,4rem)] auto-cols-fr grid-flow-col items-stretch border-t border-border/70 bg-background/94 px-1 backdrop-blur-xl", className)}
+      className={cn("grid min-h-[var(--pwa-tab-bar-height,4rem)] auto-cols-fr grid-flow-col items-center gap-1 border-t border-border/70 bg-background/94 px-2 py-1.5 backdrop-blur-xl", className)}
       {...props}
     />
   );
@@ -24,7 +24,7 @@ export type TabBarItemProps = Omit<React.ComponentPropsWithoutRef<"button">, "ch
 export function TabBarItem({ icon, label, active, badge, href, className, ...props }: TabBarItemProps) {
   const content = (
     <>
-      <span className="relative">
+      <span className="relative flex size-5 shrink-0 items-center justify-center [&>svg]:size-full">
         {icon}
         {badge != null ? <span className="absolute -right-2.5 -top-1 min-w-4 rounded-full bg-destructive px-1 text-center text-[0.6rem] font-bold leading-4 text-white">{badge}</span> : null}
       </span>
@@ -32,7 +32,7 @@ export function TabBarItem({ icon, label, active, badge, href, className, ...pro
     </>
   );
   const classes = cn(
-    "relative flex min-h-14 min-w-11 flex-col items-center justify-center gap-1 rounded-xl px-2 text-muted-foreground outline-none transition-colors hover:bg-accent/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:bg-accent data-[active]:text-primary",
+    "relative flex min-h-12 min-w-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-[0.625rem] px-2 py-1 text-muted-foreground outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:scale-[0.98] active:bg-accent data-[active]:bg-accent/55 data-[active]:text-foreground disabled:pointer-events-none disabled:opacity-45",
     className,
   );
 

@@ -8,13 +8,17 @@ Purpose: own the available mobile viewport while keeping header and footer chrom
 
 ```tsx
 <AppShell>
-  <AppShell.Header>...</AppShell.Header>
+  <AppShell.Header>
+    <NavigationBar>...</NavigationBar>
+  </AppShell.Header>
   <AppShell.Main>...</AppShell.Main>
-  <AppShell.Footer>...</AppShell.Footer>
+  <AppShell.Footer>
+    <TabBar>...</TabBar>
+  </AppShell.Footer>
 </AppShell>
 ```
 
-The root uses `100dvh` with a `100svh` floor. Header and footer consume safe-area variables. It does not modify `document.body`; the consumer decides where the application frame is mounted.
+The root uses `100dvh` with a `100svh` floor. `Header` and `Footer` are placement regions rather than styled navigation components: they keep chrome outside the scroll container and apply the relevant safe-area inset. The usual composition is `NavigationBar` inside `Header` and `TabBar` inside `Footer`. Do not add another `SafeArea` for the same edge. AppShell does not modify `document.body`; the consumer decides where the application frame is mounted.
 
 ## SafeArea
 
@@ -93,7 +97,7 @@ Purpose: render mobile application top chrome without owning routing.
 </NavigationBar>
 ```
 
-The three-column grid keeps the title centered even when leading and trailing controls differ in width. For router links, place the consumer-supplied link inside `Leading` or `Trailing`.
+The three-column grid keeps the title centered even when leading and trailing controls differ in width. Place NavigationBar inside `AppShell.Header` when using the two together. For router links, place the consumer-supplied link inside `Leading` or `Trailing`.
 
 ## TabBar
 
@@ -107,7 +111,7 @@ Purpose: provide fixed or sticky application navigation without importing a rout
 </TabBar>
 ```
 
-Items render buttons by default or anchors when `href` is supplied. Active items expose `aria-current="page"`; badges remain part of the accessible name.
+Items render buttons by default or anchors when `href` is supplied. Place TabBar inside `AppShell.Footer` when using the two together. Active items expose `aria-current="page"`; badges remain part of the accessible name.
 
 ## KeyboardAvoidingView
 
