@@ -1,0 +1,243 @@
+"use client";
+
+import * as React from "react";
+import {
+  ArrowLeft,
+  Bell,
+  Check,
+  Copy,
+  Home,
+  MoreHorizontal,
+  Search,
+  Send,
+  Share2,
+  Trash2,
+  User,
+} from "lucide-react";
+
+import { ActionSheet } from "../../../registry/components/action-sheet/action-sheet";
+import { AppShell } from "../../../registry/components/app-shell/app-shell";
+import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
+import { KeyboardAvoidingView } from "../../../registry/components/keyboard-avoiding-view/keyboard-avoiding-view";
+import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
+import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
+import { SafeArea } from "../../../registry/components/safe-area/safe-area";
+import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
+import type { ComponentSlug } from "@/lib/component-docs";
+
+type CodeBlockProps = {
+  code: string;
+  language?: string;
+  compact?: boolean;
+};
+
+export function CodeBlock({ code, language = "tsx", compact = false }: CodeBlockProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  async function copyCode() {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <div className={`code-block ${compact ? "is-compact" : ""}`}>
+      <div className="code-block-toolbar">
+        <span>{language}</span>
+        <button type="button" onClick={copyCode} aria-label="Copy code">
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+          <span>{copied ? "Copied" : "Copy"}</span>
+        </button>
+      </div>
+      <pre tabIndex={0}><code>{code}</code></pre>
+    </div>
+  );
+}
+
+function DemoButton({ children }: { children: React.ReactNode }) {
+  return <span className="demo-button">{children}</span>;
+}
+
+function AppShellDemo() {
+  return (
+    <div className="demo-phone demo-phone-tall">
+      <AppShell className="demo-app-shell">
+        <AppShell.Header>
+          <NavigationBar>
+            <NavigationBar.Leading><NavigationBar.BackButton aria-label="Go back" /></NavigationBar.Leading>
+            <NavigationBar.Title>Today</NavigationBar.Title>
+            <NavigationBar.Trailing><button className="demo-icon-button" aria-label="Notifications"><Bell size={17} /></button></NavigationBar.Trailing>
+          </NavigationBar>
+        </AppShell.Header>
+        <AppShell.Main className="demo-feed">
+          <p className="demo-overline">Friday, August 15</p>
+          <h3>Good morning.</h3>
+          <div className="demo-card demo-card-dark"><small>Next up</small><strong>Plan the product review</strong><span>10:30 AM · Studio</span></div>
+          <div className="demo-card"><small>Later</small><strong>Check release notes</strong><span>2 items remaining</span></div>
+        </AppShell.Main>
+        <AppShell.Footer>
+          <TabBar>
+            <TabBar.Item icon={<Home size={19} />} label="Home" active />
+            <TabBar.Item icon={<Search size={19} />} label="Search" />
+            <TabBar.Item icon={<User size={19} />} label="Profile" />
+          </TabBar>
+        </AppShell.Footer>
+      </AppShell>
+    </div>
+  );
+}
+
+function SafeAreaDemo() {
+  return (
+    <div className="safe-area-stage">
+      <div className="safe-area-device" style={{ "--pwa-safe-top": "28px", "--pwa-safe-right": "14px", "--pwa-safe-bottom": "24px", "--pwa-safe-left": "14px" } as React.CSSProperties}>
+        <SafeArea className="safe-area-demo-content">
+          <div className="safe-area-island" />
+          <div className="safe-area-message"><strong>Content stays clear</strong><span>Insets are applied on every requested edge.</span></div>
+          <div className="safe-area-home-indicator" />
+        </SafeArea>
+        <span className="inset-label inset-label-top">top</span>
+        <span className="inset-label inset-label-bottom">bottom</span>
+      </div>
+    </div>
+  );
+}
+
+function BottomSheetDemo() {
+  return (
+    <div className="demo-center">
+      <BottomSheet>
+        <BottomSheet.Trigger><DemoButton>Open bottom sheet</DemoButton></BottomSheet.Trigger>
+        <BottomSheet.Content>
+          <BottomSheet.Header>
+            <BottomSheet.Title>Choose a workspace</BottomSheet.Title>
+            <BottomSheet.Description>Switch where your next note will be saved.</BottomSheet.Description>
+          </BottomSheet.Header>
+          <div className="sheet-options">
+            {['Product', 'Personal', 'Research'].map((label, index) => <BottomSheet.Close key={label} className="sheet-option"><span className="sheet-option-mark">{label[0]}</span><span><strong>{label}</strong><small>{index + 3} collaborators</small></span>{index === 0 ? <Check size={17} /> : null}</BottomSheet.Close>)}
+          </div>
+        </BottomSheet.Content>
+      </BottomSheet>
+      <p className="demo-caption">Opens as a touch-first drawer with focus management and swipe dismissal.</p>
+    </div>
+  );
+}
+
+function ResponsiveDialogDemo() {
+  return (
+    <div className="demo-center">
+      <ResponsiveDialog>
+        <ResponsiveDialog.Trigger className="demo-button">Edit profile</ResponsiveDialog.Trigger>
+        <ResponsiveDialog.Content>
+          <ResponsiveDialog.Header>
+            <ResponsiveDialog.Title>Edit profile</ResponsiveDialog.Title>
+            <ResponsiveDialog.Description>This opens as a dialog here and a bottom sheet on smaller screens.</ResponsiveDialog.Description>
+          </ResponsiveDialog.Header>
+          <label className="demo-field"><span>Display name</span><input defaultValue="Alex Morgan" /></label>
+          <div className="demo-dialog-actions">
+            <ResponsiveDialog.Close className="demo-secondary-button">Cancel</ResponsiveDialog.Close>
+            <ResponsiveDialog.Close className="demo-primary-button">Save changes</ResponsiveDialog.Close>
+          </div>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog>
+      <p className="demo-caption">Resize the browser to see the presentation change.</p>
+    </div>
+  );
+}
+
+function ActionSheetDemo() {
+  return (
+    <div className="demo-center">
+      <ActionSheet>
+        <ActionSheet.Trigger><DemoButton>Open actions</DemoButton></ActionSheet.Trigger>
+        <ActionSheet.Content>
+          <ActionSheet.Header>
+            <ActionSheet.Title>Project actions</ActionSheet.Title>
+            <ActionSheet.Description>Choose what to do with Mobile foundations.</ActionSheet.Description>
+          </ActionSheet.Header>
+          <ActionSheet.Group>
+            <ActionSheet.Item><Share2 size={17} /> Share project</ActionSheet.Item>
+            <ActionSheet.Item><MoreHorizontal size={17} /> More options</ActionSheet.Item>
+            <ActionSheet.Item variant="destructive"><Trash2 size={17} /> Delete project</ActionSheet.Item>
+          </ActionSheet.Group>
+          <ActionSheet.Cancel>Cancel</ActionSheet.Cancel>
+        </ActionSheet.Content>
+      </ActionSheet>
+      <p className="demo-caption">Grouped actions use comfortable, touch-sized targets.</p>
+    </div>
+  );
+}
+
+function NavigationBarDemo() {
+  return (
+    <div className="demo-phone demo-phone-short">
+      <NavigationBar>
+        <NavigationBar.Leading><NavigationBar.BackButton aria-label="Back"><ArrowLeft size={18} /></NavigationBar.BackButton></NavigationBar.Leading>
+        <NavigationBar.Title>Project settings</NavigationBar.Title>
+        <NavigationBar.Trailing><button className="demo-text-button">Done</button></NavigationBar.Trailing>
+      </NavigationBar>
+      <div className="demo-settings-body"><div /><div /><div /></div>
+    </div>
+  );
+}
+
+function TabBarDemo() {
+  const [active, setActive] = React.useState("Home");
+  const items = [
+    { label: "Home", icon: <Home size={20} /> },
+    { label: "Search", icon: <Search size={20} /> },
+    { label: "Updates", icon: <Bell size={20} />, badge: 3 },
+    { label: "Profile", icon: <User size={20} /> },
+  ];
+  return (
+    <div className="demo-phone demo-phone-short tab-bar-demo-phone">
+      <div className="tab-demo-content"><small>Selected destination</small><strong>{active}</strong></div>
+      <TabBar>{items.map((item) => <TabBar.Item key={item.label} icon={item.icon} label={item.label} badge={item.badge} active={active === item.label} onClick={() => setActive(item.label)} />)}</TabBar>
+    </div>
+  );
+}
+
+function KeyboardAvoidingViewDemo() {
+  return (
+    <div className="demo-phone demo-phone-tall composer-demo-phone">
+      <KeyboardAvoidingView className="composer-demo">
+        <div className="composer-thread">
+          <span className="message received">Are the mobile components ready?</span>
+          <span className="message sent">The first pass is. I’m checking keyboard behavior now.</span>
+        </div>
+        <div className="composer-bar">
+          <label><span className="sr-only">Message</span><input placeholder="Write a message…" /></label>
+          <button aria-label="Send message"><Send size={16} /></button>
+        </div>
+      </KeyboardAvoidingView>
+    </div>
+  );
+}
+
+function ComponentDemo({ slug }: { slug: ComponentSlug }) {
+  switch (slug) {
+    case "app-shell": return <AppShellDemo />;
+    case "safe-area": return <SafeAreaDemo />;
+    case "bottom-sheet": return <BottomSheetDemo />;
+    case "responsive-dialog": return <ResponsiveDialogDemo />;
+    case "action-sheet": return <ActionSheetDemo />;
+    case "navigation-bar": return <NavigationBarDemo />;
+    case "tab-bar": return <TabBarDemo />;
+    case "keyboard-avoiding-view": return <KeyboardAvoidingViewDemo />;
+  }
+}
+
+export function ExamplePanel({ slug, code }: { slug: ComponentSlug; code: string }) {
+  const [tab, setTab] = React.useState<"preview" | "code">("preview");
+  return (
+    <div className="example-panel">
+      <div className="example-tabs" role="tablist" aria-label="Component example">
+        <button type="button" role="tab" aria-selected={tab === "preview"} onClick={() => setTab("preview")}>Preview</button>
+        <button type="button" role="tab" aria-selected={tab === "code"} onClick={() => setTab("code")}>Code</button>
+      </div>
+      <div className="example-content">
+        {tab === "preview" ? <div className="example-preview" role="tabpanel"><ComponentDemo slug={slug} /></div> : <div role="tabpanel"><CodeBlock code={code} compact /></div>}
+      </div>
+    </div>
+  );
+}

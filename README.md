@@ -28,7 +28,7 @@ pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000/components` for the interactive component catalog.
+Open `http://localhost:3000` to browse the documentation, live component examples, and code samples.
 
 ## Validate
 

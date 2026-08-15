@@ -1,5 +1,8 @@
 node_modules
 .next
+dist
+.pnpm-store
+.wrangler
 out
 coverage
 playwright-report

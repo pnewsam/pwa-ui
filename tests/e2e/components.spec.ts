@@ -7,26 +7,36 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("renders all eight registry components", async ({ page }) => {
-  await page.goto("/components");
-  await expect(page.getByRole("heading", { name: "Eight primitives. Designed together." })).toBeVisible();
+test("renders the documentation index and all eight component links", async ({ page, isMobile }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /Build mobile web apps/ })).toBeVisible();
+  if (isMobile) await page.getByRole("button", { name: "Open navigation" }).click();
   for (const name of ["AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView"]) {
-    await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
 });
 
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
-  await page.goto("/components");
-  await page.getByRole("button", { name: "Open form sheet" }).click();
-  await expect(page.getByRole("dialog", { name: "Compose message" })).toBeVisible();
+  await page.goto("/components/bottom-sheet");
+  await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Installation" })).toBeVisible();
+  await page.getByRole("button", { name: "Open bottom sheet" }).click();
+  await expect(page.getByRole("dialog", { name: "Choose a workspace" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog", { name: "Compose message" })).toBeHidden();
+  await expect(page.getByRole("dialog", { name: "Choose a workspace" })).toBeHidden();
 });
 
 test("uses an accessible action sheet", async ({ page }) => {
-  await page.goto("/components");
-  await page.getByRole("button", { name: "Workspace actions" }).click();
-  await expect(page.getByRole("dialog", { name: "Workspace actions" })).toBeVisible();
+  await page.goto("/components/action-sheet");
+  await page.getByRole("button", { name: "Open actions" }).click();
+  await expect(page.getByRole("dialog", { name: "Project actions" })).toBeVisible();
   await page.getByRole("button", { name: "Cancel" }).click();
-  await expect(page.getByRole("dialog", { name: "Workspace actions" })).toBeHidden();
+  await expect(page.getByRole("dialog", { name: "Project actions" })).toBeHidden();
+});
+
+test("shows copyable source alongside each live example", async ({ page }) => {
+  await page.goto("/components/tab-bar");
+  await page.getByRole("tab", { name: "Code" }).click();
+  await expect(page.locator("#preview").getByText('import { Home, Search, User } from "lucide-react"')).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy code" }).first()).toBeVisible();
 });

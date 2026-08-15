@@ -3,9 +3,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PWA UI — Mobile web that feels installed",
+  title: "PWA UI — Documentation",
   description:
-    "Source-owned React components for mobile-first PWAs and app-like web applications.",
+    "Documentation and examples for source-owned React components built for mobile-first PWAs.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icons/icon.svg",
@@ -19,8 +19,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f4ee" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0d0d" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#18181b" },
   ],
 };
 
