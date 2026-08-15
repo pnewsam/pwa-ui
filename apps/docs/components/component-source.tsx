@@ -99,28 +99,27 @@ export function ComponentSource({ slug }: { slug: ComponentSlug }) {
         ) : <span>No additional dependencies</span>}
       </div>
 
-      {state.files.length > 1 ? (
-        <div className="component-source-files" aria-label="Source files">
-          {state.files.map((file) => {
-            const label = fileLabel(file);
-            return (
-              <button
-                type="button"
-                key={label}
-                aria-pressed={label === selectedLabel}
-                onClick={() => setActiveFile(label)}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-
       <CodeBlock
         code={selectedFile.content}
         compact
         label={selectedLabel}
+        toolbarStart={state.files.length > 1 ? (
+          <div className="component-source-files" aria-label="Source files">
+            {state.files.map((file) => {
+              const label = fileLabel(file);
+              return (
+                <button
+                  type="button"
+                  key={label}
+                  aria-pressed={label === selectedLabel}
+                  onClick={() => setActiveFile(label)}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : undefined}
         copyLabel={`Copy ${selectedLabel}`}
       />
     </div>

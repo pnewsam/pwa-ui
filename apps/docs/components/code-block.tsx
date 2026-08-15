@@ -8,6 +8,7 @@ type CodeBlockProps = {
   code: string;
   language?: string;
   label?: string;
+  toolbarStart?: React.ReactNode;
   copyLabel?: string;
   compact?: boolean;
 };
@@ -43,6 +44,7 @@ export function CodeBlock({
   code,
   language = "tsx",
   label,
+  toolbarStart,
   copyLabel = "Copy code",
   compact = false,
 }: CodeBlockProps) {
@@ -64,7 +66,7 @@ export function CodeBlock({
   return (
     <div className={`code-block ${compact ? "is-compact" : ""}`}>
       <div className="code-block-toolbar">
-        <span className={label ? "code-block-path" : undefined}>{label ?? language}</span>
+        {toolbarStart ?? <span className={label ? "code-block-path" : undefined}>{label ?? language}</span>}
         <button type="button" onClick={copyCode} aria-label={copyLabel}>
           {copyState === "copied" ? <Check size={14} /> : <Copy size={14} />}
           <span>{copyText}</span>

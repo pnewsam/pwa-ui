@@ -45,9 +45,17 @@ test("shows copyable usage alongside each live example", async ({ page }) => {
 test("shows every copy-pasteable source file in a registry item", async ({ page }) => {
   await page.goto("/components/action-sheet");
   const installation = page.locator("#installation");
-  await installation.getByRole("button", { name: "Manual", exact: true }).click();
+  const manualTab = installation.getByRole("button", { name: "Manual", exact: true });
+  await expect(manualTab).toBeVisible();
+  await expect(async () => {
+    await manualTab.click();
+    await expect(manualTab).toHaveAttribute("aria-pressed", "true");
+  }).toPass();
 
   await expect(installation.getByText("Copy and paste the component into your project.")).toBeVisible();
+  const sourceToolbar = installation.locator(".component-source-panel .code-block-toolbar");
+  await expect(sourceToolbar).toHaveCount(1);
+  await expect(sourceToolbar.locator(".code-block-path")).toHaveCount(0);
   await expect(installation.getByRole("button", { name: "components/ui/action-sheet.tsx", exact: true })).toBeVisible();
   await expect(installation.getByRole("button", { name: "Copy components/ui/action-sheet.tsx" })).toBeVisible();
 

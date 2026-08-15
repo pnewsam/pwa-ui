@@ -141,8 +141,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .code-block-toolbar { display: flex; min-height: 40px; align-items: center; justify-content: space-between; border-bottom: 1px solid #2f2f33; padding: 0 9px 0 15px; }
 .code-block-toolbar > span { color: #a1a1aa; font: 500 10px var(--font-mono); text-transform: uppercase; }
 .code-block-toolbar > .code-block-path { min-width: 0; overflow: hidden; color: #d4d4d8; text-overflow: ellipsis; text-transform: none; white-space: nowrap; }
-.code-block-toolbar button { display: flex; min-height: 30px; align-items: center; gap: 6px; border: 0; border-radius: 6px; background: transparent; padding: 0 8px; color: #d4d4d8; font-size: 11px; cursor: pointer; }
-.code-block-toolbar button:hover { background: #27272a; color: white; }
+.code-block-toolbar > button { display: flex; min-height: 30px; flex: none; align-items: center; gap: 6px; border: 0; border-radius: 6px; background: transparent; padding: 0 8px; color: #d4d4d8; font-size: 11px; cursor: pointer; }
+.code-block-toolbar > button:hover { background: #27272a; color: white; }
 .code-block pre { max-height: 510px; margin: 0; overflow: auto; padding: 20px; font: 12px/1.72 var(--font-mono); tab-size: 2; }
 .code-block code { font: inherit; white-space: pre; }
 .code-block .code-line { display: block; min-height: 1.72em; }
@@ -164,7 +164,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .component-source-meta > div { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
 .component-source-meta > div > span { margin-right: 2px; }
 .component-source-meta code { border: 1px solid #dedee2; border-radius: 5px; background: white; padding: 3px 6px; color: #52525b; font: 10px var(--font-mono); }
-.component-source-files { display: flex; gap: 5px; overflow-x: auto; border-bottom: 1px solid #2f2f33; background: #18181b; padding: 8px 9px; scrollbar-width: thin; }
+.component-source-files { display: flex; min-width: 0; flex: 1; gap: 5px; overflow-x: auto; padding-right: 8px; scrollbar-width: thin; }
 .component-source-files button { min-height: 31px; flex: none; border: 1px solid transparent; border-radius: 6px; background: transparent; padding: 0 9px; color: #a1a1aa; font: 10px var(--font-mono); cursor: pointer; transition: background-color 120ms ease, color 120ms ease; }
 .component-source-files button:hover { background: #27272a; color: #f4f4f5; }
 .component-source-files button[aria-pressed="true"] { border-color: #3f3f46; background: #2f2f33; color: white; }
