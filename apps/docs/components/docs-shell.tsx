@@ -41,6 +41,10 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
               <a className={pathname === "/" ? "is-active" : ""} href="/" onClick={() => setMenuOpen(false)}>Introduction</a>
             </div>
             <div className="docs-nav-group">
+              <p>Guides</p>
+              <a className={pathname === "/guides/app-layout" ? "is-active" : ""} href="/guides/app-layout" onClick={() => setMenuOpen(false)}>App layout</a>
+            </div>
+            <div className="docs-nav-group">
               <p>Components</p>
               {componentDocs.map((component) => {
                 const href = `/components/${component.slug}`;
