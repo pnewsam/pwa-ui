@@ -59,6 +59,18 @@ test("keeps application chrome anchored while AppShell.Main scrolls", async ({ p
   expect(finalTabBarBox?.y).toBe(initialTabBarBox?.y);
 });
 
+test("clips the AppShell example to the simulated device corners", async ({ page }) => {
+  await page.goto("/components/app-shell");
+
+  const frame = page.locator(".demo-phone");
+  const shell = frame.locator('[data-slot="app-shell"]');
+
+  await expect(frame).toHaveCSS("border-radius", "25px");
+  await expect(frame).toHaveCSS("overflow", "hidden");
+  await expect(shell).toHaveCSS("border-radius", "25px");
+  await expect(shell).toHaveCSS("overflow", "hidden");
+});
+
 test("has no automatically detectable accessibility violations on core surfaces", async ({ page }) => {
   for (const path of ["/", "/guides/app-layout", "/components/tab-bar", "/hooks/use-display-mode", "/resources/browser-support"]) {
     await expect(async () => {
