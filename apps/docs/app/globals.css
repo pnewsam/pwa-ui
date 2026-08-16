@@ -218,10 +218,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .demo-button:active, .demo-primary-button:active { transform: scale(.97); }
 .demo-center { display: grid; max-width: 330px; justify-items: center; gap: 15px; text-align: center; }
 .demo-caption { margin: 0; color: #71717a; font-size: 12px; line-height: 1.55; }
-.demo-phone { width: min(100%, 345px); overflow: hidden; border: 1px solid #d4d4d8; border-radius: 25px; background: white; box-shadow: 0 14px 35px rgb(24 24 27 / 10%); }
+.demo-phone { width: min(100%, 345px); border: 1px solid #d4d4d8; border-radius: 25px; background: white; box-shadow: 0 14px 35px rgb(24 24 27 / 10%); }
+.demo-phone-viewport { height: 100%; overflow: hidden; border-radius: 24px; background: inherit; }
 .demo-phone-tall { height: 365px; }
 .demo-phone-short { height: 260px; }
-.demo-app-shell { --pwa-viewport-height: 100%; min-height: 0; border-radius: inherit; }
+.demo-app-shell { --pwa-viewport-height: 100%; min-height: 0; }
 .demo-icon-button { display: grid; width: 42px; height: 42px; place-items: center; border: 0; border-radius: 11px; background: transparent; }
 .demo-feed { padding: 22px 18px; background: #fafafa; }
 .demo-overline { margin: 0 0 5px; color: #a1a1aa; font: 600 9px var(--font-mono); text-transform: uppercase; }
@@ -264,7 +265,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .demo-settings-body div { height: 13px; border-radius: 99px; background: #f1f1f2; }
 .demo-settings-body div:nth-child(2) { width: 72%; }
 .demo-settings-body div:nth-child(3) { width: 86%; }
-.tab-bar-demo-phone { display: grid; grid-template-rows: 1fr auto; }
+.tab-bar-demo-phone .demo-phone-viewport { display: grid; grid-template-rows: 1fr auto; }
 .tab-demo-content { display: grid; place-content: center; justify-items: center; gap: 7px; background: #fafafa; }
 .tab-demo-content small { color: #71717a; font-size: 10px; }
 .tab-demo-content strong { font-size: 20px; letter-spacing: -.03em; }
