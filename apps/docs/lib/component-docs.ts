@@ -131,16 +131,20 @@ export function Actions() {
   {
     slug: "navigation-bar",
     name: "NavigationBar",
-    summary: "Safe-area-aware top application chrome with an optically centered title.",
-    description: "NavigationBar uses a balanced three-column grid so the title remains centered even when leading and trailing controls have different widths.",
+    summary: "Router-composable top application chrome with an optically centered title.",
+    description: "NavigationBar uses a balanced three-column grid so the title remains centered even when leading and trailing controls have different widths. Its back control composes with client-side router links through render.",
     install: `pnpm dlx shadcn@latest add ${registryUrl}/navigation-bar.json`,
-    usage: `import { NavigationBar } from "@/components/ui/navigation-bar"
+    usage: `import Link from "next/link"
+import { NavigationBar } from "@/components/ui/navigation-bar"
 
 export function Header() {
   return (
     <NavigationBar>
       <NavigationBar.Leading>
-        <NavigationBar.BackButton aria-label="Go back" />
+        <NavigationBar.BackButton
+          render={<Link href="/settings" />}
+          aria-label="Back to settings"
+        />
       </NavigationBar.Leading>
       <NavigationBar.Title>Settings</NavigationBar.Title>
       <NavigationBar.Trailing>Done</NavigationBar.Trailing>
@@ -148,30 +152,37 @@ export function Header() {
   )
 }`,
     anatomy: ["NavigationBar", "Leading", "Title", "Trailing", "BackButton"],
-    notes: ["Inside AppShell, place NavigationBar within AppShell.Header.", "Router state is deliberately out of scope.", "Place consumer-supplied links in Leading or Trailing.", "Long titles truncate without displacing adjacent controls."],
-    accessibility: "The root is a named navigation landmark. Icon-only controls require an aria-label.",
+    notes: ["Inside AppShell, place NavigationBar within AppShell.Header.", "Use BackButton with onClick for history-based navigation or render with your router's Link when the destination is known.", "The render prop follows the Base UI composition convention and preserves the router link's handlers, classes, and ref.", "Long titles truncate without displacing adjacent controls."],
+    accessibility: "The root is a named navigation landmark. BackButton supplies a default Back label when it renders only the built-in icon; use a more specific aria-label when context helps.",
   },
   {
     slug: "tab-bar",
     name: "TabBar",
-    summary: "Router-agnostic bottom navigation with labels, active state, and badges.",
-    description: "TabBar provides touch-sized app navigation for three to five destinations without coupling the component to Next.js or React Router.",
+    summary: "Router-composable bottom navigation with labels, active state, and badges.",
+    description: "TabBar provides touch-sized app navigation for three to five destinations without coupling the component to a specific router. Compose each item with your router's link component to preserve client-side navigation.",
     install: `pnpm dlx shadcn@latest add ${registryUrl}/tab-bar.json`,
-    usage: `import { Home, Search, User } from "lucide-react"
+    usage: `import Link from "next/link"
+import { Home, Search, User } from "lucide-react"
 import { TabBar } from "@/components/ui/tab-bar"
 
 export function Navigation() {
   return (
     <TabBar>
-      <TabBar.Item icon={<Home />} label="Home" active />
-      <TabBar.Item icon={<Search />} label="Search" badge={3} />
-      <TabBar.Item icon={<User />} label="Profile" href="/profile" />
+      <TabBar.Item render={<Link href="/" />} icon={<Home />} label="Home" active />
+      <TabBar.Item
+        render={<Link href="/search" />}
+        icon={<Search />}
+        label="Search"
+        badge={3}
+        badgeLabel="3 new results"
+      />
+      <TabBar.Item render={<Link href="/profile" />} icon={<User />} label="Profile" />
     </TabBar>
   )
 }`,
     anatomy: ["TabBar", "TabBar.Item"],
-    notes: ["Inside AppShell, place TabBar within AppShell.Footer.", "Items render buttons by default and anchors when href is supplied.", "Active items expose aria-current=page.", "Use three to five stable application destinations."],
-    accessibility: "Every item requires a visible label. Badges remain part of the accessible name and should be concise.",
+    notes: ["Inside AppShell, place TabBar within AppShell.Footer.", "Use render={<Link href=\"/search\" />} with Next.js, or render={<NavLink to=\"/search\" />} with React Router. TanStack Router follows the same render pattern.", "Items render buttons by default. href remains available for external links and no-router apps, but performs a document navigation.", "Active items expose aria-current=page. Use three to five stable application destinations."],
+    accessibility: "Every item requires a visible label. Supply badgeLabel whenever badge conveys information so assistive technology hears what the value means.",
   },
   {
     slug: "keyboard-avoiding-view",

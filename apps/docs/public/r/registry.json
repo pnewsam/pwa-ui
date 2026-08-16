@@ -179,7 +179,10 @@
     {
       "name": "navigation-bar",
       "title": "Navigation Bar",
-      "description": "Safe-area-aware top application chrome with a truly centered title.",
+      "description": "Router-composable top application chrome with a truly centered title.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
       "registryDependencies": [
         "utils"
       ],
@@ -195,7 +198,10 @@
     {
       "name": "tab-bar",
       "title": "Tab Bar",
-      "description": "Router-agnostic bottom navigation with touch targets, labels, and badges.",
+      "description": "Router-composable bottom navigation with touch targets, labels, and accessible badges.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
       "registryDependencies": [
         "utils"
       ],

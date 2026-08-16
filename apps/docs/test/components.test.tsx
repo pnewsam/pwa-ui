@@ -7,6 +7,7 @@ import { ActionSheet } from "../../../registry/components/action-sheet/action-sh
 import { AppShell } from "../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sheet";
 import { InstallPrompt } from "../../../registry/components/install-prompt/install-prompt";
+import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
@@ -48,6 +49,68 @@ describe("PWA UI components", () => {
   it("marks the active tab semantically", () => {
     render(<TabBar><TabBar.Item icon={<span />} label="Home" active /></TabBar>);
     expect(screen.getByRole("button", { name: "Home" })).toHaveAttribute("aria-current", "page");
+  });
+
+  it("passes props and events through both tab item variants", async () => {
+    const user = userEvent.setup();
+    const onAnchorClick = vi.fn((event: React.MouseEvent) => event.preventDefault());
+    const onButtonClick = vi.fn();
+
+    render(
+      <TabBar>
+        <TabBar.Item href="/home" icon={<span />} label="Home" data-testid="home-tab" onClick={onAnchorClick} />
+        <TabBar.Item icon={<span />} label="Search" data-testid="search-tab" onClick={onButtonClick} />
+      </TabBar>,
+    );
+
+    await user.click(screen.getByTestId("home-tab"));
+    await user.click(screen.getByTestId("search-tab"));
+
+    expect(screen.getByTestId("home-tab")).toHaveAttribute("href", "/home");
+    expect(onAnchorClick).toHaveBeenCalledOnce();
+    expect(onButtonClick).toHaveBeenCalledOnce();
+  });
+
+  it("composes tab items with router links and forwards their ref", () => {
+    function RouterLink({ to, ...props }: { to: string } & React.ComponentPropsWithRef<"a">) {
+      return <a href={to} {...props} />;
+    }
+
+    const ref = React.createRef<HTMLAnchorElement>();
+    render(
+      <TabBar>
+        <TabBar.Item
+          render={<RouterLink to="/updates" className="router-link" />}
+          ref={ref}
+          icon={<span />}
+          label="Updates"
+          badge={3}
+          badgeLabel="3 unread updates"
+        />
+      </TabBar>,
+    );
+
+    const item = screen.getByRole("link", { name: "Updates, 3 unread updates" });
+    expect(item).toHaveAttribute("href", "/updates");
+    expect(item).toHaveClass("router-link");
+    expect(ref.current).toBe(item);
+  });
+
+  it("composes the navigation back control with a router link", () => {
+    function RouterLink({ to, ...props }: { to: string } & React.ComponentPropsWithRef<"a">) {
+      return <a href={to} {...props} />;
+    }
+
+    const ref = React.createRef<HTMLAnchorElement>();
+    render(
+      <NavigationBar>
+        <NavigationBar.BackButton render={<RouterLink to="/settings" />} ref={ref} />
+      </NavigationBar>,
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toHaveAttribute("href", "/settings");
+    expect(ref.current).toBe(backLink);
   });
 
   it("identifies action sheet items for consistent styling", () => {

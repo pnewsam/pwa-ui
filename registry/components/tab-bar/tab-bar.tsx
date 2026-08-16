@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRender } from "@base-ui/react/use-render";
 
 import { cn } from "@/lib/utils";
 
@@ -13,20 +14,31 @@ export function TabBarRoot({ className, ...props }: React.ComponentPropsWithoutR
   );
 }
 
-export type TabBarItemProps = Omit<React.ComponentPropsWithoutRef<"button">, "children"> & {
+export interface TabBarItemState extends Record<string, unknown> {
+  active: boolean;
+}
+
+export type TabBarItemProps = Omit<useRender.ComponentProps<"button", TabBarItemState>, "children" | "ref"> & {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
   badge?: React.ReactNode;
+  badgeLabel?: string;
   href?: string;
+  ref?: React.Ref<HTMLElement>;
 };
 
-export function TabBarItem({ icon, label, active, badge, href, className, ...props }: TabBarItemProps) {
+export function TabBarItem({ icon, label, active = false, badge, badgeLabel, href, render, ref, className, ...props }: TabBarItemProps) {
   const content = (
     <>
       <span className="relative flex size-5 shrink-0 items-center justify-center [&>svg]:size-full">
         {icon}
-        {badge != null ? <span className="absolute -right-2.5 -top-1 min-w-4 rounded-full bg-destructive px-1 text-center text-[0.6rem] font-bold leading-4 text-white">{badge}</span> : null}
+        {badge != null ? (
+          <span className="absolute -right-2.5 -top-1 min-w-4 rounded-full bg-destructive px-1 text-center text-[0.6rem] font-bold leading-4 text-destructive-foreground">
+            <span aria-hidden={badgeLabel ? true : undefined}>{badge}</span>
+            {badgeLabel ? <span className="sr-only">{badgeLabel}</span> : null}
+          </span>
+        ) : null}
       </span>
       <span className="max-w-full truncate text-[0.65rem] font-medium leading-none">{label}</span>
     </>
@@ -36,11 +48,22 @@ export function TabBarItem({ icon, label, active, badge, href, className, ...pro
     className,
   );
 
-  if (href) {
-    return <a href={href} aria-current={active ? "page" : undefined} data-active={active ? "" : undefined} data-slot="tab-bar-item" className={classes}>{content}</a>;
-  }
-
-  return <button type="button" aria-current={active ? "page" : undefined} data-active={active ? "" : undefined} data-slot="tab-bar-item" className={classes} {...props}>{content}</button>;
+  return useRender<TabBarItemState, HTMLElement>({
+    defaultTagName: href ? "a" : "button",
+    render,
+    ref,
+    state: { active },
+    props: {
+      ...(render || href ? {} : { type: "button" }),
+      ...(href ? { href } : {}),
+      ...props,
+      "aria-label": props["aria-label"] ?? (badgeLabel ? `${label}, ${badgeLabel}` : undefined),
+      "aria-current": active ? "page" : undefined,
+      "data-slot": "tab-bar-item",
+      className: classes,
+      children: content,
+    },
+  });
 }
 
 export const TabBar = Object.assign(TabBarRoot, { Item: TabBarItem });

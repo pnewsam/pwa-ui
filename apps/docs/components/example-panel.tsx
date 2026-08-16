@@ -161,13 +161,13 @@ function TabBarDemo() {
   const items = [
     { label: "Home", icon: <Home size={20} /> },
     { label: "Search", icon: <Search size={20} /> },
-    { label: "Updates", icon: <Bell size={20} />, badge: 3 },
+    { label: "Updates", icon: <Bell size={20} />, badge: 3, badgeLabel: "3 unread updates" },
     { label: "Profile", icon: <User size={20} /> },
   ];
   return (
     <div className="demo-phone demo-phone-short tab-bar-demo-phone">
       <div className="tab-demo-content"><small>Selected destination</small><strong>{active}</strong></div>
-      <TabBar>{items.map((item) => <TabBar.Item key={item.label} icon={item.icon} label={item.label} badge={item.badge} active={active === item.label} onClick={() => setActive(item.label)} />)}</TabBar>
+      <TabBar>{items.map((item) => <TabBar.Item key={item.label} icon={item.icon} label={item.label} badge={item.badge} badgeLabel={item.badgeLabel} active={active === item.label} onClick={() => setActive(item.label)} />)}</TabBar>
     </div>
   );
 }

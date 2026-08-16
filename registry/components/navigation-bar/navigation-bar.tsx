@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRender } from "@base-ui/react/use-render";
 
 import { cn } from "@/lib/utils";
 
@@ -28,17 +29,24 @@ export function NavigationBarTrailing({ className, ...props }: React.ComponentPr
   return <div data-slot="navigation-bar-trailing" className={cn("flex min-w-0 items-center gap-1 justify-self-end", className)} {...props} />;
 }
 
-export function NavigationBarBackButton({ className, children, ...props }: React.ComponentPropsWithoutRef<"button">) {
-  return (
-    <button
-      type="button"
-      data-slot="navigation-bar-back-button"
-      className={cn("inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1 rounded-[0.625rem] text-sm font-medium outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97] active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45", className)}
-      {...props}
-    >
-      {children ?? <span aria-hidden="true" className="text-2xl leading-none">‹</span>}
-    </button>
-  );
+export type NavigationBarBackButtonProps = Omit<useRender.ComponentProps<"button">, "ref"> & {
+  ref?: React.Ref<HTMLElement>;
+};
+
+export function NavigationBarBackButton({ className, children, render, ref, ...props }: NavigationBarBackButtonProps) {
+  return useRender<Record<string, never>, HTMLElement>({
+    defaultTagName: "button",
+    render,
+    ref,
+    props: {
+      ...(render ? {} : { type: "button" }),
+      ...props,
+      "aria-label": props["aria-label"] ?? (children == null ? "Back" : undefined),
+      "data-slot": "navigation-bar-back-button",
+      className: cn("inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1 rounded-[0.625rem] text-sm font-medium outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97] active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45", className),
+      children: children ?? <span aria-hidden="true" className="text-2xl leading-none">‹</span>,
+    },
+  });
 }
 
 export const NavigationBar = Object.assign(NavigationBarRoot, {

@@ -96,7 +96,8 @@
       "name": "navigation-bar",
       "type": "registry:component",
       "title": "Navigation Bar",
-      "description": "Safe-area-aware top application chrome with a truly centered title.",
+      "description": "Router-composable top application chrome with a truly centered title.",
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "components/navigation-bar/navigation-bar.tsx", "type": "registry:component", "target": "components/ui/navigation-bar.tsx" }]
     },
@@ -104,7 +105,8 @@
       "name": "tab-bar",
       "type": "registry:component",
       "title": "Tab Bar",
-      "description": "Router-agnostic bottom navigation with touch targets, labels, and badges.",
+      "description": "Router-composable bottom navigation with touch targets, labels, and accessible badges.",
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "components/tab-bar/tab-bar.tsx", "type": "registry:component", "target": "components/ui/tab-bar.tsx" }]
     },
