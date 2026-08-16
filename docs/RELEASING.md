@@ -1,6 +1,6 @@
 # Releasing PWA UI
 
-This project is prepared for a beta release but has no automatic public-release trigger. Deployment, source publication, tagging, directory submission, search-console registration, and announcements are separate decisions.
+PWA UI uses an intentionally gated release flow. Deployment, tagging, directory submission, search-console registration, and announcements remain separate decisions.
 
 ## Beta readiness gate
 
@@ -29,6 +29,6 @@ pnpm test:install
 
 Cloudflare retains prior worker versions for rollback. If public verification fails, restore the last known-good deployment before diagnosing the release candidate.
 
-## Formal release — intentionally deferred
+## Formal release
 
-When authorized, create the public source repository, enable branch protection and private vulnerability reporting, choose the canonical organization and repository URL, tag `v0.1.0-beta.1`, publish release notes from `CHANGELOG.md`, register search ownership, submit the registry directory entry, and announce the beta. None of these steps should happen implicitly during a documentation deployment.
+After validation and production verification, create an annotated version tag and a matching GitHub release using the notes in `CHANGELOG.md`. Validate the tagged GitHub registry source as well as the hosted namespace. Directory submission, search ownership, and announcements do not happen implicitly during a documentation deployment.

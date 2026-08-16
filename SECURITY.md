@@ -6,7 +6,7 @@ PWA UI is currently a pre-release source registry. Security fixes are applied to
 
 ## Reporting a vulnerability
 
-Do not disclose a suspected vulnerability in a public issue. Once the source repository is public, use its private security-advisory form. Before then, report through a trusted private channel to the maintainers.
+Do not disclose a suspected vulnerability in a public issue. Use the repository's [private vulnerability-reporting form](https://github.com/pnewsam/pwa-ui/security/advisories/new).
 
 Include the affected registry item, reproduction steps, likely impact, browser or framework versions, and any suggested mitigation. Please allow the maintainers time to confirm and coordinate a fix before public disclosure.
 

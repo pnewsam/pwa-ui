@@ -10,7 +10,7 @@
     "deploy:cloudflare": "pnpm build:sites && wrangler deploy",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {

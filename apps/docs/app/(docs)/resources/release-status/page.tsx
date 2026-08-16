@@ -9,8 +9,8 @@ export default function ReleaseStatusPage() {
       <header className="docs-page-header component-header">
         <p className="docs-kicker">Resource</p>
         <h1>Release status</h1>
-        <p><span className="docs-status">v0.1 beta candidate</span></p>
-        <p>The component source and documentation are usable for evaluation. The project has not yet made a formal public release or compatibility guarantee.</p>
+        <p><span className="docs-status">v0.1 public beta</span></p>
+        <p>PWA UI is publicly available for evaluation and early use. Beta APIs may still change in response to field testing; the project does not yet make a stable compatibility guarantee.</p>
       </header>
 
       <section className="docs-section">
@@ -20,6 +20,7 @@ export default function ReleaseStatusPage() {
           <li>Automated type, unit, registry, build, and browser checks.</li>
           <li>Documented component relationships, browser degradation, accessibility responsibilities, and device QA.</li>
           <li>Canonical production documentation at pwaui.com.</li>
+          <li>Public source, issues, contribution guidance, and private vulnerability reporting on GitHub.</li>
         </ul>
       </section>
 
@@ -27,7 +28,6 @@ export default function ReleaseStatusPage() {
         <h2>Before stable</h2>
         <ul>
           <li>Complete and record the physical iOS and Android device matrix.</li>
-          <li>Publish the source repository and establish a public issue and security-reporting path.</li>
           <li>Run clean-install tests in representative Next.js and Vite applications.</li>
           <li>Freeze the first stable API only after beta usage confirms the current names and composition.</li>
         </ul>

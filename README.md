@@ -2,9 +2,11 @@
 
 Source-owned React components for mobile-first PWAs and app-like web applications.
 
+[Documentation](https://pwaui.com) · [Components](https://pwaui.com/components/app-shell) · [Issues](https://github.com/pnewsam/pwa-ui/issues) · [Releases](https://github.com/pnewsam/pwa-ui/releases)
+
 PWA UI follows the shadcn distribution model: install the source into an application, then own and adapt it there. Base UI supplies accessible behavior where a mature primitive already exists; PWA UI adds safe areas, dynamic viewports, mobile navigation chrome, software-keyboard behavior, installation, updates, and offline feedback.
 
-> **Status:** v0.1 beta candidate. The registry is ready for evaluation, but physical iOS and Android verification and a formal public release are still pending.
+> **Status:** v0.1 public beta. The registry is ready for evaluation and early use. Physical iOS and Android verification remains in progress, and beta APIs may change before the first stable release.
 
 ## Install
 
@@ -31,6 +33,12 @@ import "@/styles/pwa.css"
 ```
 
 Mount `PWAProvider` once near the application root. Direct registry URLs such as `https://pwaui.com/r/app-shell.json` remain supported.
+
+Because this repository is also a shadcn source registry, you can install directly from GitHub. Pin the release tag when you need reproducible source:
+
+```bash
+pnpm dlx shadcn@latest add pnewsam/pwa-ui/app-shell#v0.1.0-beta.1
+```
 
 ## Components
 

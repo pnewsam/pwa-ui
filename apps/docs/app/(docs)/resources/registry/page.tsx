@@ -42,6 +42,20 @@ export default function RegistryResourcePage() {
       </section>
 
       <section className="docs-section">
+        <h2>Install from GitHub</h2>
+        <p>The public repository is also a source registry. Install from the default branch for evaluation, or use a release tag when you need reproducible source.</p>
+        <CodeBlock code="pnpm dlx shadcn@latest add pnewsam/pwa-ui/app-shell" language="bash" />
+        <CodeBlock code="pnpm dlx shadcn@latest add pnewsam/pwa-ui/app-shell#v0.1.0-beta.1" language="bash" />
+        <div className="docs-resource-links">
+          <a href="https://github.com/pnewsam/pwa-ui">
+            <PackageOpen size={18} />
+            <span><strong>Repository source</strong><small>Review components, report issues, and contribute.</small></span>
+            <ArrowUpRight size={15} />
+          </a>
+        </div>
+      </section>
+
+      <section className="docs-section">
         <h2>Import the base styles</h2>
         <p>Components that use PWA layout tokens install the shared stylesheet as a registry dependency. Import it once from your application&apos;s global entry point.</p>
         <CodeBlock code={'import "@/styles/pwa.css"'} language="tsx" />
