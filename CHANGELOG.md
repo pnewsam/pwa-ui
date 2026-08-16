@@ -2,7 +2,7 @@
 
 Notable changes to PWA UI will be documented here. The project follows semantic versioning after the first stable release.
 
-## Unreleased — v0.1 beta candidate
+## 0.1.0-beta.1 — 2026-08-15
 
 ### Added
 
@@ -11,6 +11,7 @@ Notable changes to PWA UI will be documented here. The project follows semantic 
 - `PWAProvider` for one shared viewport subscription and document-level layout variables.
 - Documentation with live examples, usage snippets, and copy-pasteable implementation source.
 - Browser support, accessibility, device QA, release status, sitemap, and canonical metadata.
+- Public GitHub source registry, contribution guidance, support paths, and release automation.
 
 ### Changed
 
@@ -22,3 +23,8 @@ Notable changes to PWA UI will be documented here. The project follows semantic 
 
 - Keyboard layout calculations now ignore pinch zoom, use a stable pre-keyboard baseline, and reset after orientation changes.
 - AppShell footers can remain, hide, or lift while a likely software keyboard is open.
+
+### Known limitations
+
+- Physical iOS and Android verification is still in progress.
+- Beta APIs may change when field testing reveals a safer or clearer contract.

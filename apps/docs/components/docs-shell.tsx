@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { Braces, Menu, X } from "lucide-react";
+import { Braces, Github, Menu, X } from "lucide-react";
 
 import { componentDocs } from "@/lib/component-docs";
 import { hookDocs } from "@/lib/hook-docs";
@@ -25,6 +25,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
           <span className="docs-section-label">Documentation</span>
         </div>
         <div className="docs-header-actions">
+          <a href="https://github.com/pnewsam/pwa-ui" aria-label="View PWA UI source on GitHub"><Github size={18} /></a>
           <a href="/resources/registry" aria-label="View registry documentation"><Braces size={18} /></a>
           <button className="docs-menu-button" type="button" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>
             {menuOpen ? <X size={19} /> : <Menu size={19} />}
@@ -60,6 +61,8 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
               <a className={pathname === "/resources/device-qa" ? "is-active" : ""} href="/resources/device-qa" onClick={() => setMenuOpen(false)}>Device QA</a>
               <a className={pathname === "/resources/registry" ? "is-active" : ""} href="/resources/registry" onClick={() => setMenuOpen(false)}>Registry source</a>
               <a className={pathname === "/resources/release-status" ? "is-active" : ""} href="/resources/release-status" onClick={() => setMenuOpen(false)}>Release status</a>
+              <a href="https://github.com/pnewsam/pwa-ui">GitHub source</a>
+              <a href="https://github.com/pnewsam/pwa-ui/issues">Report an issue</a>
             </div>
           </nav>
         </aside>
