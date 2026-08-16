@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
   )
 }`,
     anatomy: ["PWAProvider", "useVisualViewport", "CSS variables"],
-    notes: ["Mount once near the application root.", "Publishes --pwa-viewport-height, --pwa-visual-viewport-height, and --pwa-keyboard-height.", "Sets data-pwa-keyboard-open on the document root while a likely software keyboard is occluding the viewport.", "Keyboard detection is a layout hint and intentionally ignores pinch zoom."],
+    notes: ["Mount once near the application root.", "PWAProvider publishes measurements but does not lock document scrolling; full-screen applications should use the opt-in root containment described in the app layout guide.", "Publishes --pwa-viewport-height, --pwa-visual-viewport-height, and --pwa-keyboard-height.", "Sets data-pwa-keyboard-open on the document root while a likely software keyboard is occluding the viewport.", "Keyboard detection is a layout hint and intentionally ignores pinch zoom."],
     accessibility: "The provider renders no wrapper or interactive UI. It preserves pinch zoom and only changes layout variables used by your application.",
   },
   {
@@ -51,7 +51,7 @@ export function Screen() {
   )
 }`,
     anatomy: ["AppShell", "AppShell.Header", "AppShell.Main", "AppShell.Footer"],
-    notes: ["Header and Footer are placement regions, not styled navigation components.", "The usual composition is NavigationBar inside Header and TabBar inside Footer.", "Header and Footer apply the relevant safe-area inset; do not wrap their children in another SafeArea for the same edge.", "Main owns scrolling and overscroll containment.", "Footer keyboardBehavior can leave chrome in place or hide it while the software keyboard is open when PWAProvider is mounted."],
+    notes: ["Header and Footer are placement regions, not styled navigation components.", "The usual composition is NavigationBar inside Header and TabBar inside Footer.", "For a full-screen application, opt into root containment so Main is the only vertical scroll region.", "Header and Footer apply the relevant safe-area inset; do not wrap their children in another SafeArea for the same edge.", "Main owns scrolling and overscroll containment.", "Footer keyboardBehavior can leave chrome in place or hide it while the software keyboard is open when PWAProvider is mounted."],
     accessibility: "Uses semantic header, main, and footer elements. Provide accessible navigation landmarks inside the chrome regions.",
   },
   {

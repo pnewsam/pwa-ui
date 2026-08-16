@@ -11,6 +11,19 @@
   --pwa-viewport-height: 100dvh;
 }
 
+html[data-pwa-app-root],
+html[data-pwa-app-root] body,
+html[data-pwa-app-root] [data-pwa-app-mount] {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html[data-pwa-app-root] body {
+  margin: 0;
+}
+
 @media (display-mode: standalone) {
   :root {
     --pwa-is-standalone: 1;
