@@ -2,6 +2,16 @@
 
 All examples assume a shadcn-compatible `@/lib/utils` alias. Registry installation adds the standard `cn()` utility and explicit npm dependencies when required.
 
+## PWAProvider
+
+Purpose: publish one shared visual viewport and software-keyboard layout contract for the application.
+
+```tsx
+<PWAProvider>{children}</PWAProvider>
+```
+
+Mount the provider once near the application root. It writes `--pwa-viewport-height`, `--pwa-visual-viewport-height`, and `--pwa-keyboard-height` on the document root and marks likely keyboard occlusion with `data-pwa-keyboard-open`. The heuristic requires an editable control to be focused, ignores pinch zoom, and resets its baseline after orientation changes.
+
 ## AppShell
 
 Purpose: own the available mobile viewport while keeping header and footer chrome outside the independently scrolling main region.
@@ -12,13 +22,13 @@ Purpose: own the available mobile viewport while keeping header and footer chrom
     <NavigationBar>...</NavigationBar>
   </AppShell.Header>
   <AppShell.Main>...</AppShell.Main>
-  <AppShell.Footer>
+  <AppShell.Footer keyboardBehavior="hide">
     <TabBar>...</TabBar>
   </AppShell.Footer>
 </AppShell>
 ```
 
-The root uses `100dvh` with a `100svh` floor. `Header` and `Footer` are placement regions rather than styled navigation components: they keep chrome outside the scroll container and apply the relevant safe-area inset. The usual composition is `NavigationBar` inside `Header` and `TabBar` inside `Footer`. Do not add another `SafeArea` for the same edge. AppShell does not modify `document.body`; the consumer decides where the application frame is mounted.
+The root uses the shared viewport-height token with a `100dvh` fallback and consumes the provider's measured height when it is mounted. `Header` and `Footer` are placement regions rather than styled navigation components: they keep chrome outside the scroll container and apply the relevant safe-area inset. The usual composition is `NavigationBar` inside `Header` and `TabBar` inside `Footer`. Do not add another `SafeArea` for the same edge. Footer `keyboardBehavior` can be `none` or `hide`.
 
 ## SafeArea
 
@@ -46,7 +56,7 @@ Purpose: provide the canonical mobile overlay, including swipe dismissal, contro
 </BottomSheet>
 ```
 
-Behavior comes from Base UI Drawer. The wrapper supplies a bottom presentation, drag handle, safe-area padding, swipe/snap CSS variables, scroll containment, reduced-motion compatibility, and `Drawer.VirtualKeyboardProvider`. Keep fixed sheet headers and footers outside long scroll bodies where possible.
+Behavior comes from Base UI Drawer. The wrapper supplies a bottom presentation, drag handle, safe-area padding, swipe/snap CSS variables, scroll containment, reduced-motion compatibility, and `Drawer.VirtualKeyboardProvider`. `Header` and `Footer` are presentation helpers inside Base UI's semantic `Drawer.Content`; the footer uses sticky positioning for long content.
 
 ## ResponsiveDialog
 
@@ -97,7 +107,7 @@ Purpose: render mobile application top chrome without owning routing.
 </NavigationBar>
 ```
 
-The three-column grid keeps the title centered even when leading and trailing controls differ in width. Place NavigationBar inside `AppShell.Header` when using the two together. For router links, place the consumer-supplied link inside `Leading` or `Trailing`.
+The three-column grid keeps the title centered even when leading and trailing controls differ in width. Place NavigationBar inside `AppShell.Header` when using the two together. For router links, compose `BackButton` with the router link through its `render` prop so client-side navigation, handlers, classes, and refs are preserved.
 
 ## TabBar
 
@@ -147,7 +157,7 @@ return update.updateAvailable ? (
 ) : null;
 ```
 
-The hook observes an existing service worker registration; it does not register one. The worker must handle the `SKIP_WAITING` message if the application uses the provided update action.
+The hook observes an existing service worker registration; it does not register one. It checks again when the page returns to the foreground by default, throttled to once every 30 seconds. The worker must handle the `SKIP_WAITING` message if the application uses the provided update action.
 
 ## OfflineBanner
 
@@ -167,4 +177,4 @@ return status === "offline" ? <OfflineBanner /> : null;
 
 ## PWA base styles
 
-`pwa-base` installs conservative tokens for safe areas, dynamic viewport height, keyboard height, navigation and tab bars, and touch targets. It does not overwrite shadcn color tokens or require a runtime provider. Import `styles/pwa.css` once from the application stylesheet or layout.
+`pwa-base` installs conservative tokens for safe areas, dynamic viewport height, keyboard height, navigation and tab bars, and touch targets. It does not overwrite shadcn color tokens. Import `styles/pwa.css` once from the application stylesheet or layout, then mount `PWAProvider` once when application chrome should respond to the measured visual viewport and software keyboard.

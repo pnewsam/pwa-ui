@@ -18,7 +18,8 @@ export interface TabBarItemState extends Record<string, unknown> {
   active: boolean;
 }
 
-export type TabBarItemProps = Omit<useRender.ComponentProps<"button", TabBarItemState>, "children" | "ref"> & {
+export type TabBarItemProps = Omit<useRender.ComponentProps<"button", TabBarItemState>, "children" | "className" | "ref"> & {
+  className?: string | ((state: TabBarItemState) => string | undefined);
   icon: React.ReactNode;
   label: string;
   active?: boolean;
@@ -43,10 +44,8 @@ export function TabBarItem({ icon, label, active = false, badge, badgeLabel, hre
       <span className="max-w-full truncate text-[0.65rem] font-medium leading-none">{label}</span>
     </>
   );
-  const classes = cn(
-    "relative flex min-h-12 min-w-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-[0.625rem] px-2 py-1 text-muted-foreground outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:scale-[0.98] active:bg-accent data-[active]:bg-accent/55 data-[active]:text-foreground disabled:pointer-events-none disabled:opacity-45",
-    className,
-  );
+  const baseClassName = "relative flex min-h-12 min-w-[var(--pwa-touch-target,2.75rem)] cursor-pointer flex-col items-center justify-center gap-1 rounded-[0.625rem] px-2 py-1 text-muted-foreground outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:scale-[0.98] active:bg-accent data-[active]:bg-accent/55 data-[active]:text-foreground disabled:pointer-events-none disabled:opacity-45 motion-reduce:transition-none motion-reduce:active:scale-100";
+  const classes = cn(baseClassName, typeof className === "function" ? className({ active }) : className);
 
   return useRender<TabBarItemState, HTMLElement>({
     defaultTagName: href ? "a" : "button",

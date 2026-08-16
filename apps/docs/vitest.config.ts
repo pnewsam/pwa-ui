@@ -12,6 +12,10 @@ export default defineConfig({
         find: "@/components/ui/bottom-sheet",
         replacement: path.resolve(__dirname, "../../registry/components/bottom-sheet/bottom-sheet.tsx"),
       },
+      {
+        find: "@/hooks/use-visual-viewport",
+        replacement: path.resolve(__dirname, "../../registry/hooks/use-visual-viewport.ts"),
+      },
       { find: "@", replacement: path.resolve(__dirname, ".") },
     ],
   },

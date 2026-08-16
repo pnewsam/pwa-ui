@@ -2,6 +2,16 @@
 
 Run this checklist against a production build. Record the device, OS/browser version, display mode, date, tester, and any linked issue.
 
+## Verification record
+
+| Status | Device | OS and browser | Display mode | Date | Tester | Notes or issue |
+| --- | --- | --- | --- | --- | --- | --- |
+| Pending | iPhone with Face ID | Safari | Browser | — | — | Required before stable |
+| Pending | iPhone with Face ID | Safari | Home Screen | — | — | Required before stable |
+| Pending | Current Android device or emulator | Chrome | Browser | — | — | Required before stable |
+| Pending | Current Android device or emulator | Chrome | Installed | — | — | Required before stable |
+| Pending | Desktop | Chrome, Safari, Firefox | Browser | — | — | Narrow and wide viewports |
+
 ## Required surfaces
 
 - Recent Face ID iPhone in Safari.

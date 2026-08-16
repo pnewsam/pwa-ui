@@ -2,36 +2,61 @@
 
 Source-owned React components for mobile-first PWAs and app-like web applications.
 
-PWA UI follows the shadcn distribution model: components are installed into an application, then owned and edited by that application. Base UI supplies accessible behavior where a mature primitive already exists; PWA UI adds the mobile composition, safe-area handling, viewport behavior, and touch-first ergonomics.
+PWA UI follows the shadcn distribution model: install the source into an application, then own and adapt it there. Base UI supplies accessible behavior where a mature primitive already exists; PWA UI adds safe areas, dynamic viewports, mobile navigation chrome, software-keyboard behavior, installation, updates, and offline feedback.
+
+> **Status:** v0.1 beta candidate. The registry is ready for evaluation, but physical iOS and Android verification and a formal public release are still pending.
+
+## Install
+
+Add the namespace to `components.json`:
+
+```json
+{
+  "registries": {
+    "@pwa-ui": "https://pwaui.com/r/{name}.json"
+  }
+}
+```
+
+Install the shared provider and only the components you need:
+
+```bash
+pnpm dlx shadcn@latest add @pwa-ui/pwa-provider @pwa-ui/app-shell @pwa-ui/tab-bar
+```
+
+Import the generated base stylesheet once from your global application entry:
+
+```tsx
+import "@/styles/pwa.css"
+```
+
+Mount `PWAProvider` once near the application root. Direct registry URLs such as `https://pwaui.com/r/app-shell.json` remain supported.
 
 ## Components
 
-The MVP registry contains:
+- `PWAProvider` — shared viewport and keyboard layout variables.
+- `AppShell` — application chrome around independently scrolling content.
+- `SafeArea` — explicit CSS environment-variable inset handling.
+- `BottomSheet` — swipeable, keyboard-aware Base UI Drawer composition.
+- `ResponsiveDialog` — Dialog on wide screens and BottomSheet on narrow screens.
+- `ActionSheet` — grouped touch actions with destructive and cancel treatments.
+- `NavigationBar` — router-composable top application chrome.
+- `TabBar` — router-composable bottom navigation with labels and badges.
+- `KeyboardAvoidingView` — Visual Viewport-aware form and composer layout.
+- `InstallPrompt`, `UpdatePrompt`, and `OfflineBanner` — PWA lifecycle feedback.
 
-- `AppShell` — fixed application chrome around independently scrolling content;
-- `SafeArea` — explicit CSS environment-variable inset handling;
-- `BottomSheet` — swipeable, keyboard-aware Base UI Drawer composition;
-- `ResponsiveDialog` — centered Dialog on wide screens and BottomSheet on narrow screens;
-- `ActionSheet` — grouped touch actions with destructive and cancel treatments;
-- `NavigationBar` — safe-area-aware top application chrome;
-- `TabBar` — router-agnostic bottom navigation with labels and badges;
-- `KeyboardAvoidingView` — Visual Viewport-aware form and composer layout;
-- `InstallPrompt` — an explicit, user-initiated app installation prompt;
-- `UpdatePrompt` — a persistent choice to apply or defer a service worker update;
-- `OfflineBanner` — non-blocking connectivity feedback with an optional recovery action.
-
-Supporting registry hooks expose display mode, Visual Viewport state, media queries, install availability, service worker updates, network status, and page visibility. The installable documentation app includes settings, mobile-form, and content-feed demos using the canonical registry source.
+Supporting hooks cover display mode, Visual Viewport state, media queries, install availability, service-worker updates, network status, and page visibility.
 
 ## Develop
 
-Node.js 20 or later and pnpm are required.
+Node.js 22 or later and pnpm 10 are required.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000` to browse the documentation, live component examples, and code samples.
+Open `http://localhost:3000` for the documentation, live examples, usage snippets, and copy-pasteable component source.
 
 ## Validate
 
@@ -40,33 +65,18 @@ pnpm check
 pnpm test:e2e
 ```
 
-## Test the registry locally
-
-Build and serve the docs app:
+Build and test the local registry with:
 
 ```bash
 pnpm registry:build
 pnpm dev
-```
-
-In a fresh shadcn-enabled project, install any component from the local registry:
-
-```bash
 pnpm dlx shadcn@latest add http://localhost:3000/r/app-shell.json
-pnpm dlx shadcn@latest add http://localhost:3000/r/bottom-sheet.json
-pnpm dlx shadcn@latest add http://localhost:3000/r/tab-bar.json
 ```
 
-Install the shared PWA tokens and Base UI dependency separately:
+Registry source in `registry/` is canonical. The documentation app imports that same source, while `shadcn build` produces the public payloads in `apps/docs/public/r`.
 
-```bash
-pnpm dlx shadcn@latest add http://localhost:3000/r/pwa-base.json
-```
+See [CONTRIBUTING.md](./CONTRIBUTING.md), [SECURITY.md](./SECURITY.md), [docs/COMPONENTS.md](./docs/COMPONENTS.md), and [docs/DEVICE_QA.md](./docs/DEVICE_QA.md).
 
-After the repository is public, the same source registry can be consumed directly as `owner/repository/bottom-sheet`.
+## License
 
-## Architecture
-
-Registry source is canonical. The docs app imports the same source shown to consumers, while `shadcn build` produces installable payloads in `apps/docs/public/r`.
-
-See [MVP.md](./MVP.md) for product scope, [docs/COMPONENTS.md](./docs/COMPONENTS.md) for API and behavior notes, and [docs/DEVICE_QA.md](./docs/DEVICE_QA.md) for real-device validation.
+MIT

@@ -1,5 +1,7 @@
 # PWA UI MVP
 
+> Historical planning document. The current beta surface also includes `PWAProvider` and lifecycle feedback components; see the documentation and changelog for the active public surface.
+
 ## Thesis
 
 Build a registry-first React UI layer that makes mobile web applications feel like installed applications without replacing shadcn/ui, Base UI, or the browser platform.

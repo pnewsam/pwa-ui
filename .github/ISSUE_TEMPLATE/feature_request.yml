@@ -1,0 +1,24 @@
+name: Feature proposal
+description: Propose a focused component, hook, utility, or API refinement.
+title: "[Proposal]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Describe the PWA-specific problem, not only the desired API.
+    validations:
+      required: true
+  - type: textarea
+    id: existing
+    attributes:
+      label: Existing conventions
+      description: Note relevant web, React, React Native, Expo, shadcn, or Base UI conventions.
+  - type: textarea
+    id: composition
+    attributes:
+      label: Proposed composition
+      description: Show a small usage example and explain how it relates to existing items.
+    validations:
+      required: true

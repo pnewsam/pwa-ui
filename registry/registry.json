@@ -6,15 +6,18 @@
       "type": "registry:style",
       "title": "PWA UI Base",
       "description": "Safe-area, viewport, keyboard, app chrome, and touch-target tokens.",
-      "dependencies": ["@base-ui/react"],
       "files": [{ "path": "styles/pwa.css", "type": "registry:style", "target": "styles/pwa.css" }]
     },
     {
-      "name": "pwa-ready",
+      "name": "pwa-provider",
       "type": "registry:component",
-      "title": "PWA Ready",
-      "description": "A small proof component for verifying the registry workflow.",
-      "files": [{ "path": "components/pwa-ready/pwa-ready.tsx", "type": "registry:component", "target": "components/pwa-ready.tsx" }]
+      "title": "PWA Provider",
+      "description": "Shared visual viewport and software-keyboard CSS variables for application layouts.",
+      "registryDependencies": ["https://pwaui.com/r/pwa-base.json"],
+      "files": [
+        { "path": "components/pwa-provider/pwa-provider.tsx", "type": "registry:component", "target": "components/ui/pwa-provider.tsx" },
+        { "path": "hooks/use-visual-viewport.ts", "type": "registry:hook", "target": "hooks/use-visual-viewport.ts" }
+      ]
     },
     {
       "name": "use-display-mode",
@@ -70,7 +73,7 @@
       "type": "registry:component",
       "title": "Safe Area",
       "description": "Explicit CSS environment-variable safe-area padding.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [{ "path": "components/safe-area/safe-area.tsx", "type": "registry:component", "target": "components/ui/safe-area.tsx" }]
     },
     {
@@ -78,7 +81,7 @@
       "type": "registry:component",
       "title": "Keyboard Avoiding View",
       "description": "Visual Viewport-aware layout for forms and fixed composers.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [
         { "path": "components/keyboard-avoiding-view/keyboard-avoiding-view.tsx", "type": "registry:component", "target": "components/ui/keyboard-avoiding-view.tsx" },
         { "path": "hooks/use-visual-viewport.ts", "type": "registry:hook", "target": "hooks/use-visual-viewport.ts" }
@@ -89,7 +92,7 @@
       "type": "registry:component",
       "title": "App Shell",
       "description": "A dynamic-viewport application frame with independently scrolling content.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [{ "path": "components/app-shell/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" }]
     },
     {
@@ -98,7 +101,7 @@
       "title": "Navigation Bar",
       "description": "Router-composable top application chrome with a truly centered title.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [{ "path": "components/navigation-bar/navigation-bar.tsx", "type": "registry:component", "target": "components/ui/navigation-bar.tsx" }]
     },
     {
@@ -107,7 +110,7 @@
       "title": "Tab Bar",
       "description": "Router-composable bottom navigation with touch targets, labels, and accessible badges.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [{ "path": "components/tab-bar/tab-bar.tsx", "type": "registry:component", "target": "components/ui/tab-bar.tsx" }]
     },
     {
@@ -116,7 +119,7 @@
       "title": "Bottom Sheet",
       "description": "A swipeable, keyboard-aware mobile bottom sheet built on Base UI Drawer.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [{ "path": "components/bottom-sheet/bottom-sheet.tsx", "type": "registry:component", "target": "components/ui/bottom-sheet.tsx" }]
     },
     {
@@ -125,7 +128,7 @@
       "title": "Responsive Dialog",
       "description": "One content tree rendered as a desktop dialog or mobile bottom sheet.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [
         { "path": "components/responsive-dialog/responsive-dialog.tsx", "type": "registry:component", "target": "components/ui/responsive-dialog.tsx" },
         { "path": "components/bottom-sheet/bottom-sheet.tsx", "type": "registry:component", "target": "components/ui/bottom-sheet.tsx" },
@@ -138,7 +141,7 @@
       "title": "Action Sheet",
       "description": "Grouped, touch-first actions presented in a mobile bottom sheet.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://pwaui.com/r/pwa-base.json"],
       "files": [
         { "path": "components/action-sheet/action-sheet.tsx", "type": "registry:component", "target": "components/ui/action-sheet.tsx" },
         { "path": "components/bottom-sheet/bottom-sheet.tsx", "type": "registry:component", "target": "components/ui/bottom-sheet.tsx" }

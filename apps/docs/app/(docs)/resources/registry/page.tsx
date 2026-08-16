@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
 import { ArrowUpRight, Braces, PackageOpen } from "lucide-react";
 
 import { CodeBlock } from "@/components/code-block";
+import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Registry source — PWA UI",
-  description: "Install and inspect the published PWA UI shadcn registry.",
-};
+export const metadata = createPageMetadata("Registry source", "Install and inspect the published PWA UI shadcn registry.", "/resources/registry");
 
 export default function RegistryResourcePage() {
   return (
@@ -36,14 +33,23 @@ export default function RegistryResourcePage() {
       </section>
 
       <section className="docs-section">
-        <h2>Install a component</h2>
-        <p>Use the public site URL as the registry origin and replace the final filename with the item you need.</p>
+        <h2>Configure the namespace</h2>
+        <p>Add the registry to <code>components.json</code>. This keeps install commands short and makes the source explicit.</p>
+        <CodeBlock code={'{\n  "registries": {\n    "@pwa-ui": "https://pwaui.com/r/{name}.json"\n  }\n}'} language="json" />
+        <CodeBlock code="pnpm dlx shadcn@latest add @pwa-ui/pwa-provider @pwa-ui/app-shell" language="bash" />
+        <p>Direct URLs remain supported when you do not want to configure a namespace.</p>
         <CodeBlock code="pnpm dlx shadcn@latest add https://pwaui.com/r/app-shell.json" language="bash" />
       </section>
 
       <section className="docs-section">
+        <h2>Import the base styles</h2>
+        <p>Components that use PWA layout tokens install the shared stylesheet as a registry dependency. Import it once from your application&apos;s global entry point.</p>
+        <CodeBlock code={'import "@/styles/pwa.css"'} language="tsx" />
+      </section>
+
+      <section className="docs-section">
         <h2>Available items</h2>
-        <p>AppShell, SafeArea, BottomSheet, ResponsiveDialog, ActionSheet, NavigationBar, TabBar, KeyboardAvoidingView, and the shared hooks are published independently.</p>
+        <p>PWAProvider, AppShell, SafeArea, BottomSheet, ResponsiveDialog, ActionSheet, NavigationBar, TabBar, KeyboardAvoidingView, lifecycle feedback components, and the shared hooks are published independently.</p>
       </section>
 
       <nav className="docs-pagination" aria-label="Documentation pagination">

@@ -19,7 +19,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
         <a href="/" className="docs-brand" aria-label="PWA UI documentation home">
           <span className="docs-brand-mark" aria-hidden="true">P</span>
           <span>PWA UI</span>
-          <span className="docs-version">v0.1</span>
+          <span className="docs-version">v0.1 beta</span>
         </a>
         <div className="docs-header-center">
           <span className="docs-section-label">Documentation</span>
@@ -55,8 +55,11 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="docs-nav-group">
               <p>Resources</p>
+              <a className={pathname === "/resources/browser-support" ? "is-active" : ""} href="/resources/browser-support" onClick={() => setMenuOpen(false)}>Browser support</a>
+              <a className={pathname === "/resources/accessibility" ? "is-active" : ""} href="/resources/accessibility" onClick={() => setMenuOpen(false)}>Accessibility</a>
               <a className={pathname === "/resources/device-qa" ? "is-active" : ""} href="/resources/device-qa" onClick={() => setMenuOpen(false)}>Device QA</a>
               <a className={pathname === "/resources/registry" ? "is-active" : ""} href="/resources/registry" onClick={() => setMenuOpen(false)}>Registry source</a>
+              <a className={pathname === "/resources/release-status" ? "is-active" : ""} href="/resources/release-status" onClick={() => setMenuOpen(false)}>Release status</a>
             </div>
           </nav>
         </aside>

@@ -43,10 +43,10 @@ export function InstallPrompt({
         <h2 id={titleId} className="text-sm font-semibold tracking-[-0.01em]">{title}</h2>
         <p id={descriptionId} className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button type="button" disabled={installing} onClick={onInstall} className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground outline-none transition-[opacity,transform] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-55">
+          <button type="button" disabled={installing} onClick={onInstall} className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground outline-none transition-[opacity,transform] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-55 motion-reduce:transition-none motion-reduce:active:scale-100">
             {installing ? "Opening…" : actionLabel}
           </button>
-          {onDismiss ? <button type="button" disabled={installing} onClick={onDismiss} className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl px-4 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-55">{dismissLabel}</button> : null}
+          {onDismiss ? <button type="button" disabled={installing} onClick={onDismiss} className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl px-4 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-55 motion-reduce:transition-none">{dismissLabel}</button> : null}
         </div>
       </div>
     </section>

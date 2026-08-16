@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 test.beforeEach(async ({ page }) => {
   page.on("pageerror", (error) => console.error(`PAGE ERROR: ${error.message}`));
@@ -11,12 +12,25 @@ test("renders the documentation index with component and hook links", async ({ p
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Build mobile web apps/ })).toBeVisible();
   if (isMobile) await page.getByRole("button", { name: "Open navigation" }).click();
-  for (const name of ["AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView", "InstallPrompt", "UpdatePrompt", "OfflineBanner"]) {
+  for (const name of ["PWAProvider", "AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView", "InstallPrompt", "UpdatePrompt", "OfflineBanner"]) {
     await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
   for (const name of ["useDisplayMode", "useVisualViewport", "useMediaQuery", "useInstallPrompt", "useServiceWorkerUpdate", "useNetworkStatus", "usePageVisibility"]) {
     await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
+});
+
+test("has no automatically detectable accessibility violations on core surfaces", async ({ page }) => {
+  for (const path of ["/", "/components/tab-bar", "/hooks/use-display-mode", "/resources/browser-support"]) {
+    await page.goto(path);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
+  }
+
+  await page.goto("/components/bottom-sheet");
+  await page.getByRole("button", { name: "Open bottom sheet" }).click();
+  const overlayResults = await new AxeBuilder({ page }).include('[role="dialog"]').analyze();
+  expect(overlayResults.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
 });
 
 test("documents installable hook usage and source", async ({ page }) => {

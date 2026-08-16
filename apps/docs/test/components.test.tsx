@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -9,6 +9,7 @@ import { BottomSheet } from "../../../registry/components/bottom-sheet/bottom-sh
 import { InstallPrompt } from "../../../registry/components/install-prompt/install-prompt";
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
+import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
 import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
@@ -28,13 +29,25 @@ describe("PWA UI components", () => {
       <AppShell>
         <AppShell.Header>Header</AppShell.Header>
         <AppShell.Main>Content</AppShell.Main>
-        <AppShell.Footer>Footer</AppShell.Footer>
+        <AppShell.Footer keyboardBehavior="hide">Footer</AppShell.Footer>
       </AppShell>,
     );
 
     expect(screen.getByRole("banner")).toHaveTextContent("Header");
     expect(screen.getByRole("main")).toHaveTextContent("Content");
     expect(screen.getByRole("contentinfo")).toHaveTextContent("Footer");
+    expect(screen.getByRole("contentinfo")).toHaveAttribute("data-keyboard-behavior", "hide");
+  });
+
+  it("publishes shared viewport tokens and restores the document root", async () => {
+    const view = render(<PWAProvider><span>Application</span></PWAProvider>);
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue("--pwa-viewport-height")).toBe(`${window.innerHeight}px`);
+    });
+
+    view.unmount();
+    expect(document.documentElement.style.getPropertyValue("--pwa-viewport-height")).toBe("");
   });
 
   it("applies only requested safe-area edges", () => {
@@ -47,8 +60,9 @@ describe("PWA UI components", () => {
   });
 
   it("marks the active tab semantically", () => {
-    render(<TabBar><TabBar.Item icon={<span />} label="Home" active /></TabBar>);
+    render(<TabBar><TabBar.Item icon={<span />} label="Home" active className={({ active }) => active ? "consumer-active" : undefined} /></TabBar>);
     expect(screen.getByRole("button", { name: "Home" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Home" })).toHaveClass("consumer-active");
   });
 
   it("passes props and events through both tab item variants", async () => {
@@ -104,12 +118,13 @@ describe("PWA UI components", () => {
     const ref = React.createRef<HTMLAnchorElement>();
     render(
       <NavigationBar>
-        <NavigationBar.BackButton render={<RouterLink to="/settings" />} ref={ref} />
+        <NavigationBar.BackButton render={<RouterLink to="/settings" />} ref={ref} className={() => "consumer-back"} />
       </NavigationBar>,
     );
 
     const backLink = screen.getByRole("link", { name: "Back" });
     expect(backLink).toHaveAttribute("href", "/settings");
+    expect(backLink).toHaveClass("consumer-back");
     expect(ref.current).toBe(backLink);
   });
 
@@ -143,6 +158,16 @@ describe("PWA UI components", () => {
     expect(await screen.findByRole("dialog")).toHaveAccessibleName("Filters");
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("preserves functional class names on wrapped Base UI parts", () => {
+    render(
+      <BottomSheet>
+        <BottomSheet.Trigger className={() => "consumer-trigger"}>Open</BottomSheet.Trigger>
+      </BottomSheet>,
+    );
+
+    expect(screen.getByRole("button", { name: "Open" })).toHaveClass("consumer-trigger");
   });
 
   it("keeps installation behind an explicit action", async () => {

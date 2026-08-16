@@ -1,9 +1,6 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Device QA — PWA UI",
-  description: "A practical device and browser checklist for validating PWA UI components.",
-};
+export const metadata = createPageMetadata("Device QA", "A practical device and browser checklist for validating PWA UI components.", "/resources/device-qa");
 
 const sections = [
   {

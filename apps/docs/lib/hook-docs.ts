@@ -152,6 +152,7 @@ export function UpdateButton() {
     ],
     notes: [
       "The hook never registers a service worker and reports unregistered when none exists for the scope.",
+      "By default it checks for a newer worker when the page returns to the foreground, throttled to once every 30 seconds; set checkOnVisible to false to opt out.",
       "Set reload: true only after the application has protected unsaved work.",
       "The service worker must handle the SKIP_WAITING message before applyUpdate can activate it.",
     ],

@@ -85,4 +85,24 @@ describe("PWA UI hooks", () => {
     expect(waitingWorker.postMessage).toHaveBeenCalledWith({ type: "SKIP_WAITING" });
     expect(result.current.status).toBe("activating");
   });
+
+  it("checks an existing service worker after returning to the foreground", async () => {
+    const registration = Object.assign(new EventTarget(), {
+      waiting: null,
+      installing: null,
+      update: vi.fn().mockResolvedValue(undefined),
+    });
+    const serviceWorker = Object.assign(new EventTarget(), {
+      controller: {},
+      getRegistration: vi.fn().mockResolvedValue(registration),
+    });
+    Object.defineProperty(window.navigator, "serviceWorker", { configurable: true, value: serviceWorker });
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
+
+    const { result } = renderHook(() => useServiceWorkerUpdate());
+    await waitFor(() => expect(result.current.status).toBe("idle"));
+
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    await waitFor(() => expect(registration.update).toHaveBeenCalledOnce());
+  });
 });

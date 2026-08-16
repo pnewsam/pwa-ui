@@ -15,7 +15,9 @@ export function BottomSheetTrigger({ className, ...props }: Drawer.Trigger.Props
   return (
     <Drawer.Trigger
       data-slot="bottom-sheet-trigger"
-      className={cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", typeof className === "string" ? className : undefined)}
+      className={typeof className === "function"
+        ? (state) => cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", className(state))
+        : cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", className)}
       {...props}
     />
   );
@@ -44,7 +46,7 @@ export function BottomSheetContent({
         <Drawer.Backdrop
           data-slot="bottom-sheet-backdrop"
           className={cn(
-            "fixed inset-0 z-50 bg-black/48 backdrop-blur-[2px] opacity-[calc(1-var(--drawer-swipe-progress,0))] transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0",
+            "fixed inset-0 z-50 bg-black/48 backdrop-blur-[2px] opacity-[calc(1-var(--drawer-swipe-progress,0))] transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none",
             backdropClassName,
           )}
         />
@@ -55,7 +57,7 @@ export function BottomSheetContent({
           <Drawer.Popup
             data-slot="bottom-sheet-content"
             className={cn(
-              "pointer-events-auto relative flex max-h-[min(92dvh,56rem)] w-full flex-col overflow-hidden rounded-t-[1.75rem] border border-border/80 bg-background text-foreground shadow-[0_-18px_60px_rgb(0_0_0/0.18)] outline-none transition-[transform,translate] duration-[calc(var(--drawer-swipe-strength,1)*300ms)] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full data-[swiping]:duration-0 sm:max-w-xl",
+              "pointer-events-auto relative flex max-h-[min(92dvh,56rem)] w-full flex-col overflow-hidden rounded-t-[1.75rem] border border-border/80 bg-background text-foreground shadow-[0_-18px_60px_rgb(0_0_0/0.18)] outline-none transition-[transform,translate] duration-[calc(var(--drawer-swipe-strength,1)*300ms)] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full data-[swiping]:duration-0 motion-reduce:transition-none sm:max-w-xl",
               className,
             )}
             style={{
@@ -93,15 +95,15 @@ export function BottomSheetFooter({ className, ...props }: React.ComponentPropsW
 }
 
 export function BottomSheetTitle({ className, ...props }: Drawer.Title.Props) {
-  return <Drawer.Title data-slot="bottom-sheet-title" className={cn("text-lg font-semibold tracking-[-0.025em]", typeof className === "string" ? className : undefined)} {...props} />;
+  return <Drawer.Title data-slot="bottom-sheet-title" className={typeof className === "function" ? (state) => cn("text-lg font-semibold tracking-[-0.025em]", className(state)) : cn("text-lg font-semibold tracking-[-0.025em]", className)} {...props} />;
 }
 
 export function BottomSheetDescription({ className, ...props }: Drawer.Description.Props) {
-  return <Drawer.Description data-slot="bottom-sheet-description" className={cn("text-sm leading-6 text-muted-foreground", typeof className === "string" ? className : undefined)} {...props} />;
+  return <Drawer.Description data-slot="bottom-sheet-description" className={typeof className === "function" ? (state) => cn("text-sm leading-6 text-muted-foreground", className(state)) : cn("text-sm leading-6 text-muted-foreground", className)} {...props} />;
 }
 
 export function BottomSheetClose({ className, ...props }: Drawer.Close.Props) {
-  return <Drawer.Close data-slot="bottom-sheet-close" className={cn("outline-none focus-visible:ring-2 focus-visible:ring-ring", typeof className === "string" ? className : undefined)} {...props} />;
+  return <Drawer.Close data-slot="bottom-sheet-close" className={typeof className === "function" ? (state) => cn("outline-none focus-visible:ring-2 focus-visible:ring-ring", className(state)) : cn("outline-none focus-visible:ring-2 focus-visible:ring-ring", className)} {...props} />;
 }
 
 export const BottomSheet = Object.assign(BottomSheetRoot, {

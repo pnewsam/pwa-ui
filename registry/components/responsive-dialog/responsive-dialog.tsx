@@ -86,12 +86,12 @@ export function ResponsiveDialogContent({ className, children, ...props }: Respo
 
   return (
     <Dialog.Portal>
-      <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px] transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+      <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px] transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none" />
       <Dialog.Viewport className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-5">
         <Dialog.Popup
           data-slot="responsive-dialog-content"
           className={cn(
-            "w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background p-6 text-foreground shadow-[0_24px_70px_rgb(0_0_0/0.18)] outline-none transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
+            "w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background p-6 text-foreground shadow-[0_24px_70px_rgb(0_0_0/0.18)] outline-none transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0 motion-reduce:transition-none",
             className,
           )}
           {...props}
@@ -110,12 +110,14 @@ export function ResponsiveDialogHeader(props: React.ComponentPropsWithoutRef<"di
 
 export function ResponsiveDialogTitle(props: Dialog.Title.Props) {
   const { mobile } = useResponsiveDialogContext();
-  return mobile ? <BottomSheetTitle {...props} /> : <Dialog.Title data-slot="responsive-dialog-title" {...props} className={cn("text-lg font-semibold tracking-[-0.025em]", typeof props.className === "string" ? props.className : undefined)} />;
+  const { className, ...titleProps } = props;
+  return mobile ? <BottomSheetTitle {...props} /> : <Dialog.Title data-slot="responsive-dialog-title" {...titleProps} className={typeof className === "function" ? (state) => cn("text-lg font-semibold tracking-[-0.025em]", className(state)) : cn("text-lg font-semibold tracking-[-0.025em]", className)} />;
 }
 
 export function ResponsiveDialogDescription(props: Dialog.Description.Props) {
   const { mobile } = useResponsiveDialogContext();
-  return mobile ? <BottomSheetDescription {...props} /> : <Dialog.Description data-slot="responsive-dialog-description" {...props} className={cn("text-sm leading-6 text-muted-foreground", typeof props.className === "string" ? props.className : undefined)} />;
+  const { className, ...descriptionProps } = props;
+  return mobile ? <BottomSheetDescription {...props} /> : <Dialog.Description data-slot="responsive-dialog-description" {...descriptionProps} className={typeof className === "function" ? (state) => cn("text-sm leading-6 text-muted-foreground", className(state)) : cn("text-sm leading-6 text-muted-foreground", className)} />;
 }
 
 export function ResponsiveDialogClose(props: Dialog.Close.Props) {

@@ -17,6 +17,7 @@ export type ServiceWorkerUpdateStatus =
 export type UseServiceWorkerUpdateOptions = {
   scope?: string;
   checkOnMount?: boolean;
+  checkOnVisible?: boolean;
 };
 
 type ApplyUpdateOptions = {
@@ -30,6 +31,7 @@ function toError(cause: unknown) {
 export function useServiceWorkerUpdate({
   scope,
   checkOnMount = false,
+  checkOnVisible = true,
 }: UseServiceWorkerUpdateOptions = {}) {
   const registrationRef = React.useRef<ServiceWorkerRegistration | null>(null);
   const waitingWorkerRef = React.useRef<ServiceWorker | null>(null);
@@ -47,6 +49,7 @@ export function useServiceWorkerUpdate({
     let cancelled = false;
     let currentRegistration: ServiceWorkerRegistration | null = null;
     let installingWorker: ServiceWorker | null = null;
+    let lastVisibleCheck = 0;
 
     if (!("serviceWorker" in navigator)) {
       setStatus("unsupported");
@@ -89,7 +92,33 @@ export function useServiceWorkerUpdate({
       if (!cancelled) watchInstallingWorker(currentRegistration?.installing ?? null);
     };
 
+    const checkRegistration = async () => {
+      if (!currentRegistration || currentRegistration.waiting || currentRegistration.installing) return;
+      setError(null);
+      setStatus("checking");
+      try {
+        await currentRegistration.update();
+        if (!cancelled && !currentRegistration.installing && !currentRegistration.waiting) {
+          setStatus("idle");
+        }
+      } catch (cause) {
+        if (cancelled) return;
+        setError(toError(cause));
+        setStatus("error");
+      }
+    };
+
+    const handleVisible = () => {
+      if (!checkOnVisible || document.visibilityState !== "visible") return;
+      const now = Date.now();
+      if (now - lastVisibleCheck < 30_000) return;
+      lastVisibleCheck = now;
+      void checkRegistration();
+    };
+
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
+    document.addEventListener("visibilitychange", handleVisible);
+    window.addEventListener("pageshow", handleVisible);
 
     const initialize = async () => {
       try {
@@ -116,11 +145,8 @@ export function useServiceWorkerUpdate({
         }
 
         if (checkOnMount) {
-          setStatus("checking");
-          await currentRegistration.update();
-          if (!cancelled && !currentRegistration.installing && !currentRegistration.waiting) {
-            setStatus("idle");
-          }
+          lastVisibleCheck = Date.now();
+          await checkRegistration();
         }
       } catch (cause) {
         if (cancelled) return;
@@ -140,8 +166,10 @@ export function useServiceWorkerUpdate({
       installingWorker?.removeEventListener("statechange", handleInstallingStateChange);
       currentRegistration?.removeEventListener("updatefound", handleUpdateFound);
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
+      document.removeEventListener("visibilitychange", handleVisible);
+      window.removeEventListener("pageshow", handleVisible);
     };
-  }, [checkOnMount, scope]);
+  }, [checkOnMount, checkOnVisible, scope]);
 
   const checkForUpdate = React.useCallback(async () => {
     const currentRegistration = registrationRef.current;

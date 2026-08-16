@@ -11,21 +11,15 @@
   --pwa-viewport-height: 100dvh;
 }
 
-@supports (height: 100dvh) {
-  :root {
-    --pwa-viewport-height: 100dvh;
-  }
-}
-
-html,
-body {
-  min-height: 100%;
-}
-
 @media (display-mode: standalone) {
   :root {
     --pwa-is-standalone: 1;
   }
+}
+
+html[data-pwa-keyboard-open]
+  [data-slot="app-shell-footer"][data-keyboard-behavior="hide"] {
+  display: none;
 }
 
 @supports not (height: 100dvh) {

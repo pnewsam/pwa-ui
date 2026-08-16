@@ -5,6 +5,7 @@ import { CodeBlock } from "@/components/code-block";
 import { ComponentInstallation } from "@/components/component-installation";
 import { HookExamplePanel } from "@/components/hook-example-panel";
 import { getHookDoc, hookDocs } from "@/lib/hook-docs";
+import { createPageMetadata } from "@/lib/site-metadata";
 
 export function generateStaticParams() {
   return hookDocs.map(({ slug }) => ({ slug }));
@@ -13,7 +14,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/hooks/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const hook = getHookDoc(slug);
-  return hook ? { title: `${hook.name} — PWA UI`, description: hook.summary } : {};
+  return hook ? createPageMetadata(hook.name, hook.summary, `/hooks/${hook.slug}`) : {};
 }
 
 export default async function HookPage({ params }: PageProps<"/hooks/[slug]">) {

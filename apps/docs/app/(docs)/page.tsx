@@ -27,14 +27,16 @@ export default function IntroductionPage() {
 
       <section className="docs-section" id="installation">
         <h2>Installation</h2>
-        <p>Start with the shared platform tokens, then install only the components required by your screen.</p>
-        <CodeBlock code="pnpm dlx shadcn@latest add https://pwaui.com/r/pwa-base.json" language="bash" />
-        <CodeBlock code="pnpm dlx shadcn@latest add https://pwaui.com/r/app-shell.json\npnpm dlx shadcn@latest add https://pwaui.com/r/bottom-sheet.json\npnpm dlx shadcn@latest add https://pwaui.com/r/tab-bar.json" language="bash" />
+        <p>Add the PWA UI namespace to your shadcn configuration, install the provider and the components required by your screen, then import the generated base stylesheet once.</p>
+        <CodeBlock code={'{\n  "registries": {\n    "@pwa-ui": "https://pwaui.com/r/{name}.json"\n  }\n}'} language="json" />
+        <CodeBlock code="pnpm dlx shadcn@latest add @pwa-ui/pwa-provider @pwa-ui/app-shell @pwa-ui/tab-bar" language="bash" />
+        <CodeBlock code={'import "@/styles/pwa.css"'} language="tsx" />
+        <p>Mount <code>PWAProvider</code> once near your application root. Every component page includes a direct URL command as a fallback.</p>
       </section>
 
       <section className="docs-section" id="components">
         <h2>Components</h2>
-        <p>The MVP is deliberately small: eight primitives that form a coherent mobile application layer.</p>
+        <p>The beta is deliberately small: {componentDocs.length} primitives that form a coherent mobile application layer.</p>
         <div className="docs-component-list">
           {componentDocs.map((component) => (
             <a href={`/components/${component.slug}`} key={component.slug}>

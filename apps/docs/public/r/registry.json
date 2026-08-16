@@ -1,15 +1,12 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "pwa-ui",
-  "homepage": "https://github.com/pwa-ui/pwa-ui",
+  "homepage": "https://pwaui.com",
   "items": [
     {
       "name": "pwa-base",
       "title": "PWA UI Base",
       "description": "Safe-area, viewport, keyboard, app chrome, and touch-target tokens.",
-      "dependencies": [
-        "@base-ui/react"
-      ],
       "files": [
         {
           "path": "registry/styles/pwa.css",
@@ -20,14 +17,22 @@
       "type": "registry:style"
     },
     {
-      "name": "pwa-ready",
-      "title": "PWA Ready",
-      "description": "A small proof component for verifying the registry workflow.",
+      "name": "pwa-provider",
+      "title": "PWA Provider",
+      "description": "Shared visual viewport and software-keyboard CSS variables for application layouts.",
+      "registryDependencies": [
+        "https://pwaui.com/r/pwa-base.json"
+      ],
       "files": [
         {
-          "path": "registry/components/pwa-ready/pwa-ready.tsx",
+          "path": "registry/components/pwa-provider/pwa-provider.tsx",
           "type": "registry:component",
-          "target": "components/pwa-ready.tsx"
+          "target": "components/ui/pwa-provider.tsx"
+        },
+        {
+          "path": "registry/hooks/use-visual-viewport.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-visual-viewport.ts"
         }
       ],
       "type": "registry:component"
@@ -128,7 +133,8 @@
       "title": "Safe Area",
       "description": "Explicit CSS environment-variable safe-area padding.",
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -144,7 +150,8 @@
       "title": "Keyboard Avoiding View",
       "description": "Visual Viewport-aware layout for forms and fixed composers.",
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -165,7 +172,8 @@
       "title": "App Shell",
       "description": "A dynamic-viewport application frame with independently scrolling content.",
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -184,7 +192,8 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -203,7 +212,8 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -222,7 +232,8 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -241,7 +252,8 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {
@@ -270,7 +282,8 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/pwa-base.json"
       ],
       "files": [
         {

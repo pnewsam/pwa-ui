@@ -7,7 +7,7 @@ export function AppShellRoot({ className, ...props }: React.ComponentPropsWithou
     <div
       data-slot="app-shell"
       className={cn(
-        "isolate flex h-[var(--pwa-viewport-height,100dvh)] min-h-[100svh] w-full flex-col overflow-hidden bg-background text-foreground",
+        "isolate flex h-[var(--pwa-viewport-height,100dvh)] min-h-0 w-full flex-col overflow-hidden bg-background text-foreground",
         className,
       )}
       {...props}
@@ -36,10 +36,20 @@ export function AppShellMain({ className, ...props }: React.ComponentPropsWithou
   );
 }
 
-export function AppShellFooter({ className, style, ...props }: React.ComponentPropsWithoutRef<"footer">) {
+export type AppShellFooterProps = React.ComponentPropsWithoutRef<"footer"> & {
+  keyboardBehavior?: "none" | "hide";
+};
+
+export function AppShellFooter({
+  className,
+  keyboardBehavior = "none",
+  style,
+  ...props
+}: AppShellFooterProps) {
   return (
     <footer
       data-slot="app-shell-footer"
+      data-keyboard-behavior={keyboardBehavior}
       className={cn("z-20 shrink-0", className)}
       style={{ paddingBottom: "var(--pwa-safe-bottom, env(safe-area-inset-bottom, 0px))", ...style }}
       {...props}

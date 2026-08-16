@@ -3,13 +3,10 @@
   "name": "pwa-base",
   "title": "PWA UI Base",
   "description": "Safe-area, viewport, keyboard, app chrome, and touch-target tokens.",
-  "dependencies": [
-    "@base-ui/react"
-  ],
   "files": [
     {
       "path": "registry/styles/pwa.css",
-      "content": ":root {\n  --pwa-safe-top: env(safe-area-inset-top, 0px);\n  --pwa-safe-right: env(safe-area-inset-right, 0px);\n  --pwa-safe-bottom: env(safe-area-inset-bottom, 0px);\n  --pwa-safe-left: env(safe-area-inset-left, 0px);\n  --pwa-keyboard-height: 0px;\n  --pwa-navigation-bar-height: 3.5rem;\n  --pwa-tab-bar-height: 4rem;\n  --pwa-touch-target: 2.75rem;\n  --pwa-visual-viewport-height: 100dvh;\n  --pwa-viewport-height: 100dvh;\n}\n\n@supports (height: 100dvh) {\n  :root {\n    --pwa-viewport-height: 100dvh;\n  }\n}\n\nhtml,\nbody {\n  min-height: 100%;\n}\n\n@media (display-mode: standalone) {\n  :root {\n    --pwa-is-standalone: 1;\n  }\n}\n\n@supports not (height: 100dvh) {\n  :root {\n    --pwa-viewport-height: 100vh;\n  }\n}\n",
+      "content": ":root {\n  --pwa-safe-top: env(safe-area-inset-top, 0px);\n  --pwa-safe-right: env(safe-area-inset-right, 0px);\n  --pwa-safe-bottom: env(safe-area-inset-bottom, 0px);\n  --pwa-safe-left: env(safe-area-inset-left, 0px);\n  --pwa-keyboard-height: 0px;\n  --pwa-navigation-bar-height: 3.5rem;\n  --pwa-tab-bar-height: 4rem;\n  --pwa-touch-target: 2.75rem;\n  --pwa-visual-viewport-height: 100dvh;\n  --pwa-viewport-height: 100dvh;\n}\n\n@media (display-mode: standalone) {\n  :root {\n    --pwa-is-standalone: 1;\n  }\n}\n\nhtml[data-pwa-keyboard-open]\n  [data-slot=\"app-shell-footer\"][data-keyboard-behavior=\"hide\"] {\n  display: none;\n}\n\n@supports not (height: 100dvh) {\n  :root {\n    --pwa-viewport-height: 100vh;\n  }\n}\n",
       "type": "registry:style",
       "target": "styles/pwa.css"
     }

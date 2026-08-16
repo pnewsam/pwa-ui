@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a reproducible problem in a PWA UI registry item.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: dropdown
+    id: item
+    attributes:
+      label: Registry item
+      options:
+        - PWAProvider / viewport hooks
+        - AppShell / SafeArea / KeyboardAvoidingView
+        - BottomSheet / ResponsiveDialog / ActionSheet
+        - NavigationBar / TabBar
+        - InstallPrompt / UpdatePrompt / OfflineBanner
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include steps and a small repository or code sample when possible.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Framework, browser, OS, device, and browser or standalone display mode.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I tested the unmodified registry source.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true

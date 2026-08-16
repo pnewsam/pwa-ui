@@ -35,7 +35,7 @@ export type ActionSheetItemProps = React.ComponentPropsWithoutRef<"button"> & {
 
 export function ActionSheetItem({ variant = "default", closeOnSelect = true, className, ...props }: ActionSheetItemProps) {
   const classes = cn(
-    "flex min-h-14 w-full cursor-pointer items-center justify-center gap-2.5 border-b border-border/70 px-4 text-[0.95rem] font-medium outline-none transition-[background-color,color] duration-150 ease-out last:border-b-0 hover:bg-accent focus-visible:bg-accent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45 [&>svg]:size-[1.125rem] [&>svg]:shrink-0",
+    "flex min-h-14 w-full cursor-pointer items-center justify-center gap-2.5 border-b border-border/70 px-4 text-[0.95rem] font-medium outline-none transition-[background-color,color] duration-150 ease-out last:border-b-0 hover:bg-accent focus-visible:bg-accent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45 motion-reduce:transition-none [&>svg]:size-[1.125rem] [&>svg]:shrink-0",
     variant === "destructive" && "text-destructive",
     className,
   );
@@ -48,7 +48,7 @@ export function ActionSheetItem({ variant = "default", closeOnSelect = true, cla
 }
 
 export function ActionSheetCancel({ className, ...props }: React.ComponentProps<typeof BottomSheetClose>) {
-  return <BottomSheetClose data-slot="action-sheet-cancel" className={cn("mt-2 min-h-14 w-full cursor-pointer rounded-2xl border border-border/70 bg-background px-4 text-[0.95rem] font-semibold shadow-sm outline-none transition-[background-color,color] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45", typeof className === "string" ? className : undefined)} {...props} />;
+  return <BottomSheetClose data-slot="action-sheet-cancel" className={typeof className === "function" ? (state) => cn("mt-2 min-h-14 w-full cursor-pointer rounded-2xl border border-border/70 bg-background px-4 text-[0.95rem] font-semibold shadow-sm outline-none transition-[background-color,color] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45 motion-reduce:transition-none", className(state)) : cn("mt-2 min-h-14 w-full cursor-pointer rounded-2xl border border-border/70 bg-background px-4 text-[0.95rem] font-semibold shadow-sm outline-none transition-[background-color,color] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45 motion-reduce:transition-none", className)} {...props} />;
 }
 
 export const ActionSheet = Object.assign(ActionSheetRoot, {

@@ -5,6 +5,7 @@ import { CodeBlock } from "@/components/code-block";
 import { ComponentInstallation } from "@/components/component-installation";
 import { ExamplePanel } from "@/components/example-panel";
 import { componentDocs, getComponentDoc } from "@/lib/component-docs";
+import { createPageMetadata } from "@/lib/site-metadata";
 
 export function generateStaticParams() {
   return componentDocs.map(({ slug }) => ({ slug }));
@@ -13,7 +14,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/components/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const component = getComponentDoc(slug);
-  return component ? { title: `${component.name} — PWA UI`, description: component.summary } : {};
+  return component ? createPageMetadata(component.name, component.summary, `/components/${component.slug}`) : {};
 }
 
 export default async function ComponentPage({ params }: PageProps<"/components/[slug]">) {

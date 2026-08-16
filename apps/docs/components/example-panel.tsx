@@ -23,6 +23,7 @@ import { KeyboardAvoidingView } from "../../../registry/components/keyboard-avoi
 import { InstallPrompt } from "../../../registry/components/install-prompt/install-prompt";
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
+import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
@@ -59,6 +60,18 @@ function AppShellDemo() {
         </AppShell.Footer>
       </AppShell>
     </div>
+  );
+}
+
+function PWAProviderDemo() {
+  return (
+    <PWAProvider>
+      <div className="demo-center">
+        <span className="docs-list-icon"><Check size={14} /></span>
+        <strong>Viewport tokens are active</strong>
+        <p className="demo-caption">One provider keeps application chrome and keyboard-aware layouts in sync.</p>
+      </div>
+    </PWAProvider>
   );
 }
 
@@ -241,6 +254,7 @@ function OfflineBannerDemo() {
 
 function ComponentDemo({ slug }: { slug: ComponentSlug }) {
   switch (slug) {
+    case "pwa-provider": return <PWAProviderDemo />;
     case "app-shell": return <AppShellDemo />;
     case "safe-area": return <SafeAreaDemo />;
     case "bottom-sheet": return <BottomSheetDemo />;

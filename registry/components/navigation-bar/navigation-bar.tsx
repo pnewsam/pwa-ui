@@ -29,12 +29,16 @@ export function NavigationBarTrailing({ className, ...props }: React.ComponentPr
   return <div data-slot="navigation-bar-trailing" className={cn("flex min-w-0 items-center gap-1 justify-self-end", className)} {...props} />;
 }
 
-export type NavigationBarBackButtonProps = Omit<useRender.ComponentProps<"button">, "ref"> & {
+export type NavigationBarBackButtonState = Record<string, never>;
+
+export type NavigationBarBackButtonProps = Omit<useRender.ComponentProps<"button", NavigationBarBackButtonState>, "className" | "ref"> & {
+  className?: string | ((state: NavigationBarBackButtonState) => string | undefined);
   ref?: React.Ref<HTMLElement>;
 };
 
 export function NavigationBarBackButton({ className, children, render, ref, ...props }: NavigationBarBackButtonProps) {
-  return useRender<Record<string, never>, HTMLElement>({
+  const baseClassName = "inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1 rounded-[0.625rem] text-sm font-medium outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97] active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45 motion-reduce:transition-none motion-reduce:active:scale-100";
+  return useRender<NavigationBarBackButtonState, HTMLElement>({
     defaultTagName: "button",
     render,
     ref,
@@ -43,7 +47,7 @@ export function NavigationBarBackButton({ className, children, render, ref, ...p
       ...props,
       "aria-label": props["aria-label"] ?? (children == null ? "Back" : undefined),
       "data-slot": "navigation-bar-back-button",
-      className: cn("inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1 rounded-[0.625rem] text-sm font-medium outline-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.97] active:bg-accent/80 disabled:pointer-events-none disabled:opacity-45", className),
+      className: cn(baseClassName, typeof className === "function" ? className({}) : className),
       children: children ?? <span aria-hidden="true" className="text-2xl leading-none">‹</span>,
     },
   });

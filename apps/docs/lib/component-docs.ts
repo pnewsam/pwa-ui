@@ -2,6 +2,27 @@ const registryUrl = "https://pwaui.com/r";
 
 export const componentDocs = [
   {
+    slug: "pwa-provider",
+    name: "PWAProvider",
+    summary: "One shared viewport subscription and stable PWA layout variables for the application.",
+    description: "PWAProvider publishes visual viewport and software-keyboard measurements as CSS variables at the document root. Mount it once so AppShell and other layouts share one source of truth.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/pwa-provider.json`,
+    usage: `import { PWAProvider } from "@/components/ui/pwa-provider"
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <PWAProvider>{children}</PWAProvider>
+      </body>
+    </html>
+  )
+}`,
+    anatomy: ["PWAProvider", "useVisualViewport", "CSS variables"],
+    notes: ["Mount once near the application root.", "Publishes --pwa-viewport-height, --pwa-visual-viewport-height, and --pwa-keyboard-height.", "Sets data-pwa-keyboard-open on the document root while a likely software keyboard is occluding the viewport.", "Keyboard detection is a layout hint and intentionally ignores pinch zoom."],
+    accessibility: "The provider renders no wrapper or interactive UI. It preserves pinch zoom and only changes layout variables used by your application.",
+  },
+  {
     slug: "app-shell",
     name: "AppShell",
     summary: "A dynamic-viewport frame for fixed application chrome and independently scrolling content.",
@@ -21,7 +42,7 @@ export function Screen() {
         </NavigationBar>
       </AppShell.Header>
       <AppShell.Main>Scrollable content</AppShell.Main>
-      <AppShell.Footer>
+      <AppShell.Footer keyboardBehavior="hide">
         <TabBar>
           <TabBar.Item icon={<Home />} label="Home" active />
         </TabBar>
@@ -30,7 +51,7 @@ export function Screen() {
   )
 }`,
     anatomy: ["AppShell", "AppShell.Header", "AppShell.Main", "AppShell.Footer"],
-    notes: ["Header and Footer are placement regions, not styled navigation components.", "The usual composition is NavigationBar inside Header and TabBar inside Footer.", "Header and Footer apply the relevant safe-area inset; do not wrap their children in another SafeArea for the same edge.", "Main owns scrolling and overscroll containment."],
+    notes: ["Header and Footer are placement regions, not styled navigation components.", "The usual composition is NavigationBar inside Header and TabBar inside Footer.", "Header and Footer apply the relevant safe-area inset; do not wrap their children in another SafeArea for the same edge.", "Main owns scrolling and overscroll containment.", "Footer keyboardBehavior can leave chrome in place or hide it while the software keyboard is open when PWAProvider is mounted."],
     accessibility: "Uses semantic header, main, and footer elements. Provide accessible navigation landmarks inside the chrome regions.",
   },
   {

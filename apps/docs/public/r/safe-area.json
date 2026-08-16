@@ -4,7 +4,8 @@
   "title": "Safe Area",
   "description": "Explicit CSS environment-variable safe-area padding.",
   "registryDependencies": [
-    "utils"
+    "utils",
+    "https://pwaui.com/r/pwa-base.json"
   ],
   "files": [
     {
