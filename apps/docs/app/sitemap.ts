@@ -8,6 +8,7 @@ const origin = "https://pwaui.com";
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "",
+    "/guides/app-layout",
     ...componentDocs.map(({ slug }) => `/components/${slug}`),
     ...hookDocs.map(({ slug }) => `/hooks/${slug}`),
     "/resources/browser-support",

@@ -7,6 +7,8 @@ import { ExamplePanel } from "@/components/example-panel";
 import { componentDocs, getComponentDoc } from "@/lib/component-docs";
 import { createPageMetadata } from "@/lib/site-metadata";
 
+const layoutComponentSlugs = new Set(["pwa-provider", "app-shell", "safe-area", "navigation-bar", "tab-bar"]);
+
 export function generateStaticParams() {
   return componentDocs.map(({ slug }) => ({ slug }));
 }
@@ -54,6 +56,14 @@ export default async function ComponentPage({ params }: PageProps<"/components/[
         <h2>Anatomy</h2>
         <div className="docs-anatomy">{component.anatomy.map((part) => <code key={part}>{part}</code>)}</div>
       </section>
+
+      {layoutComponentSlugs.has(component.slug) ? (
+        <section className="docs-section" id="composition">
+          <h2>Composition</h2>
+          <p>See how PWAProvider, AppShell, SafeArea, NavigationBar, and TabBar divide viewport, scrolling, safe-area, and navigation responsibilities.</p>
+          <p><a className="docs-inline-link" href="/guides/app-layout">Read the app layout guide →</a></p>
+        </section>
+      ) : null}
 
       <section className="docs-section" id="behavior">
         <h2>Behavior notes</h2>

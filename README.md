@@ -32,7 +32,7 @@ Import the generated base stylesheet once from your global application entry:
 import "@/styles/pwa.css"
 ```
 
-Mount `PWAProvider` once near the application root. Direct registry URLs such as `https://pwaui.com/r/app-shell.json` remain supported.
+Mount `PWAProvider` once near the application root. For a full-screen app shell, opt into document containment with `data-pwa-app-root` on `html` and `data-pwa-app-mount` on the element containing the shell. See the [app layout guide](https://pwaui.com/guides/app-layout) for the complete composition. Direct registry URLs such as `https://pwaui.com/r/app-shell.json` remain supported.
 
 Because this repository is also a shadcn source registry, you can install directly from GitHub. Pin the release tag when you need reproducible source:
 
