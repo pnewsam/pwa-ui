@@ -24,7 +24,7 @@
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/vite-plugin": "1.52.0",
     "@tailwindcss/postcss": "^4.1.0",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.1.0",
@@ -32,8 +32,8 @@
     "@types/node": "^20.17.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "6.0.2",
-    "@vitejs/plugin-rsc": "0.5.26",
+    "@vitejs/plugin-react": "6.0.5",
+    "@vitejs/plugin-rsc": "0.5.34",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.1.0",
     "jsdom": "^26.0.0",
@@ -41,9 +41,9 @@
     "tailwindcss": "^4.1.0",
     "typescript": "^5.7.0",
     "vinext": "1.0.0-beta.5",
-    "vite": "8.0.13",
+    "vite": "8.2.1",
     "vitest": "^3.2.0",
-    "wrangler": "4.92.0"
+    "wrangler": "4.122.0"
   },
   "type": "module"
 }
