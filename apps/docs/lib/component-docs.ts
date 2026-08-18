@@ -246,7 +246,11 @@ import { InstallPrompt } from "@/components/ui/install-prompt"
 import { useInstallPrompt } from "@/hooks/use-install-prompt"
 
 export function AppInstallPrompt() {
-  const { status, prompt } = useInstallPrompt()
+  const { status, promptType, prompt } = useInstallPrompt()
+
+  if (promptType === "ios-manual") {
+    return <InstallPrompt mode="manual" />
+  }
 
   if (status !== "available" && status !== "prompting") return null
 
@@ -261,8 +265,8 @@ export function AppInstallPrompt() {
     />
   )
 }`,
-    anatomy: ["InstallPrompt", "title", "description", "install action", "optional dismiss action"],
-    notes: ["Render only after useInstallPrompt reports available.", "The component never requests installation during render or without a user action.", "Use product-specific copy that explains the value of installing."],
+    anatomy: ["InstallPrompt", "title", "description", "install action", "manual steps", "optional dismiss action"],
+    notes: ["Render only after useInstallPrompt reports available.", "On iOS, where no programmatic prompt exists, render mode=\"manual\" for Share → Add to Home Screen steps.", "The component never requests installation during render or without a user action.", "Use product-specific copy that explains the value of installing."],
     platformCaveats: ["iOS Safari never fires `beforeinstallprompt`, so the programmatic install flow is unavailable there — render manual \"Share → Add to Home Screen\" guidance for iOS. Firefox does not support programmatic PWA installation."],
     accessibility: "The prompt is a labelled section with visible text and touch-sized native buttons. Browser installation remains tied to an explicit user action.",
   },
