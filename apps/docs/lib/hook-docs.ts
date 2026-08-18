@@ -80,7 +80,7 @@ export function ResponsiveLabel() {
       { name: "boolean", description: "Whether the supplied media query currently matches." },
     ],
     notes: [
-      "The optional second argument controls the value used before the client effect runs.",
+      "The optional second argument is the value used for server rendering and hydration; the first client render already reflects the live media query.",
       "The hook responds when the media query begins or stops matching.",
       "Use the same breakpoint string in CSS and JavaScript when behavior and layout must change together.",
     ],
