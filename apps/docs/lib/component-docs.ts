@@ -20,6 +20,7 @@ export default function RootLayout({ children }) {
 }`,
     anatomy: ["PWAProvider", "useVisualViewport", "CSS variables"],
     notes: ["Mount once near the application root.", "PWAProvider publishes measurements but does not lock document scrolling; full-screen applications should use the opt-in root containment described in the app layout guide.", "Publishes --pwa-viewport-height, --pwa-visual-viewport-height, and --pwa-keyboard-height.", "Sets data-pwa-keyboard-open on the document root while a likely software keyboard is occluding the viewport.", "Keyboard detection is a layout hint and intentionally ignores pinch zoom."],
+    platformCaveats: ["Software-keyboard detection is a heuristic built on the Visual Viewport API. It cannot perfectly separate the keyboard from other viewport occlusions and is intentionally suppressed during pinch-zoom.", "On Android the reported keyboard height depends on the page's `interactive-widget` policy. With `overlays-content` the visual viewport does not shrink, so the keyboard variables stay at 0. See Platform limitations."],
     accessibility: "The provider renders no wrapper or interactive UI. It preserves pinch zoom and only changes layout variables used by your application.",
   },
   {
@@ -52,6 +53,7 @@ export function Screen() {
 }`,
     anatomy: ["AppShell", "AppShell.Header", "AppShell.Main", "AppShell.Footer"],
     notes: ["Header and Footer are placement regions, not styled navigation components.", "The usual composition is NavigationBar inside Header and TabBar inside Footer.", "For a full-screen application, opt into root containment so Main is the only vertical scroll region.", "Header and Footer apply the relevant safe-area inset; do not wrap their children in another SafeArea for the same edge.", "Main owns scrolling and overscroll containment.", "Footer keyboardBehavior can leave chrome in place or hide it while the software keyboard is open when PWAProvider is mounted."],
+    platformCaveats: ["`--pwa-viewport-height` tracks the visual viewport and shrinks when the software keyboard opens. Anchor chrome with the safe-area padding this component applies rather than `100vh`.", "Safe-area insets are only non-zero with `viewport-fit=cover` on edge-to-edge or installed surfaces. In an ordinary browser tab they resolve to 0."],
     accessibility: "Uses semantic header, main, and footer elements. Provide accessible navigation landmarks inside the chrome regions.",
   },
   {
@@ -71,6 +73,7 @@ export function Footer() {
 }`,
     anatomy: ["SafeArea"],
     notes: ["Supported edges: top, right, bottom, and left.", "Uses env(safe-area-inset-*) with zero-value fallbacks.", "Combine it with your own spacing inside a nested child when padding must be additive."],
+    platformCaveats: ["`env(safe-area-inset-*)` only reports non-zero values when the page sets `viewport-fit=cover` on a device with display cutouts or an installed/edge-to-edge surface. Everywhere else these resolve to 0 by design."],
     accessibility: "SafeArea is a layout-only div and does not alter the semantics of its children.",
   },
   {
@@ -96,6 +99,7 @@ export function Filters() {
 }`,
     anatomy: ["BottomSheet", "Trigger", "Content", "Header", "Title", "Description", "Footer", "Close"],
     notes: ["Supports controlled and uncontrolled open state.", "Snap points and swipe dismissal are inherited from Base UI Drawer.", "VirtualKeyboardProvider keeps form controls visible above software keyboards."],
+    platformCaveats: ["Gesture physics, snap points, and focus management come from Base UI's Drawer, which is pre-1.0. Pin your `@base-ui/react` version so a minor release cannot change drag or snap behavior underneath you.", "Provide a visible Close, or rely on Escape and backdrop dismissal, for users who cannot perform the drag gesture. The drag handle is decorative and is not operable by assistive technology."],
     accessibility: "Always include a Title. Include a Description when it adds meaningful context. Escape, focus trapping, restoration, and backdrop dismissal are provided by Base UI.",
   },
   {
@@ -121,6 +125,7 @@ export function EditProfile() {
 }`,
     anatomy: ["ResponsiveDialog", "Trigger", "Content", "Header", "Title", "Description", "Close"],
     notes: ["Default breakpoint is max-width: 47.999rem.", "The open state remains valid when the presentation changes.", "Lift local form state above Content when it must survive a breakpoint remount."],
+    platformCaveats: ["Crossing the breakpoint while open swaps the dialog and sheet implementations, which remounts the content subtree and resets uncontrolled state and focus. Lift any state you must preserve above `Content`.", "The mobile/desktop choice is resolved on the client, so server-rendered markup assumes the desktop dialog until hydration."],
     accessibility: "Both presentations use Base UI primitives. Only one dialog or drawer root is mounted at a time, avoiding duplicate focus traps.",
   },
   {
@@ -147,6 +152,7 @@ export function Actions() {
 }`,
     anatomy: ["ActionSheet", "Trigger", "Content", "Header", "Group", "Item", "Cancel"],
     notes: ["Items close the sheet by default.", "Set closeOnSelect={false} for actions that keep the sheet open.", "Groups, items, and Cancel provide deliberate 56px touch targets."],
+    platformCaveats: ["Built on Base UI's pre-1.0 Drawer (see BottomSheet). The web cannot access the native iOS action-sheet chrome or its system haptics."],
     accessibility: "Use specific action labels and reserve the destructive variant for irreversible or difficult-to-recover operations.",
   },
   {
@@ -174,6 +180,7 @@ export function Header() {
 }`,
     anatomy: ["NavigationBar", "Leading", "Title", "Trailing", "BackButton"],
     notes: ["Inside AppShell, place NavigationBar within AppShell.Header.", "Use BackButton with onClick for history-based navigation or render with your router's Link when the destination is known.", "The render prop follows the Base UI composition convention and preserves the router link's handlers, classes, and ref.", "Long titles truncate without displacing adjacent controls."],
+    platformCaveats: ["Back navigation is application-controlled. The OS/browser back gesture and the platform back stack are not managed by this component."],
     accessibility: "The root is a named navigation landmark. BackButton supplies a default Back label when it renders only the built-in icon; use a more specific aria-label when context helps.",
   },
   {
@@ -203,6 +210,7 @@ export function Navigation() {
 }`,
     anatomy: ["TabBar", "TabBar.Item"],
     notes: ["Inside AppShell, place TabBar within AppShell.Footer.", "Use render={<Link href=\"/search\" />} with Next.js, or render={<NavLink to=\"/search\" />} with React Router. TanStack Router follows the same render pattern.", "Items render buttons by default. href remains available for external links and no-router apps, but performs a document navigation.", "Active items expose aria-current=page. Use three to five stable application destinations."],
+    platformCaveats: ["This is web navigation chrome, not native tabs. It does not integrate with OS gesture navigation, and in an installed iOS PWA the home-indicator area must be handled with the footer safe-area inset."],
     accessibility: "Every item requires a visible label. Supply badgeLabel whenever badge conveys information so assistive technology hears what the value means.",
   },
   {
@@ -223,6 +231,7 @@ export function Composer() {
 }`,
     anatomy: ["KeyboardAvoidingView", "useVisualViewport"],
     notes: ["Behaviors: padding, height, and position.", "Exposes --pwa-keyboard-height and --pwa-visual-viewport-height.", "Inside BottomSheet, prefer Base UI's dedicated keyboard provider."],
+    platformCaveats: ["Keyboard avoidance depends on the Visual Viewport API and the page's `interactive-widget` policy. With Android's `overlays-content` the viewport does not resize, so `--pwa-keyboard-height` stays 0 and this view does not move. Use `resizes-content` or `resizes-visual` if you depend on it. See Platform limitations.", "On iOS Safari the OS also auto-scrolls the focused field, which can compound with `behavior=\"position\"`. Test the `padding` and `height` behaviors on a real device."],
     accessibility: "The component is layout-only. Preserve normal focus order and label all form controls inside it.",
   },
   {
@@ -254,6 +263,7 @@ export function AppInstallPrompt() {
 }`,
     anatomy: ["InstallPrompt", "title", "description", "install action", "optional dismiss action"],
     notes: ["Render only after useInstallPrompt reports available.", "The component never requests installation during render or without a user action.", "Use product-specific copy that explains the value of installing."],
+    platformCaveats: ["iOS Safari never fires `beforeinstallprompt`, so the programmatic install flow is unavailable there — render manual \"Share → Add to Home Screen\" guidance for iOS. Firefox does not support programmatic PWA installation."],
     accessibility: "The prompt is a labelled section with visible text and touch-sized native buttons. Browser installation remains tied to an explicit user action.",
   },
   {
@@ -283,6 +293,7 @@ export function AppUpdatePrompt() {
 }`,
     anatomy: ["UpdatePrompt", "title", "status description", "update action", "optional defer action"],
     notes: ["Use a persistent inline notice because the update remains available until activated.", "reload is opt-in so the application can protect unsaved work.", "The service worker must respond to the SKIP_WAITING message."],
+    platformCaveats: ["Requires a registered service worker that honors the `SKIP_WAITING` message. iOS PWAs can evict storage and constrain background work, so an update may not apply until the next foreground launch."],
     accessibility: "Status changes are announced politely, actions remain available to keyboard and touch users, and the notice does not steal focus.",
   },
   {
@@ -305,6 +316,7 @@ export function ConnectivityBanner() {
 }`,
     anatomy: ["OfflineBanner", "status indicator", "message", "optional action"],
     notes: ["Place it in normal document flow so it pushes content rather than covering it.", "Do not disable important actions solely because navigator.onLine reports offline.", "Use an action slot for a contextual retry or troubleshooting link when appropriate."],
+    platformCaveats: ["`navigator.onLine` is a hint, not proof of connectivity: it can report online with no working internet and vice versa. Never gate critical actions on it; always handle failed requests directly."],
     accessibility: "The message uses a polite status live region, includes visible text rather than color alone, and does not interrupt the current task.",
   },
 ] as const;

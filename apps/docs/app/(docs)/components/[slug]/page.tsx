@@ -70,6 +70,13 @@ export default async function ComponentPage({ params }: PageProps<"/components/[
         <ul>{component.notes.map((note) => <li key={note}>{note}</li>)}</ul>
       </section>
 
+      <section className="docs-section" id="platform-limitations">
+        <h2>Platform limitations</h2>
+        <div className="docs-callout docs-callout--warning" role="note">
+          <ul>{component.platformCaveats.map((caveat) => <li key={caveat}>{caveat}</li>)}</ul>
+        </div>
+      </section>
+
       <section className="docs-section" id="accessibility">
         <h2>Accessibility</h2>
         <p>{component.accessibility}</p>
