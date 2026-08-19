@@ -297,6 +297,7 @@ export function StackNavigator({
         data-slot="stack-navigator"
         data-depth={depth}
         data-back-gesture-state="idle"
+        data-transitioning={renderState.enteringKey || renderState.exitingKey ? "" : undefined}
         className={cn("relative isolate h-full min-h-0 overflow-hidden bg-background", className)}
         style={{
           "--pwa-stack-transition-duration": `${fallbackDuration}ms`,

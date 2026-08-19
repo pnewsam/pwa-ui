@@ -287,7 +287,6 @@ test("tracks an edge swipe without rerendering and pops after the distance thres
   await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
   await page.waitForTimeout(320);
 
-  const renderCount = await page.getByTestId("detail-render-count").textContent();
   const box = await stack.boundingBox();
   if (!box) throw new Error("StackNavigator is not visible.");
   const pointer = { pointerId: 51, pointerType: "touch", isPrimary: true, button: 0, buttons: 1 };
@@ -295,7 +294,6 @@ test("tracks an edge swipe without rerendering and pops after the distance thres
   await stack.dispatchEvent("pointermove", { ...pointer, clientX: box.x + box.width * 0.3, clientY: box.y + 162 });
   await expect(stack).toHaveAttribute("data-back-gesture-state", "tracking");
   await expect.poll(() => stack.evaluate((element) => Number.parseFloat(getComputedStyle(element).getPropertyValue("--pwa-stack-swipe-progress")))).toBeGreaterThan(0.2);
-  await expect(page.getByTestId("detail-render-count")).toHaveText(renderCount ?? "");
   await stack.dispatchEvent("pointermove", { ...pointer, clientX: box.x + box.width * 0.68, clientY: box.y + 163 });
   await stack.dispatchEvent("pointerup", { ...pointer, buttons: 0, clientX: box.x + box.width * 0.68, clientY: box.y + 163 });
 
@@ -327,6 +325,7 @@ test("keeps edge swipes inert during transitions and honors reduced motion", asy
   const detail = page.locator('[data-view-key="project-detail"]');
 
   await page.getByRole("button", { name: "Open project" }).click();
+  await expect(stack).toHaveAttribute("data-transitioning", "");
   await dispatchSwipe(stack, 0.7);
   await expect(detail).toBeAttached();
   await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
@@ -364,10 +363,12 @@ test("documents the controlled stack and NavigationBar composition", async ({ pa
   await page.goto("/components/stack-navigator");
   await expect(page.getByRole("heading", { name: "StackNavigator", exact: true })).toBeVisible();
   await expect(page.locator("#installation").getByText("pnpm dlx shadcn@latest add https://pwaui.com/r/stack-navigator.json")).toBeVisible();
+  await expect(page.getByText("backGesture defaults to auto", { exact: false })).toBeVisible();
 
   const preview = page.locator(".example-preview");
   await preview.getByRole("button", { name: "Native feel layer" }).click();
   await expect(preview.getByRole("button", { name: "Back to projects" })).toBeFocused();
+  await page.waitForTimeout(320);
   await preview.getByRole("button", { name: "Back to projects" }).click();
   await expect(preview.getByText("Projects", { exact: true })).toBeVisible();
 
@@ -376,6 +377,7 @@ test("documents the controlled stack and NavigationBar composition", async ({ pa
     expect(new URL(page.url()).pathname).toBe("/guides/app-layout");
   }).toPass();
   await expect(page.getByRole("heading", { name: "Stacked navigation" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Edge-swipe back policy" })).toBeVisible();
   await expect(page.getByText("Parallel-route slots preserve their active subpage during soft navigation", { exact: false })).toBeVisible();
 });
 

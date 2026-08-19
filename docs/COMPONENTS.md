@@ -67,6 +67,7 @@ Purpose: animate a consumer-controlled stack of mounted application views withou
 ```tsx
 <AppShell.Main className="overflow-hidden">
   <StackNavigator
+    backGesture="auto"
     entries={entries}
     onPop={(topKey) => removeEntry(topKey)}
     onDepthChange={(depth) => setTabBarVisible(depth === 1)}
@@ -75,6 +76,8 @@ Purpose: animate a consumer-controlled stack of mounted application views withou
 ```
 
 Append an entry to push and remove the final entry to pop. Covered views remain mounted, inert, and hidden from the accessibility tree, so their DOM state and scroll survive. A detail entry can call `useStackNavigator().pop` from `NavigationBar.BackButton`; that request invokes the controlled `onPop` callback. Same-document View Transitions enhance supported browsers, while the component retains a transform/opacity fallback and an instant reduced-motion path. Router integrations must derive `entries` from router state and send `onPop` back through the router—the component itself never reads or writes a URL.
+
+`backGesture="auto"` enables the left-edge swipe only in standalone or fullscreen display mode, avoiding Safari's browser-history gesture by default. `"on"` and `"off"` are explicit overrides. The edge width and completion threshold are configurable; tracking exposes `--pwa-stack-swipe-progress`, `data-back-gesture-state`, and `onBackGestureStateChange` for custom chrome. Vertical-first movement is not captured, reduced motion swaps without sliding follow-through, and Android system Back remains the router's responsibility. Right-edge/RTL mirroring is not yet implemented.
 
 ## SafeArea
 

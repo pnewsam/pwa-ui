@@ -206,6 +206,14 @@ export default function AppLayoutGuidePage() {
         <p>Keep route ownership in Next.js. A client wrapper can receive the list and optional detail slot as React nodes, map the rendered route state to entries, and call <code>router.back()</code> from <code>onPop</code>. Links or <code>router.push()</code> still perform navigation; StackNavigator only presents the result.</p>
         <CodeBlock code={nextRoutedStack} language="tsx" label="Client route adapter" />
         <p>Parallel-route slots preserve their active subpage during soft navigation, but a hard reload needs a matching <code>default.tsx</code> fallback. Intercepted routes are useful when the routed detail should overlay its originating context; they are not required for a normal state-driven stack. In either pattern, pass the router-rendered nodes into StackNavigator rather than adding pathname or history logic to the registry component.</p>
+        <h3>Edge-swipe back policy</h3>
+        <p><code>backGesture=&quot;auto&quot;</code> is the default and the recommended starting point. It enables the leading-edge gesture only when the app is running in <code>standalone</code> or <code>fullscreen</code> display mode. In an ordinary Safari tab, the browser already owns that edge for history navigation, so the component stays out of the way.</p>
+        <ul>
+          <li>Use <code>on</code> only for a kiosk, embedded surface, or other environment where you have verified the edge is unclaimed.</li>
+          <li>Use <code>off</code> for surfaces with a horizontal edge interaction, an RTL right-edge requirement, or any unresolved OS gesture conflict.</li>
+          <li>Android system Back remains router territory. Update the route or controlled entries from the platform event; do not synthesize a pointer swipe.</li>
+        </ul>
+        <p>The gesture begins inside a 24-pixel edge zone after the left safe-area inset, waits for horizontal intent, and leaves vertical-first movement alone. A distance past half the stack width or a deliberate velocity flick commits the same controlled <code>onPop</code> request as the back button. Use <code>onBackGestureStateChange</code> or <code>data-back-gesture-state</code> when custom chrome should react during tracking.</p>
       </section>
 
       <section className="docs-section" id="common-mistakes">

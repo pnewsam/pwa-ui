@@ -174,7 +174,7 @@ function StackNavigatorDemo() {
 
   return (
     <DemoPhone className="demo-phone-tall">
-      <StackNavigator entries={entries} onPop={() => setDetailOpen(false)} />
+      <StackNavigator backGesture="auto" entries={entries} onPop={() => setDetailOpen(false)} />
     </DemoPhone>
   );
 }

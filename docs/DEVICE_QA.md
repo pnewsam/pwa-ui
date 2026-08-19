@@ -60,6 +60,12 @@ Run this checklist against a production build. Record the device, OS/browser ver
 - Repeat with Reduce Motion enabled: the view changes without sliding and focus/state behavior remains identical.
 - Rotate during or immediately after push/pop; the active view fills the recovered viewport and no stale transition layer remains.
 - Verify both the native View Transitions path on a current browser and the CSS fallback on an older or disabled engine.
+- In iOS Safari browser mode, confirm `backGesture="auto"` remains disabled and the browser's own history swipe behaves normally without double navigation.
+- Install the same app to the iOS Home Screen, push a detail, and confirm a left-edge drag follows the finger 1:1, reveals the prior view with parallax and dimming, then commits past half width or springs back below it.
+- On installed Android with both gesture and three-button navigation configurations, confirm the custom edge swipe does not compete with the OS and the system Back path is handled separately by the host router.
+- Begin vertically inside the edge zone and horizontally outside it; list scrolling and horizontal scrollers remain native and no stack gesture state is entered.
+- Interrupt an active drag with an OS gesture, app backgrounding, rotation, or `pointercancel`; the detail returns to a stable position and the next attempt still works.
+- Repeat the edge swipe with Reduce Motion enabled; it still pops without sliding follow-through, duplicate transitions, or focus loss.
 
 ## Software keyboard
 
