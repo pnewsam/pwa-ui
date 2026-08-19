@@ -133,6 +133,28 @@ test("offers the manual install path only where the browser has no install promp
   expect(results.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
 });
 
+test("arms pull-to-refresh at the top and refreshes exactly once", async ({ page }) => {
+  await page.goto("/test-fixtures/pull-to-refresh");
+  const region = page.getByTestId("pull-region");
+  await page.getByTestId("hydration-ready").click();
+  await expect(region).toHaveAttribute("data-ready", "true");
+
+  await region.dispatchEvent("pointerdown", { pointerId: 1, pointerType: "touch", clientX: 30, clientY: 40 });
+  await region.dispatchEvent("pointermove", { pointerId: 1, pointerType: "touch", clientX: 30, clientY: 210 });
+  await expect(region).toHaveAttribute("data-state", "armed");
+  await region.dispatchEvent("pointerup", { pointerId: 1, pointerType: "touch", clientX: 30, clientY: 210 });
+
+  await expect(region).toHaveAttribute("data-state", "refreshing");
+  await expect(page.getByTestId("refresh-count")).toHaveText("Refreshes: 1");
+  await expect(region).toHaveAttribute("data-state", "idle");
+
+  await region.evaluate((element) => { element.scrollTop = 80; });
+  await region.dispatchEvent("pointerdown", { pointerId: 2, pointerType: "touch", clientX: 30, clientY: 40 });
+  await region.dispatchEvent("pointermove", { pointerId: 2, pointerType: "touch", clientX: 30, clientY: 210 });
+  await region.dispatchEvent("pointerup", { pointerId: 2, pointerType: "touch", clientX: 30, clientY: 210 });
+  await expect(page.getByTestId("refresh-count")).toHaveText("Refreshes: 1");
+});
+
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
   await page.goto("/components/bottom-sheet");
   await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();

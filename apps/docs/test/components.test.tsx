@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -10,6 +10,7 @@ import { InstallPrompt } from "../../../registry/components/install-prompt/insta
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
+import { PullToRefresh } from "../../../registry/components/pull-to-refresh/pull-to-refresh";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
@@ -208,6 +209,42 @@ describe("PWA UI components", () => {
     const banner = within(view.container);
     expect(banner.getByRole("status")).toHaveTextContent("You're offline");
     expect(banner.getByRole("button", { name: "Retry" })).toBeVisible();
+  });
+
+  it("refreshes exactly once after an armed pull and retracts when it settles", async () => {
+    let settleRefresh!: () => void;
+    const onRefresh = vi.fn(() => new Promise<void>((resolve) => {
+      settleRefresh = resolve;
+    }));
+    const view = render(<PullToRefresh data-testid="pull-region" onRefresh={onRefresh}>Content</PullToRefresh>);
+
+    const region = within(view.container).getByTestId("pull-region");
+    region.scrollTop = 0;
+    fireEvent.pointerDown(region, { pointerId: 1, pointerType: "touch", clientX: 20, clientY: 20 });
+    fireEvent.pointerMove(region, { pointerId: 1, pointerType: "touch", clientX: 20, clientY: 180 });
+    expect(region).toHaveAttribute("data-state", "armed");
+    fireEvent.pointerUp(region, { pointerId: 1, pointerType: "touch", clientX: 20, clientY: 180 });
+
+    expect(onRefresh).toHaveBeenCalledOnce();
+    expect(region).toHaveAttribute("data-state", "refreshing");
+    settleRefresh();
+    await waitFor(() => expect(region).toHaveAttribute("data-state", "idle"));
+    expect(region.style.getPropertyValue("--pwa-pull-distance")).toBe("0px");
+  });
+
+  it("leaves refresh and native scrolling untouched when a pull is not armed", () => {
+    const onRefresh = vi.fn();
+    const view = render(<PullToRefresh data-testid="pull-region" onRefresh={onRefresh}>Content</PullToRefresh>);
+
+    const region = within(view.container).getByTestId("pull-region");
+    region.scrollTop = 40;
+    fireEvent.pointerDown(region, { pointerId: 2, pointerType: "touch", clientX: 20, clientY: 20 });
+    const moved = fireEvent.pointerMove(region, { pointerId: 2, pointerType: "touch", clientX: 20, clientY: 160 });
+    fireEvent.pointerUp(region, { pointerId: 2, pointerType: "touch", clientX: 20, clientY: 160 });
+
+    expect(moved).toBe(true);
+    expect(onRefresh).not.toHaveBeenCalled();
+    expect(region).toHaveAttribute("data-state", "idle");
   });
 
   it("renders the responsive dialog in its mobile presentation below the breakpoint", () => {

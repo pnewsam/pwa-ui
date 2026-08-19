@@ -185,6 +185,22 @@
       "type": "registry:component"
     },
     {
+      "name": "pull-to-refresh",
+      "title": "Pull to Refresh",
+      "description": "A touch-driven refresh viewport with resistant pull feedback and accessible status.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/pull-to-refresh/pull-to-refresh.tsx",
+          "type": "registry:component",
+          "target": "components/ui/pull-to-refresh.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
       "name": "navigation-bar",
       "title": "Navigation Bar",
       "description": "Router-composable top application chrome with a truly centered title.",

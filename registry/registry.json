@@ -96,6 +96,14 @@
       "files": [{ "path": "components/app-shell/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" }]
     },
     {
+      "name": "pull-to-refresh",
+      "type": "registry:component",
+      "title": "Pull to Refresh",
+      "description": "A touch-driven refresh viewport with resistant pull feedback and accessible status.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "components/pull-to-refresh/pull-to-refresh.tsx", "type": "registry:component", "target": "components/ui/pull-to-refresh.tsx" }]
+    },
+    {
       "name": "navigation-bar",
       "type": "registry:component",
       "title": "Navigation Bar",
