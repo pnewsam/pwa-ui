@@ -67,7 +67,7 @@ The v0.1 beta covers mobile *chrome* — safe areas, viewport and keyboard handl
 Listed in intended execution order (physics first to de-risk the pipeline, stack next, showcase last):
 
 - [x] [001 `pull-to-refresh`](../features/001-pull-to-refresh.md) — touch-driven refresh control for `AppShell.Main` and generic scroll containers.
-- [ ] [002 `scroll-restoration`](../features/002-scroll-restoration.md) — `useScrollRestoration` hook with per-key persistence and a documented TabBar composition.
+- [x] [002 `scroll-restoration`](../features/002-scroll-restoration.md) — `useScrollRestoration` hook with per-key persistence and a documented TabBar composition.
 - [ ] [003 `use-haptics`](../features/003-use-haptics.md) — capability-detected haptic feedback hook with honest platform caveats.
 - [ ] [004 `stack-navigator`](../features/004-stack-navigator.md) — router-agnostic stacked view container with View Transitions push/pop, fallback transitions, and focus management.
 - [ ] [005 `stack-back-gesture`](../features/005-stack-back-gesture.md) — Pointer Events edge-swipe back with gesture-tracked progress, layered on `stack-navigator` (depends on 004).
