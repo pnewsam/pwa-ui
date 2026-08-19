@@ -12,6 +12,7 @@ test("renders the documentation index with component and hook links", async ({ p
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Build mobile web apps/ })).toBeVisible();
   if (isMobile) await page.getByRole("button", { name: "Open navigation" }).click();
+  await expect(page.getByRole("link", { name: "App layout", exact: true })).toBeVisible();
   for (const name of ["PWAProvider", "AppShell", "SafeArea", "BottomSheet", "ResponsiveDialog", "ActionSheet", "NavigationBar", "TabBar", "KeyboardAvoidingView", "InstallPrompt", "UpdatePrompt", "OfflineBanner"]) {
     await expect(page.getByRole("link", { name, exact: true }).first()).toBeVisible();
   }
@@ -20,9 +21,63 @@ test("renders the documentation index with component and hook links", async ({ p
   }
 });
 
-test("has no automatically detectable accessibility violations on core surfaces", async ({ page }) => {
-  for (const path of ["/", "/components/tab-bar", "/hooks/use-display-mode", "/resources/browser-support"]) {
+test("keeps application chrome anchored while AppShell.Main scrolls", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/test-fixtures/app-shell");
+
+  await expect(page.locator("html")).toHaveAttribute("data-pwa-app-root", "");
+
+  const mount = page.getByTestId("app-mount");
+  const main = page.getByTestId("app-scroll-region");
+  const tabBar = page.getByRole("navigation", { name: "Primary" });
+
+  const containment = await page.evaluate(() => {
+    const mountElement = document.querySelector<HTMLElement>("[data-pwa-app-mount]");
+    return {
+      htmlOverflow: getComputedStyle(document.documentElement).overflow,
+      bodyOverflow: getComputedStyle(document.body).overflow,
+      mountOverflow: mountElement ? getComputedStyle(mountElement).overflow : null,
+    };
+  });
+
+  expect(containment).toEqual({ htmlOverflow: "hidden", bodyOverflow: "hidden", mountOverflow: "hidden" });
+  await expect(mount).toHaveCSS("height", "844px");
+
+  const initialTabBarBox = await tabBar.boundingBox();
+  expect(initialTabBarBox).not.toBeNull();
+
+  const scrollState = await main.evaluate((element) => {
+    element.scrollTop = 500;
+    return { clientHeight: element.clientHeight, scrollHeight: element.scrollHeight, scrollTop: element.scrollTop };
+  });
+
+  expect(scrollState.scrollHeight).toBeGreaterThan(scrollState.clientHeight);
+  expect(scrollState.scrollTop).toBeGreaterThan(0);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+  const finalTabBarBox = await tabBar.boundingBox();
+  expect(finalTabBarBox?.y).toBe(initialTabBarBox?.y);
+});
+
+test("clips every phone example to its simulated device corners", async ({ page }) => {
+  for (const path of ["/components/app-shell", "/components/navigation-bar", "/components/tab-bar", "/components/keyboard-avoiding-view"]) {
     await page.goto(path);
+
+    const frame = page.locator(".demo-phone");
+    const viewport = frame.locator(".demo-phone-viewport");
+
+    await expect(frame).toHaveCSS("border-radius", "25px");
+    await expect(viewport).toHaveCSS("border-radius", "24px");
+    await expect(viewport).toHaveCSS("overflow", "hidden");
+  }
+});
+
+test("has no automatically detectable accessibility violations on core surfaces", async ({ page }) => {
+  for (const path of ["/", "/guides/app-layout", "/components/tab-bar", "/hooks/use-display-mode", "/resources/browser-support"]) {
+    await expect(async () => {
+      await page.goto(path);
+      expect(new URL(page.url()).pathname).toBe(path);
+    }).toPass();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
   }
@@ -54,6 +109,28 @@ test("documents the priority-one install prompt composition", async ({ page }) =
   await installation.getByRole("button", { name: "Manual", exact: true }).click();
   await installation.getByRole("button", { name: "hooks/use-install-prompt.ts", exact: true }).click();
   await expect(installation.getByRole("button", { name: "Copy hooks/use-install-prompt.ts" })).toBeVisible();
+});
+
+test("offers the manual install path only where the browser has no install prompt", async ({ page }) => {
+  await page.goto("/test-fixtures/install-prompt");
+
+  const onIOS = await page.evaluate(() => /iPad|iPhone|iPod/.test(navigator.userAgent));
+  const promptType = page.getByTestId("prompt-type");
+  const manualPrompt = page.getByRole("region", { name: "Install Field Notes" });
+
+  if (!onIOS) {
+    await expect(promptType).not.toHaveText("ios-manual");
+    await expect(page.getByRole("list")).toHaveCount(0);
+    return;
+  }
+
+  await expect(promptType).toHaveText("ios-manual");
+  await expect(manualPrompt).toHaveAttribute("data-mode", "manual");
+  await expect(manualPrompt.getByRole("listitem")).toHaveCount(3);
+  await expect(manualPrompt.getByRole("button")).toHaveCount(0);
+
+  const results = await new AxeBuilder({ page }).include('[data-slot="install-prompt"]').analyze();
+  expect(results.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
 });
 
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {

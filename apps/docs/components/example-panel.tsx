@@ -34,9 +34,17 @@ function DemoButton({ children }: { children: React.ReactNode }) {
   return <span className="demo-button">{children}</span>;
 }
 
+function DemoPhone({ children, className }: { children: React.ReactNode; className: string }) {
+  return (
+    <div className={`demo-phone ${className}`}>
+      <div className="demo-phone-viewport">{children}</div>
+    </div>
+  );
+}
+
 function AppShellDemo() {
   return (
-    <div className="demo-phone demo-phone-tall">
+    <DemoPhone className="demo-phone-tall">
       <AppShell className="demo-app-shell">
         <AppShell.Header>
           <NavigationBar>
@@ -59,7 +67,7 @@ function AppShellDemo() {
           </TabBar>
         </AppShell.Footer>
       </AppShell>
-    </div>
+    </DemoPhone>
   );
 }
 
@@ -158,14 +166,14 @@ function ActionSheetDemo() {
 
 function NavigationBarDemo() {
   return (
-    <div className="demo-phone demo-phone-short">
+    <DemoPhone className="demo-phone-short">
       <NavigationBar>
         <NavigationBar.Leading><NavigationBar.BackButton aria-label="Back"><ArrowLeft size={18} /></NavigationBar.BackButton></NavigationBar.Leading>
         <NavigationBar.Title>Project settings</NavigationBar.Title>
         <NavigationBar.Trailing><button className="demo-text-button">Done</button></NavigationBar.Trailing>
       </NavigationBar>
       <div className="demo-settings-body"><div /><div /><div /></div>
-    </div>
+    </DemoPhone>
   );
 }
 
@@ -178,16 +186,16 @@ function TabBarDemo() {
     { label: "Profile", icon: <User size={20} /> },
   ];
   return (
-    <div className="demo-phone demo-phone-short tab-bar-demo-phone">
+    <DemoPhone className="demo-phone-short tab-bar-demo-phone">
       <div className="tab-demo-content"><small>Selected destination</small><strong>{active}</strong></div>
       <TabBar>{items.map((item) => <TabBar.Item key={item.label} icon={item.icon} label={item.label} badge={item.badge} badgeLabel={item.badgeLabel} active={active === item.label} onClick={() => setActive(item.label)} />)}</TabBar>
-    </div>
+    </DemoPhone>
   );
 }
 
 function KeyboardAvoidingViewDemo() {
   return (
-    <div className="demo-phone demo-phone-tall composer-demo-phone">
+    <DemoPhone className="demo-phone-tall composer-demo-phone">
       <KeyboardAvoidingView className="composer-demo">
         <div className="composer-thread">
           <span className="message received">Are the mobile components ready?</span>
@@ -198,7 +206,7 @@ function KeyboardAvoidingViewDemo() {
           <button aria-label="Send message"><Send size={16} /></button>
         </div>
       </KeyboardAvoidingView>
-    </div>
+    </DemoPhone>
   );
 }
 

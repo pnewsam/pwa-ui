@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../../registry/styles/pwa.css";
 @source "../../../registry";
 
 :root {
@@ -102,7 +103,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 
 .docs-section { padding-top: 52px; scroll-margin-top: calc(var(--docs-header-height) + 22px); }
 .docs-section h2 { margin: 0 0 17px; font-size: 24px; font-weight: 570; letter-spacing: -.024em; }
+.docs-section h3 { margin: 30px 0 12px; font-size: 16px; font-weight: 590; letter-spacing: -.012em; }
 .docs-section > p { margin: 0 0 24px; color: #62626a; font-size: 15px; line-height: 1.75; }
+.docs-section > p code, .docs-section li code { border: 1px solid var(--docs-line); border-radius: 5px; background: #f5f5f6; padding: 2px 5px; color: #3f3f46; font: 11px var(--font-mono); }
+.docs-inline-link { color: #27272a; font-weight: 580; text-decoration: underline; text-decoration-color: #d4d4d8; text-underline-offset: 4px; }
+.docs-inline-link:hover { text-decoration-color: #52525b; }
 .docs-section ul { margin: 0; padding-left: 21px; color: #3f3f46; font-size: 14px; line-height: 1.75; }
 .docs-section li + li { margin-top: 8px; }
 .docs-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 30px; border: 1px solid var(--docs-line); border-radius: 10px; }
@@ -143,6 +148,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .docs-resource-links small { color: var(--docs-subtle); font-size: 12px; line-height: 1.5; }
 .docs-checklist .docs-section { padding-top: 46px; }
 .docs-callout { margin: 22px 0; border-left: 3px solid #a1a1aa; background: #f5f5f6; padding: 15px 17px; color: #52525b; font-size: 13px; line-height: 1.65; }
+.docs-callout--warning { border-left-color: #b45309; background: #fef6ec; color: #7c4a12; }
+.docs-callout--warning ul { margin: 0; padding-left: 19px; color: inherit; font-size: 13px; line-height: 1.65; }
+.docs-section .docs-callout--warning code { border-color: #f0d9b8; background: #fdf0dd; color: #7c4a12; }
 .docs-table-wrap { overflow-x: auto; border: 1px solid var(--docs-line); border-radius: 10px; background: white; }
 .docs-table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.5; }
 .docs-table th, .docs-table td { min-width: 118px; border-bottom: 1px solid var(--docs-line); padding: 12px 14px; text-align: left; vertical-align: top; }
@@ -213,7 +221,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .demo-button:active, .demo-primary-button:active { transform: scale(.97); }
 .demo-center { display: grid; max-width: 330px; justify-items: center; gap: 15px; text-align: center; }
 .demo-caption { margin: 0; color: #71717a; font-size: 12px; line-height: 1.55; }
-.demo-phone { width: min(100%, 345px); overflow: hidden; border: 1px solid #d4d4d8; border-radius: 25px; background: white; box-shadow: 0 14px 35px rgb(24 24 27 / 10%); }
+.demo-phone { width: min(100%, 345px); border: 1px solid #d4d4d8; border-radius: 25px; background: white; box-shadow: 0 14px 35px rgb(24 24 27 / 10%); }
+.demo-phone-viewport { height: 100%; overflow: hidden; border-radius: 24px; background: inherit; }
 .demo-phone-tall { height: 365px; }
 .demo-phone-short { height: 260px; }
 .demo-app-shell { --pwa-viewport-height: 100%; min-height: 0; }
@@ -259,7 +268,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .demo-settings-body div { height: 13px; border-radius: 99px; background: #f1f1f2; }
 .demo-settings-body div:nth-child(2) { width: 72%; }
 .demo-settings-body div:nth-child(3) { width: 86%; }
-.tab-bar-demo-phone { display: grid; grid-template-rows: 1fr auto; }
+.tab-bar-demo-phone .demo-phone-viewport { display: grid; grid-template-rows: 1fr auto; }
 .tab-demo-content { display: grid; place-content: center; justify-items: center; gap: 7px; background: #fafafa; }
 .tab-demo-content small { color: #71717a; font-size: 10px; }
 .tab-demo-content strong { font-size: 20px; letter-spacing: -.03em; }

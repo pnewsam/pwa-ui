@@ -49,6 +49,7 @@ const sections = [
     title: "Installation, updates, and lifecycle",
     items: [
       "The install prompt appears only after the browser reports availability and the user chooses to install.",
+      "On iOS, manual mode shows Share → Add to Home Screen steps that match the current Safari flow.",
       "Accepting, dismissing, and completing installation each leave the interface in the correct state.",
       "A waiting service worker displays one update prompt and never reloads without an explicit choice.",
       "Applying an update activates the waiting worker; deferring it keeps the current session usable.",

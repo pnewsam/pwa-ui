@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ActionSheet } from "../../../registry/components/action-sheet/action-sheet";
 import { AppShell } from "../../../registry/components/app-shell/app-shell";
@@ -10,10 +10,17 @@ import { InstallPrompt } from "../../../registry/components/install-prompt/insta
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
+import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
 import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
 import { CodeBlock } from "@/components/code-block";
+
+const defaultMatchMedia = window.matchMedia;
+
+afterEach(() => {
+  Object.defineProperty(window, "matchMedia", { configurable: true, value: defaultMatchMedia });
+});
 
 describe("PWA UI components", () => {
   it("syntax highlights code without changing its contents", () => {
@@ -180,6 +187,15 @@ describe("PWA UI components", () => {
     expect(onInstall).toHaveBeenCalledOnce();
   });
 
+  it("renders manual installation steps without an install action", () => {
+    const view = render(<InstallPrompt mode="manual" title="Install Field Notes" />);
+    const prompt = within(view.container);
+
+    expect(prompt.getByRole("region", { name: "Install Field Notes" })).toHaveAttribute("data-mode", "manual");
+    expect(prompt.getAllByRole("listitem")).toHaveLength(3);
+    expect(prompt.queryByRole("button")).not.toBeInTheDocument();
+  });
+
   it("announces an update without taking focus", () => {
     const view = render(<UpdatePrompt updating onUpdate={() => undefined} />);
     const prompt = within(view.container);
@@ -192,5 +208,42 @@ describe("PWA UI components", () => {
     const banner = within(view.container);
     expect(banner.getByRole("status")).toHaveTextContent("You're offline");
     expect(banner.getByRole("button", { name: "Retry" })).toBeVisible();
+  });
+
+  it("renders the responsive dialog in its mobile presentation below the breakpoint", () => {
+    const breakpoint = "(max-width: 47.999rem)";
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: (query: string) => ({
+        matches: query === breakpoint,
+        media: query,
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      }),
+    });
+
+    const { unmount } = render(
+      <ResponsiveDialog defaultOpen breakpoint={breakpoint}>
+        <ResponsiveDialog.Content>
+          <ResponsiveDialog.Title>Edit profile</ResponsiveDialog.Title>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog>,
+    );
+
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-slot", "bottom-sheet-content");
+    unmount();
+  });
+
+  it("renders the responsive dialog as a dialog above the breakpoint", () => {
+    const { unmount } = render(
+      <ResponsiveDialog defaultOpen>
+        <ResponsiveDialog.Content>
+          <ResponsiveDialog.Title>Edit profile</ResponsiveDialog.Title>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog>,
+    );
+
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-slot", "responsive-dialog-content");
+    unmount();
   });
 });

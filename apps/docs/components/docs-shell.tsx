@@ -41,6 +41,10 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
               <a className={pathname === "/" ? "is-active" : ""} href="/" onClick={() => setMenuOpen(false)}>Introduction</a>
             </div>
             <div className="docs-nav-group">
+              <p>Guides</p>
+              <a className={pathname === "/guides/app-layout" ? "is-active" : ""} href="/guides/app-layout" onClick={() => setMenuOpen(false)}>App layout</a>
+            </div>
+            <div className="docs-nav-group">
               <p>Components</p>
               {componentDocs.map((component) => {
                 const href = `/components/${component.slug}`;
@@ -57,6 +61,7 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
             <div className="docs-nav-group">
               <p>Resources</p>
               <a className={pathname === "/resources/browser-support" ? "is-active" : ""} href="/resources/browser-support" onClick={() => setMenuOpen(false)}>Browser support</a>
+              <a className={pathname === "/resources/platform-limitations" ? "is-active" : ""} href="/resources/platform-limitations" onClick={() => setMenuOpen(false)}>Platform limitations</a>
               <a className={pathname === "/resources/accessibility" ? "is-active" : ""} href="/resources/accessibility" onClick={() => setMenuOpen(false)}>Accessibility</a>
               <a className={pathname === "/resources/device-qa" ? "is-active" : ""} href="/resources/device-qa" onClick={() => setMenuOpen(false)}>Device QA</a>
               <a className={pathname === "/resources/registry" ? "is-active" : ""} href="/resources/registry" onClick={() => setMenuOpen(false)}>Registry source</a>
