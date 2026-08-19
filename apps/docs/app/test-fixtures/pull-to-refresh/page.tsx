@@ -9,7 +9,7 @@ export default function PullToRefreshTestFixture() {
   const [ready, setReady] = React.useState(false);
 
   async function refresh() {
-    await new Promise((resolve) => setTimeout(resolve, 120));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setRefreshes((count) => count + 1);
   }
 

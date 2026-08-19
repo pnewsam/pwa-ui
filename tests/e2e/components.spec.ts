@@ -134,6 +134,7 @@ test("offers the manual install path only where the browser has no install promp
 });
 
 test("arms pull-to-refresh at the top and refreshes exactly once", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/test-fixtures/pull-to-refresh");
   const region = page.getByTestId("pull-region");
   await page.getByTestId("hydration-ready").click();
@@ -145,6 +146,7 @@ test("arms pull-to-refresh at the top and refreshes exactly once", async ({ page
   await region.dispatchEvent("pointerup", { pointerId: 1, pointerType: "touch", clientX: 30, clientY: 210 });
 
   await expect(region).toHaveAttribute("data-state", "refreshing");
+  await expect(region.locator('[data-slot="pull-to-refresh-indicator"] [aria-hidden="true"]')).toHaveCSS("animation-name", "none");
   await expect(page.getByTestId("refresh-count")).toHaveText("Refreshes: 1");
   await expect(region).toHaveAttribute("data-state", "idle");
 

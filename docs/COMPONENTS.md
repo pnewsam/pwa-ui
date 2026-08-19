@@ -46,6 +46,20 @@ For a full-screen application, import `pwa-base` and opt into document containme
 
 Leave these attributes off ordinary document pages and embedded component examples that should retain normal page scrolling.
 
+## PullToRefresh
+
+Purpose: add a touch-driven refresh gesture to a list or feed without owning the data request.
+
+```tsx
+<AppShell.Main className="overflow-hidden">
+  <PullToRefresh className="h-full" onRefresh={refresh}>
+    <MessageList />
+  </PullToRefresh>
+</AppShell.Main>
+```
+
+`PullToRefresh` owns the vertical scroll viewport so its top-edge check has a single reliable boundary. When composing it with `AppShell.Main`, move scrolling to the component by setting Main to `overflow-hidden` and the refresh viewport to `h-full`. It exposes `data-state` and `--pwa-pull-distance` for styling, holds its status indicator while the returned promise is pending, and ignores mouse drags. Keep a conventional refresh action available for people who cannot perform the gesture.
+
 ## SafeArea
 
 Purpose: apply selected platform safe-area insets without device detection.

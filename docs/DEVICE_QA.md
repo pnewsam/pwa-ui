@@ -40,6 +40,17 @@ Run this checklist against a production build. Record the device, OS/browser ver
 - Resizing an open ResponsiveDialog preserves its open state and leaves only one focus trap.
 - ActionSheet groups are clear, destructive actions are distinguishable, and Cancel is easy to reach.
 
+## Pull to refresh
+
+- At the top of the list, a downward touch pull moves the content with increasing resistance and changes the indicator from Pull to Release.
+- Releasing beyond the threshold starts exactly one refresh, holds the indicator until the refresh settles, and retracts cleanly.
+- Releasing before the threshold does not refresh and returns the content to its resting position.
+- When the list is scrolled away from the top, vertical scrolling remains native: no content transform, blocked scroll, or accidental refresh occurs.
+- Horizontal intent, an interrupted pointer, and a second pointer do not trigger a refresh.
+- In browser mode, application and browser pull-to-refresh do not both activate; in standalone mode, the custom gesture still works.
+- Repeat the top-edge and scrolled-list cases on iOS Safari, iOS Home Screen, Android Chrome, and installed Android.
+- With Reduce Motion enabled, the state remains understandable without spinner rotation or nonessential movement.
+
 ## Software keyboard
 
 - Focus every field in the mobile form and BottomSheet form.

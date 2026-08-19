@@ -14,7 +14,7 @@
 
 - **ID:** 001
 - **Mode:** product
-- **Status:** in_progress
+- **Status:** complete
 - **Created:** 2026-08-19
 - **Last updated:** 2026-08-19
 - **Owner:** maintainer (pnewsam)
@@ -47,9 +47,9 @@ Installed apps refresh lists by pulling down; web apps usually cannot without hi
 - [x] A default spinner indicator ships in the component (consumers can replace it via an `indicator` prop or slot); it announces refresh state to assistive technology (`role="status"`, polite live region) and respects `prefers-reduced-motion` (opacity change instead of rotation/translation).
 - [x] Implementation uses Pointer Events with proper capture and cancellation (pointercancel, pointerleave), and applies `touch-action` such that vertical pan still works when the gesture is not armed. No user-agent sniffing.
 - [x] Registry entry added to `registry/registry.json`; `pnpm registry:build` produces `r/pull-to-refresh.json` and `scripts/test-registry-install.mjs` passes for the new item.
-- [ ] Docs entry in `apps/docs/lib/component-docs.ts` with a live example page, including a caveat section on platform behavior (browser-mode native pull-to-refresh, standalone mode, desktop no-op with mouse wheel).
+- [x] Docs entry in `apps/docs/lib/component-docs.ts` with a live example page, including a caveat section on platform behavior (browser-mode native pull-to-refresh, standalone mode, desktop no-op with mouse wheel).
 - [x] Unit coverage in `apps/docs/test/components.test.tsx` and a Playwright fixture at `apps/docs/app/test-fixtures/pull-to-refresh/page.tsx` exercised by `tests/e2e/components.spec.ts` (synthetic pointer sequence: arm, pull past threshold, release, assert single `onRefresh` and state transitions).
-- [ ] [DEVICE_QA.md](../DEVICE_QA.md) gains a pull-to-refresh section with concrete pass criteria (arming at top only, no scroll fight, standalone and browser mode).
+- [x] [DEVICE_QA.md](../DEVICE_QA.md) gains a pull-to-refresh section with concrete pass criteria (arming at top only, no scroll fight, standalone and browser mode).
 
 ### Should Have
 
@@ -93,19 +93,20 @@ Installed apps refresh lists by pulling down; web apps usually cannot without hi
 
 ## Definition of Done
 
-- [ ] All must-have acceptance criteria pass.
-- [ ] Required invariants and guardrails hold (native scroll untouched when not armed).
-- [ ] Verification evidence is recorded.
-- [ ] No unrelated changes are included.
-- [ ] Relevant documentation is updated (component docs page, COMPONENTS.md, DEVICE_QA.md).
+- [x] All must-have acceptance criteria pass.
+- [x] Required invariants and guardrails hold (native scroll untouched when not armed).
+- [x] Verification evidence is recorded.
+- [x] No unrelated changes are included.
+- [x] Relevant documentation is updated (component docs page, COMPONENTS.md, DEVICE_QA.md).
 
 ## Tasks
 
 - [x] Implement `PullToRefresh` (component, state machine, indicator, CSS variable/data-state contract) with unit tests and the Playwright fixture + e2e spec passing; include the registry entry and registry install verification in the same commit.
-- [ ] Add the docs page (`component-docs.ts` entry, live example, platform caveats), update `docs/COMPONENTS.md`, and add the DEVICE_QA.md section; run `pnpm check` and `pnpm test:e2e` and record evidence.
+- [x] Add the docs page (`component-docs.ts` entry, live example, platform caveats), update `docs/COMPONENTS.md`, and add the DEVICE_QA.md section; run `pnpm check` and `pnpm test:e2e` and record evidence.
 
 ## Progress
 
 | Criterion or task | Status | Evidence | Notes |
 | --- | --- | --- | --- |
 | Component, registry payload, tests, and clean install | complete | `pnpm --filter @pwa-ui/docs exec vitest run test/components.test.tsx`; `pnpm typecheck`; `pnpm registry:validate`; `pnpm registry:build`; focused Playwright spec in Chromium + WebKit; clean `@pwa-ui/pull-to-refresh` install | The component owns its scroll viewport so `scrollTop` arming and native-scroll pass-through have one reliable boundary. |
+| Documentation and feature validation | complete | `pnpm check`; `pnpm test:e2e` (28 passed); visual inspection of `/components/pull-to-refresh`; reduced-motion Playwright assertion in Chromium + WebKit | Docs explain AppShell composition, browser/standalone caveats, desktop behavior, and the remaining real-device QA gate. |

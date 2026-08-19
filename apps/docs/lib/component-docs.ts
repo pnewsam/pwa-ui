@@ -77,6 +77,32 @@ export function Footer() {
     accessibility: "SafeArea is a layout-only div and does not alter the semantics of its children.",
   },
   {
+    slug: "pull-to-refresh",
+    name: "PullToRefresh",
+    summary: "A resistant, touch-driven refresh viewport for list and feed screens.",
+    description: "PullToRefresh owns a scroll viewport, arms only at its top edge, and keeps the refresh indicator visible until your asynchronous refresh work settles.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/pull-to-refresh.json`,
+    usage: `"use client"
+
+import { PullToRefresh } from "@/components/ui/pull-to-refresh"
+
+export function Inbox() {
+  async function refresh() {
+    await fetch("/api/messages", { cache: "no-store" })
+  }
+
+  return (
+    <PullToRefresh className="h-full" onRefresh={refresh}>
+      <ol>{/* messages */}</ol>
+    </PullToRefresh>
+  )
+}`,
+    anatomy: ["PullToRefresh", "indicator", "scroll viewport", "content"],
+    notes: ["The component owns its scroll viewport so it can determine reliably when scrollTop is zero.", "Inside AppShell, place PullToRefresh in AppShell.Main and move vertical overflow from Main to PullToRefresh: use overflow-hidden on Main and h-full on PullToRefresh.", "The state contract is exposed through data-state=idle, pulling, armed, or refreshing and --pwa-pull-distance.", "Mouse dragging is ignored. Desktop users refresh through your ordinary visible controls or browser command.", "Use the controlled refreshing prop when another state owner determines when the refresh has finished."],
+    platformCaveats: ["Browser-mode Safari and Chrome may already provide page-level pull-to-refresh. Keep the application root overscroll-contained so the browser gesture does not compete with this viewport; installed standalone PWAs generally need the custom control.", "Pointer-derived touch behavior still varies at platform boundaries. Verify both browser and installed display modes on real iOS and Android hardware before treating the gesture as stable."],
+    accessibility: "Refresh progress is announced through a polite status live region. The default spinner stops rotating when reduced motion is requested; keep a separate visible refresh action available for users who cannot perform the gesture.",
+  },
+  {
     slug: "bottom-sheet",
     name: "BottomSheet",
     summary: "A swipeable, keyboard-aware mobile bottom sheet built on Base UI Drawer.",

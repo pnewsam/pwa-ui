@@ -24,6 +24,7 @@ import { InstallPrompt } from "../../../registry/components/install-prompt/insta
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
+import { PullToRefresh } from "../../../registry/components/pull-to-refresh/pull-to-refresh";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
@@ -96,6 +97,36 @@ function SafeAreaDemo() {
         <span className="inset-label inset-label-bottom">bottom</span>
       </div>
     </div>
+  );
+}
+
+function PullToRefreshDemo() {
+  const [refreshes, setRefreshes] = React.useState(0);
+
+  async function refresh() {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    setRefreshes((count) => count + 1);
+  }
+
+  return (
+    <DemoPhone className="demo-phone-tall">
+      <div className="flex h-full min-h-0 flex-col bg-background">
+        <div className="shrink-0 border-b border-border px-5 py-4">
+          <strong className="text-sm">Inbox</strong>
+          <p className="mt-1 text-xs text-muted-foreground">Pull the list down to refresh · {refreshes} complete</p>
+        </div>
+        <PullToRefresh className="min-h-0 flex-1" onRefresh={refresh}>
+          <div className="space-y-2 p-3">
+            {["Design review", "Release checklist", "Device QA", "Offline states", "Install flow"].map((label, index) => (
+              <div className="rounded-xl border border-border bg-card p-3" key={label}>
+                <strong className="block text-sm font-medium">{label}</strong>
+                <span className="text-xs text-muted-foreground">Updated {index + 2} minutes ago</span>
+              </div>
+            ))}
+          </div>
+        </PullToRefresh>
+      </div>
+    </DemoPhone>
   );
 }
 
@@ -265,6 +296,7 @@ function ComponentDemo({ slug }: { slug: ComponentSlug }) {
     case "pwa-provider": return <PWAProviderDemo />;
     case "app-shell": return <AppShellDemo />;
     case "safe-area": return <SafeAreaDemo />;
+    case "pull-to-refresh": return <PullToRefreshDemo />;
     case "bottom-sheet": return <BottomSheetDemo />;
     case "responsive-dialog": return <ResponsiveDialogDemo />;
     case "action-sheet": return <ActionSheetDemo />;
