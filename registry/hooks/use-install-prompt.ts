@@ -4,6 +4,7 @@ import * as React from "react";
 
 export type InstallPromptOutcome = "accepted" | "dismissed";
 export type InstallPromptResult = InstallPromptOutcome | "unavailable" | "error";
+export type InstallPromptType = "native" | "ios-manual" | "unavailable";
 export type InstallPromptStatus =
   | "unknown"
   | "unavailable"
@@ -17,6 +18,12 @@ type NativeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: InstallPromptOutcome; platform: string }>;
 };
+
+function isIOS() {
+  const navigatorWithTouch = window.navigator as Navigator & { maxTouchPoints?: number };
+  return /iPad|iPhone|iPod/.test(window.navigator.userAgent)
+    || (window.navigator.platform === "MacIntel" && (navigatorWithTouch.maxTouchPoints ?? 0) > 1);
+}
 
 function isInstalled() {
   const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };
@@ -32,6 +39,7 @@ export function useInstallPrompt() {
   const activePromptRef = React.useRef<Promise<InstallPromptResult> | null>(null);
   const mountedRef = React.useRef(false);
   const [status, setStatus] = React.useState<InstallPromptStatus>("unknown");
+  const [manualPlatform, setManualPlatform] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
 
   React.useEffect(() => {
@@ -46,12 +54,15 @@ export function useInstallPrompt() {
     const handleInstalled = () => {
       promptEventRef.current = null;
       setError(null);
+      setManualPlatform(false);
       setStatus("installed");
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleInstalled);
-    setStatus(isInstalled() ? "installed" : "unavailable");
+    const installed = isInstalled();
+    setManualPlatform(!installed && isIOS());
+    setStatus(installed ? "installed" : "unavailable");
 
     return () => {
       mountedRef.current = false;
@@ -92,10 +103,16 @@ export function useInstallPrompt() {
     return activePrompt;
   }, []);
 
+  const promptType: InstallPromptType = status === "available" || status === "prompting"
+    ? "native"
+    : manualPlatform ? "ios-manual" : "unavailable";
+
   return {
     status,
     error,
+    promptType,
     canPrompt: status === "available",
+    canInstallManually: promptType === "ios-manual",
     isInstalled: status === "installed",
     prompt,
   };

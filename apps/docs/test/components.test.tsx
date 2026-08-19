@@ -187,6 +187,15 @@ describe("PWA UI components", () => {
     expect(onInstall).toHaveBeenCalledOnce();
   });
 
+  it("renders manual installation steps without an install action", () => {
+    const view = render(<InstallPrompt mode="manual" title="Install Field Notes" />);
+    const prompt = within(view.container);
+
+    expect(prompt.getByRole("region", { name: "Install Field Notes" })).toHaveAttribute("data-mode", "manual");
+    expect(prompt.getAllByRole("listitem")).toHaveLength(3);
+    expect(prompt.queryByRole("button")).not.toBeInTheDocument();
+  });
+
   it("announces an update without taking focus", () => {
     const view = render(<UpdatePrompt updating onUpdate={() => undefined} />);
     const prompt = within(view.container);

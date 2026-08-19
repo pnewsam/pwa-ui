@@ -109,6 +109,8 @@ export function InstallButton() {
     returns: [
       { name: "status", description: "The install lifecycle from unknown or unavailable through prompting and user choice." },
       { name: "canPrompt", description: "Whether a captured browser prompt is currently available." },
+      { name: "promptType", description: "Which install path is available: native, ios-manual, or unavailable." },
+      { name: "canInstallManually", description: "Whether the platform installs from its own share menu instead of a programmatic prompt." },
       { name: "isInstalled", description: "Whether the app is running installed or the appinstalled event has confirmed installation." },
       { name: "error", description: "The most recent native prompt failure, if one occurred." },
       { name: "prompt()", description: "Shows the captured browser prompt once and resolves with its outcome." },
@@ -116,7 +118,7 @@ export function InstallButton() {
     notes: [
       "Mount the hook near the application root so it can capture the browser event when it fires.",
       "prompt() returns unavailable when no prompt has been captured and shares one in-flight request across repeated calls.",
-      "Browsers that do not expose beforeinstallprompt remain unavailable; provide separate platform instructions when your product needs them.",
+      "Browsers that do not expose beforeinstallprompt remain unavailable; promptType reports ios-manual on iOS so you can render Share → Add to Home Screen guidance instead.",
     ],
   },
   {

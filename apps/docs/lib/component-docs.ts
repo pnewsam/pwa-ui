@@ -237,8 +237,8 @@ export function Composer() {
   {
     slug: "install-prompt",
     name: "InstallPrompt",
-    summary: "A persistent, accessible invitation to install the PWA when the browser allows it.",
-    description: "InstallPrompt presents the value and action clearly without triggering browser UI on its own. Pair it with useInstallPrompt and only render it when the browser supplies an install prompt.",
+    summary: "A persistent, accessible invitation to install the PWA, with a manual path where the browser offers no prompt.",
+    description: "InstallPrompt presents the value and action clearly without triggering browser UI on its own. Pair it with useInstallPrompt: show the install action where the browser supplies a prompt, and the manual Home Screen steps where it never will.",
     install: `pnpm dlx shadcn@latest add ${registryUrl}/install-prompt.json`,
     usage: `"use client"
 
@@ -246,7 +246,11 @@ import { InstallPrompt } from "@/components/ui/install-prompt"
 import { useInstallPrompt } from "@/hooks/use-install-prompt"
 
 export function AppInstallPrompt() {
-  const { status, prompt } = useInstallPrompt()
+  const { status, promptType, prompt } = useInstallPrompt()
+
+  if (promptType === "ios-manual") {
+    return <InstallPrompt mode="manual" />
+  }
 
   if (status !== "available" && status !== "prompting") return null
 
@@ -261,10 +265,10 @@ export function AppInstallPrompt() {
     />
   )
 }`,
-    anatomy: ["InstallPrompt", "title", "description", "install action", "optional dismiss action"],
-    notes: ["Render only after useInstallPrompt reports available.", "The component never requests installation during render or without a user action.", "Use product-specific copy that explains the value of installing."],
+    anatomy: ["InstallPrompt", "title", "description", "install action", "manual steps", "optional dismiss action"],
+    notes: ["Render the default prompt mode after useInstallPrompt reports promptType \"native\".", "Render mode=\"manual\" when useInstallPrompt reports promptType \"ios-manual\"; iOS has no programmatic prompt, so the component shows Share → Add to Home Screen steps instead of an install button.", "The component never requests installation during render or without a user action.", "Use product-specific copy that explains the value of installing."],
     platformCaveats: ["iOS Safari never fires `beforeinstallprompt`, so the programmatic install flow is unavailable there — render manual \"Share → Add to Home Screen\" guidance for iOS. Firefox does not support programmatic PWA installation."],
-    accessibility: "The prompt is a labelled section with visible text and touch-sized native buttons. Browser installation remains tied to an explicit user action.",
+    accessibility: "The prompt is a labelled section with visible text. Prompt mode adds touch-sized native buttons; manual mode presents an ordered list of steps and renders a button only when you supply onDismiss. Browser installation remains tied to an explicit user action.",
   },
   {
     slug: "update-prompt",

@@ -9,10 +9,12 @@ import { usePageVisibility } from "../../../registry/hooks/use-page-visibility";
 import { useServiceWorkerUpdate } from "../../../registry/hooks/use-service-worker-update";
 
 const defaultMatchMedia = window.matchMedia;
+const defaultUserAgent = window.navigator.userAgent;
 
 afterEach(() => {
   Reflect.deleteProperty(window.navigator, "serviceWorker");
   Object.defineProperty(window, "matchMedia", { configurable: true, value: defaultMatchMedia });
+  Object.defineProperty(window.navigator, "userAgent", { configurable: true, value: defaultUserAgent });
 });
 
 function mockMatchMedia(matching: string) {
@@ -84,6 +86,25 @@ describe("PWA UI hooks", () => {
     expect(nativePrompt).toHaveBeenCalledOnce();
     expect(result.current.status).toBe("accepted");
     await expect(result.current.prompt()).resolves.toBe("unavailable");
+  });
+
+  it("reports the iOS manual install path when no browser prompt exists", () => {
+    Object.defineProperty(window.navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15" });
+    const { result } = renderHook(() => useInstallPrompt());
+
+    expect(result.current).toMatchObject({ status: "unavailable", promptType: "ios-manual", canInstallManually: true, canPrompt: false });
+  });
+
+  it("prefers the native install path once a prompt is captured", () => {
+    const { result } = renderHook(() => useInstallPrompt());
+    expect(result.current.promptType).toBe("unavailable");
+
+    act(() => window.dispatchEvent(Object.assign(new Event("beforeinstallprompt", { cancelable: true }), {
+      prompt: vi.fn().mockResolvedValue(undefined),
+      userChoice: Promise.resolve({ outcome: "accepted" as const, platform: "web" }),
+    })));
+
+    expect(result.current).toMatchObject({ promptType: "native", canInstallManually: false });
   });
 
   it("activates only an existing waiting service worker", async () => {
