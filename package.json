@@ -11,6 +11,7 @@
     "typecheck": "pnpm --filter @pwa-ui/docs typecheck",
     "test": "pnpm --filter @pwa-ui/docs test",
     "test:e2e": "playwright test",
+    "test:pwa": "PWA_UI_E2E_PRODUCTION=1 playwright test tests/e2e/pwa.spec.ts --project=chromium --workers=1",
     "test:install": "node scripts/test-registry-install.mjs",
     "smoke:public": "node scripts/verify-public-registry.mjs",
     "registry:build": "shadcn build registry.json --output apps/docs/public/r",
