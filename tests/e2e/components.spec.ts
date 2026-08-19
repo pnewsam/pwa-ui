@@ -93,7 +93,7 @@ test("clips every phone example to its simulated device corners", async ({ page 
 });
 
 test("has no automatically detectable accessibility violations on core surfaces", async ({ page }) => {
-  for (const path of ["/", "/guides/app-layout", "/components/tab-bar", "/hooks/use-display-mode", "/resources/browser-support"]) {
+  for (const path of ["/", "/demo", "/guides/app-layout", "/components/tab-bar", "/hooks/use-display-mode", "/resources/browser-support"]) {
     await expect(async () => {
       await page.goto(path);
       expect(new URL(page.url()).pathname).toBe(path);

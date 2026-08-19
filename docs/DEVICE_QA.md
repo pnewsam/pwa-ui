@@ -86,6 +86,16 @@ Run this checklist against a production build. Record the device, OS/browser ver
 - Backgrounding and restoring the app do not duplicate listeners, prompts, or network work.
 - Unsupported browsers and unregistered service workers fail quietly with an accurate state.
 
+## Installable showcase
+
+- Open `/demo` in iOS Safari, use the manual install card, add PWA UI to the Home Screen, and confirm launch opens directly into the demo without browser chrome.
+- Open `/demo` in Android Chrome, use the native Install action when offered, launch the installed app, and confirm its standalone display mode and icon treatment.
+- In each installed mode, pull to refresh, push and edge-swipe back from a project, switch away from a scrolled Activity tab and return, focus the New note field in its sheet, and verify the offline banner during an actual connectivity change.
+- Confirm each “what you’re feeling” caption opens the matching component or hook documentation and the Docs action returns to a normally scrolling documentation page.
+- On a desktop browser, confirm the demo remains centered in a phone-width frame while every control stays keyboard reachable.
+- Deploy a worker version bump while an installed copy remains open, foreground or reload the old copy, and confirm one UpdatePrompt appears; choosing Later preserves the session and choosing Update now activates and reloads once.
+- Inspect application storage after browsing registry pages and confirm the docs worker has not created a cache containing `/r/*` responses.
+
 ## Accessibility and motion
 
 - Tab and Shift+Tab remain inside open overlays.

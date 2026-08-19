@@ -3,7 +3,7 @@
 ## Metadata
 
 - **ID:** 001
-- **Status:** in_progress
+- **Status:** complete
 - **Created:** 2026-08-19
 - **Target quarter:** 2026-Q4
 - **Owner:** maintainer (pnewsam)
@@ -71,7 +71,7 @@ Listed in intended execution order (physics first to de-risk the pipeline, stack
 - [x] [003 `use-haptics`](../features/003-use-haptics.md) — capability-detected haptic feedback hook with honest platform caveats.
 - [x] [004 `stack-navigator`](../features/004-stack-navigator.md) — router-agnostic stacked view container with View Transitions push/pop, fallback transitions, and focus management.
 - [x] [005 `stack-back-gesture`](../features/005-stack-back-gesture.md) — Pointer Events edge-swipe back with gesture-tracked progress, layered on `stack-navigator` (depends on 004).
-- [ ] [006 `showcase-demo`](../features/006-showcase-demo.md) — installable pwaui.com demo flow composing the full registry surface, plus docs-app manifest/service-worker installability (depends on 001–005).
+- [x] [006 `showcase-demo`](../features/006-showcase-demo.md) — installable pwaui.com demo flow composing the full registry surface, plus docs-app manifest/service-worker installability (depends on 001–005).
 
 ## Dependencies & Risks
 
@@ -108,3 +108,11 @@ Listed in intended execution order (physics first to de-risk the pipeline, stack
 - Sequencing rationale: the physics items are small, independent, and de-risk the registry/docs pipeline for the larger stack work; the showcase lands last so it can compose everything, but its manifest/service-worker groundwork can start any time.
 - Open question for the maintainer: whether `stack-navigator` should ship a thin optional adapter example for Next.js App Router in docs (guide-only) — recommended as documentation, not as registry code, to respect the routing non-goal.
 - Open question: minimum browser support line for View Transitions fallback testing (suggest: latest two Safari majors, latest Chrome/Android WebView, latest Firefox).
+
+## Completion evidence
+
+- All six child features are complete and independently documented.
+- `pnpm check` passes with 39 unit tests, a valid 24-item registry, and 42 statically generated documentation pages.
+- The full Playwright regression passes in Chromium and WebKit (56 passed; 2 production-only checks intentionally skipped), while `pnpm test:pwa` separately passes the built-app installability and service-worker contract.
+- The clean-consumer registry installation smoke test passes, and the automated axe surface scan includes `/demo` with no detected violations.
+- Physical iOS/Android installation and a live two-deploy update check remain recorded release gates in `docs/DEVICE_QA.md` and `docs/RELEASING.md`; they are not implementation blockers under this epic’s stated out-of-scope policy.

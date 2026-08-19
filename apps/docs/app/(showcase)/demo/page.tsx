@@ -101,9 +101,8 @@ function ProjectDetail({ project }: { project: Project }) {
 }
 
 function ActivityTab() {
-  const { ref: restorationRef } = useScrollRestoration("demo:activity", { storage: "session" });
   return (
-    <section className="h-full overflow-y-auto" data-testid="activity-scroll" ref={restorationRef}>
+    <>
       <FeelCaption href="/hooks/use-scroll-restoration">Switch tabs after scrolling. This view returns to the same position.</FeelCaption>
       <div className="px-4 pb-8 pt-5">
         <h1 className="text-2xl font-medium tracking-[-0.035em]">Activity</h1>
@@ -116,7 +115,7 @@ function ActivityTab() {
           ))}
         </div>
       </div>
-    </section>
+    </>
   );
 }
 
@@ -168,9 +167,8 @@ function NoteSheet() {
 }
 
 function SettingsTab() {
-  const { ref: restorationRef } = useScrollRestoration("demo:settings", { storage: "session" });
   return (
-    <section className="h-full overflow-y-auto" data-testid="settings-scroll" ref={restorationRef}>
+    <>
       <FeelCaption href="/components/bottom-sheet">Open the form to feel a keyboard-aware sheet composed from the same registry source.</FeelCaption>
       <div className="space-y-4 px-4 pb-8 pt-5">
         <div><p className="text-xs font-medium text-muted-foreground">Demo controls</p><h1 className="mt-1 text-2xl font-medium tracking-[-0.035em]">Settings</h1></div>
@@ -182,7 +180,7 @@ function SettingsTab() {
           <ChevronRight className="ml-auto size-4 text-muted-foreground" />
         </Link>
       </div>
-    </section>
+    </>
   );
 }
 
@@ -203,6 +201,7 @@ export default function DemoPage() {
   const [refreshCount, setRefreshCount] = React.useState(0);
   const network = useNetworkStatus();
   const haptics = useHaptics();
+  const { ref: tabScrollRef } = useScrollRestoration(`demo:${tab}`, { storage: "session" });
 
   async function refresh() {
     await new Promise((resolve) => setTimeout(resolve, 220));
@@ -236,7 +235,7 @@ export default function DemoPage() {
           {network.status === "offline" ? <OfflineBanner>Offline demo mode. Your current view still works.</OfflineBanner> : null}
           <NavigationBar>
             <NavigationBar.Leading>
-              {selected ? <NavigationBar.BackButton aria-label="Back to projects" data-autofocus onClick={() => setSelected(null)} /> : <SlidersHorizontal aria-hidden="true" className="ml-3 size-4 text-muted-foreground" />}
+              {selected ? <NavigationBar.BackButton aria-label="Back to projects" onClick={() => setSelected(null)} /> : <SlidersHorizontal aria-hidden="true" className="ml-3 size-4 text-muted-foreground" />}
             </NavigationBar.Leading>
             <NavigationBar.Title>{title}</NavigationBar.Title>
             <NavigationBar.Trailing><Link className="inline-flex min-h-11 items-center rounded-lg px-2 text-xs font-medium text-muted-foreground" href="/">Docs</Link></NavigationBar.Trailing>
@@ -244,8 +243,11 @@ export default function DemoPage() {
         </AppShell.Header>
         <AppShell.Main className="overflow-hidden">
           {tab === "home" ? <StackNavigator backGesture="auto" entries={entries} onPop={() => setSelected(null)} /> : null}
-          {tab === "activity" ? <ActivityTab /> : null}
-          {tab === "settings" ? <SettingsTab /> : null}
+          {tab === "home" ? null : (
+            <section className="h-full overflow-y-auto" data-testid={`${tab}-scroll`} ref={tabScrollRef}>
+              {tab === "activity" ? <ActivityTab /> : <SettingsTab />}
+            </section>
+          )}
         </AppShell.Main>
         {!selected ? (
           <AppShell.Footer keyboardBehavior="hide" className="bg-background">

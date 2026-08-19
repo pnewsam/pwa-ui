@@ -14,7 +14,7 @@ export default defineConfig({
   webServer: {
     command: productionPwaAudit ? "pnpm --filter @pwa-ui/docs start" : "pnpm --filter @pwa-ui/docs dev --webpack",
     url: "http://localhost:3000/",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: productionPwaAudit ? false : !process.env.CI,
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
