@@ -99,7 +99,7 @@ export function Filters() {
 }`,
     anatomy: ["BottomSheet", "Trigger", "Content", "Header", "Title", "Description", "Footer", "Close"],
     notes: ["Supports controlled and uncontrolled open state.", "Snap points and swipe dismissal are inherited from Base UI Drawer.", "VirtualKeyboardProvider keeps form controls visible above software keyboards."],
-    platformCaveats: ["Gesture physics, snap points, and focus management come from Base UI's Drawer, which is pre-1.0. Pin your `@base-ui/react` version so a minor release cannot change drag or snap behavior underneath you.", "Provide a visible Close, or rely on Escape and backdrop dismissal, for users who cannot perform the drag gesture. The drag handle is decorative and is not operable by assistive technology."],
+    platformCaveats: ["Gesture physics, snap points, and focus management come from Base UI's Drawer, an external behavioral dependency. Pin the `@base-ui/react` version you tested and re-check drag and snap behavior when you upgrade it.", "Provide a visible Close, or rely on Escape and backdrop dismissal, for users who cannot perform the drag gesture. The drag handle is decorative and is not operable by assistive technology."],
     accessibility: "Always include a Title. Include a Description when it adds meaningful context. Escape, focus trapping, restoration, and backdrop dismissal are provided by Base UI.",
   },
   {
@@ -152,7 +152,7 @@ export function Actions() {
 }`,
     anatomy: ["ActionSheet", "Trigger", "Content", "Header", "Group", "Item", "Cancel"],
     notes: ["Items close the sheet by default.", "Set closeOnSelect={false} for actions that keep the sheet open.", "Groups, items, and Cancel provide deliberate 56px touch targets."],
-    platformCaveats: ["Built on Base UI's pre-1.0 Drawer (see BottomSheet). The web cannot access the native iOS action-sheet chrome or its system haptics."],
+    platformCaveats: ["Built on Base UI's Drawer (see BottomSheet), so drag and dismissal behavior follows that dependency and is worth re-checking on upgrade. The web cannot access the native iOS action-sheet chrome or its system haptics."],
     accessibility: "Use specific action labels and reserve the destructive variant for irreversible or difficult-to-recover operations.",
   },
   {

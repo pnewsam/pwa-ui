@@ -9,6 +9,10 @@ import { createPageMetadata } from "@/lib/site-metadata";
 
 const layoutComponentSlugs = new Set(["pwa-provider", "app-shell", "safe-area", "navigation-bar", "tab-bar"]);
 
+function renderCaveat(caveat: string) {
+  return caveat.split(/`([^`]+)`/).map((part, index) => index % 2 === 1 ? <code key={index}>{part}</code> : part);
+}
+
 export function generateStaticParams() {
   return componentDocs.map(({ slug }) => ({ slug }));
 }
@@ -73,7 +77,7 @@ export default async function ComponentPage({ params }: PageProps<"/components/[
       <section className="docs-section" id="platform-limitations">
         <h2>Platform limitations</h2>
         <div className="docs-callout docs-callout--warning" role="note">
-          <ul>{component.platformCaveats.map((caveat) => <li key={caveat}>{caveat}</li>)}</ul>
+          <ul>{component.platformCaveats.map((caveat) => <li key={caveat}>{renderCaveat(caveat)}</li>)}</ul>
         </div>
       </section>
 

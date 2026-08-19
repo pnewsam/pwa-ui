@@ -150,6 +150,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .docs-callout { margin: 22px 0; border-left: 3px solid #a1a1aa; background: #f5f5f6; padding: 15px 17px; color: #52525b; font-size: 13px; line-height: 1.65; }
 .docs-callout--warning { border-left-color: #b45309; background: #fef6ec; color: #7c4a12; }
 .docs-callout--warning ul { margin: 0; padding-left: 19px; color: inherit; font-size: 13px; line-height: 1.65; }
+.docs-section .docs-callout--warning code { border-color: #f0d9b8; background: #fdf0dd; color: #7c4a12; }
 .docs-table-wrap { overflow-x: auto; border: 1px solid var(--docs-line); border-radius: 10px; background: white; }
 .docs-table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.5; }
 .docs-table th, .docs-table td { min-width: 118px; border-bottom: 1px solid var(--docs-line); padding: 12px 14px; text-align: left; vertical-align: top; }

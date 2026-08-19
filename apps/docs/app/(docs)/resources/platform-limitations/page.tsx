@@ -1,6 +1,6 @@
 import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata = createPageMetadata("Platform limitations", "The platform behavior PWA UI cannot change: iOS gaps, Android viewport policy, connectivity hints, safe areas, and pre-1.0 dependencies.", "/resources/platform-limitations");
+export const metadata = createPageMetadata("Platform limitations", "The platform behavior PWA UI cannot change: iOS gaps, Android viewport policy, connectivity hints, safe areas, and external dependencies.", "/resources/platform-limitations");
 
 export default function PlatformLimitationsPage() {
   return (
@@ -52,8 +52,8 @@ export default function PlatformLimitationsPage() {
       <section className="docs-section" id="base-ui-drawer">
         <h2>Base UI Drawer dependency</h2>
         <ul>
-          <li>Gesture physics, snap points, dismissal, and focus management for <code>BottomSheet</code>, <code>ActionSheet</code>, and the mobile presentation of <code>ResponsiveDialog</code> come from Base UI&apos;s Drawer, which is pre-1.0.</li>
-          <li>Pin your <code>@base-ui/react</code> version so a minor release cannot change drag or snap behavior underneath your application.</li>
+          <li>Gesture physics, snap points, dismissal, and focus management for <code>BottomSheet</code>, <code>ActionSheet</code>, and the mobile presentation of <code>ResponsiveDialog</code> come from Base UI&apos;s Drawer. These components target <code>@base-ui/react</code> 1.x.</li>
+          <li>Drawer&apos;s interaction details remain an external behavioral dependency: pin the version you tested, and re-run your gesture and snap checks when you upgrade it.</li>
           <li>The drag handle is decorative and is not operable by assistive technology. Provide a visible Close, or rely on Escape and backdrop dismissal, for users who cannot perform the gesture.</li>
         </ul>
       </section>
