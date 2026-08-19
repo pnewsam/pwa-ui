@@ -14,7 +14,7 @@
 
 - **ID:** 002
 - **Mode:** product
-- **Status:** draft
+- **Status:** in_progress
 - **Created:** 2026-08-19
 - **Last updated:** 2026-08-19
 - **Owner:** maintainer (pnewsam)
@@ -40,20 +40,20 @@ Switching tabs in a native app never loses your place; in most web apps every ta
 
 ### Must Have
 
-- [ ] `useScrollRestoration` hook exists at `registry/hooks/use-scroll-restoration.ts` with signature approximately `useScrollRestoration(key: string, options?: { storage?: "memory" | "session"; behavior?: "auto" | "instant" }) => { ref: (node: HTMLElement | null) => void; save: () => void; clear: (key?: string) => void }`.
-- [ ] Attaching the returned `ref` to a scroll container restores the stored position for `key` after the element mounts, and continuously records position (throttled, passive scroll listener) while mounted.
-- [ ] Restoration copes with late-arriving content: if the stored offset exceeds the current `scrollHeight`, the hook retries restoration on a bounded schedule (e.g. rAF + `ResizeObserver` on the container, capped ~2s) rather than silently clamping on first paint, and stops once restored or the user scrolls.
-- [ ] Key changes on a live element save the old key's position and restore the new key's position — this is the tab-switch path when the consumer keeps one scroller and swaps content.
-- [ ] `storage: "memory"` (default) is a module-level Map shared across hook instances; `storage: "session"` persists through `sessionStorage` under a namespaced key (`pwa-ui:scroll:<key>`) and degrades silently to memory when storage throws (private mode).
-- [ ] SSR-safe: no window access at module scope; server render is a no-op, consistent with existing hooks in `registry/hooks/`.
-- [ ] Restoration is instant by default (no smooth-scroll animation) and never fights user input: any user scroll during the retry window cancels pending restoration.
-- [ ] Registry entry in `registry/registry.json`; `pnpm registry:build` output installs cleanly via `scripts/test-registry-install.mjs`.
+- [x] `useScrollRestoration` hook exists at `registry/hooks/use-scroll-restoration.ts` with signature approximately `useScrollRestoration(key: string, options?: { storage?: "memory" | "session"; behavior?: "auto" | "instant" }) => { ref: (node: HTMLElement | null) => void; save: () => void; clear: (key?: string) => void }`.
+- [x] Attaching the returned `ref` to a scroll container restores the stored position for `key` after the element mounts, and continuously records position (throttled, passive scroll listener) while mounted.
+- [x] Restoration copes with late-arriving content: if the stored offset exceeds the current `scrollHeight`, the hook retries restoration on a bounded schedule (e.g. rAF + `ResizeObserver` on the container, capped ~2s) rather than silently clamping on first paint, and stops once restored or the user scrolls.
+- [x] Key changes on a live element save the old key's position and restore the new key's position — this is the tab-switch path when the consumer keeps one scroller and swaps content.
+- [x] `storage: "memory"` (default) is a module-level Map shared across hook instances; `storage: "session"` persists through `sessionStorage` under a namespaced key (`pwa-ui:scroll:<key>`) and degrades silently to memory when storage throws (private mode).
+- [x] SSR-safe: no window access at module scope; server render is a no-op, consistent with existing hooks in `registry/hooks/`.
+- [x] Restoration is instant by default (no smooth-scroll animation) and never fights user input: any user scroll during the retry window cancels pending restoration.
+- [x] Registry entry in `registry/registry.json`; `pnpm registry:build` output installs cleanly via `scripts/test-registry-install.mjs`.
 - [ ] Docs entry in `apps/docs/lib/hook-docs.ts` including a worked TabBar example: three tabs swapping content inside `AppShell.Main`, each restoring its own position; note the alternative "keep views mounted and toggle visibility" pattern and when to prefer it.
 - [ ] Unit tests in `apps/docs/test/hooks.test.tsx` (save/restore, key change, storage fallback, late-content retry) and a Playwright fixture at `apps/docs/app/test-fixtures/scroll-restoration/page.tsx` with an e2e assertion that a tab switch away and back restores the offset within a tolerance of ±1px.
 
 ### Should Have
 
-- [ ] `clear()` with no argument clears all stored positions (useful on logout/reset).
+- [x] `clear()` with no argument clears all stored positions (useful on logout/reset).
 
 ## Out of Scope
 
@@ -94,10 +94,11 @@ Switching tabs in a native app never loses your place; in most web apps every ta
 
 ## Tasks
 
-- [ ] Implement `use-scroll-restoration` with unit tests, registry entry, and clean-install verification passing in one commit.
+- [x] Implement `use-scroll-restoration` with unit tests, registry entry, and clean-install verification passing in one commit.
 - [ ] Add the docs entry with the TabBar composition example, the Playwright fixture + e2e assertion, and the COMPONENTS.md note; run full checks and record evidence.
 
 ## Progress
 
 | Criterion or task | Status | Evidence | Notes |
 | --- | --- | --- | --- |
+| Hook, persistence strategies, retry behavior, registry payload, and unit tests | complete | `pnpm lint`; `pnpm typecheck`; `pnpm registry:validate`; `pnpm registry:build`; `pnpm --filter @pwa-ui/docs exec vitest run test/hooks.test.tsx`; clean `@pwa-ui/use-scroll-restoration` install | Callback-ref identity changes save the prior key before restoring the next key on the same element; storage failures retain the module-memory copy. |

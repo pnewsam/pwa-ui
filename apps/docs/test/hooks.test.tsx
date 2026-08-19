@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, renderHook, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useInstallPrompt } from "../../../registry/hooks/use-install-prompt";
@@ -7,6 +7,7 @@ import { useMediaQuery } from "../../../registry/hooks/use-media-query";
 import { useNetworkStatus } from "../../../registry/hooks/use-network-status";
 import { usePageVisibility } from "../../../registry/hooks/use-page-visibility";
 import { useServiceWorkerUpdate } from "../../../registry/hooks/use-service-worker-update";
+import { useScrollRestoration } from "../../../registry/hooks/use-scroll-restoration";
 
 const defaultMatchMedia = window.matchMedia;
 const defaultUserAgent = window.navigator.userAgent;
@@ -37,6 +38,29 @@ function mockMatchMedia(matching: string) {
     matching = nextMatching;
     act(() => listeners.forEach((queryListeners) => queryListeners.forEach((listener) => listener())));
   };
+}
+
+function ScrollRestorationProbe({
+  viewKey,
+  storage = "memory",
+  scrollHeight = 600,
+  clientHeight = 100,
+}: {
+  viewKey: string;
+  storage?: "memory" | "session";
+  scrollHeight?: number;
+  clientHeight?: number;
+}) {
+  const { ref: restorationRef } = useScrollRestoration(viewKey, { storage });
+  const ref = React.useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      Object.defineProperty(node, "scrollHeight", { configurable: true, value: scrollHeight });
+      Object.defineProperty(node, "clientHeight", { configurable: true, value: clientHeight });
+    }
+    restorationRef(node);
+  }, [clientHeight, restorationRef, scrollHeight]);
+
+  return <div data-testid="scroll-region" ref={ref} />;
 }
 
 describe("PWA UI hooks", () => {
@@ -169,5 +193,68 @@ describe("PWA UI hooks", () => {
 
     change("(min-width: 48rem)");
     expect(renders.at(-1)).toBe(false);
+  });
+
+  it("saves and restores a keyed scroll position", async () => {
+    const first = render(<ScrollRestorationProbe viewKey="restore-basic" />);
+    const firstRegion = first.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    firstRegion.scrollTop = 128;
+    fireEvent.scroll(firstRegion);
+    first.unmount();
+
+    const second = render(<ScrollRestorationProbe viewKey="restore-basic" />);
+    const secondRegion = second.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    await waitFor(() => expect(secondRegion.scrollTop).toBe(128));
+  });
+
+  it("saves the old key and restores the new key on a live element", async () => {
+    const view = render(<ScrollRestorationProbe viewKey="tab-a" />);
+    let region = view.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    region.scrollTop = 84;
+    fireEvent.scroll(region);
+
+    view.rerender(<ScrollRestorationProbe viewKey="tab-b" />);
+    region = view.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    region.scrollTop = 26;
+    fireEvent.scroll(region);
+
+    view.rerender(<ScrollRestorationProbe viewKey="tab-a" />);
+    region = view.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    await waitFor(() => expect(region.scrollTop).toBe(84));
+  });
+
+  it("falls back to shared memory when session storage throws", async () => {
+    const getItem = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new DOMException("Unavailable");
+    });
+    const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("Unavailable");
+    });
+
+    const first = render(<ScrollRestorationProbe storage="session" viewKey="private-mode" />);
+    const firstRegion = first.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    firstRegion.scrollTop = 72;
+    first.unmount();
+
+    const second = render(<ScrollRestorationProbe storage="session" viewKey="private-mode" />);
+    const secondRegion = second.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    await waitFor(() => expect(secondRegion.scrollTop).toBe(72));
+
+    getItem.mockRestore();
+    setItem.mockRestore();
+  });
+
+  it("retries restoration until late content can reach the saved offset", async () => {
+    const first = render(<ScrollRestorationProbe viewKey="late-content" />);
+    const firstRegion = first.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    firstRegion.scrollTop = 240;
+    first.unmount();
+
+    const second = render(<ScrollRestorationProbe clientHeight={100} scrollHeight={100} viewKey="late-content" />);
+    const secondRegion = second.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    expect(secondRegion.scrollTop).toBe(0);
+
+    Object.defineProperty(secondRegion, "scrollHeight", { configurable: true, value: 600 });
+    await waitFor(() => expect(secondRegion.scrollTop).toBe(240));
   });
 });

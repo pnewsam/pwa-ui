@@ -69,6 +69,13 @@
       "files": [{ "path": "hooks/use-page-visibility.ts", "type": "registry:hook", "target": "hooks/use-page-visibility.ts" }]
     },
     {
+      "name": "use-scroll-restoration",
+      "type": "registry:hook",
+      "title": "useScrollRestoration",
+      "description": "Persist and restore scroll positions per consumer-owned view key.",
+      "files": [{ "path": "hooks/use-scroll-restoration.ts", "type": "registry:hook", "target": "hooks/use-scroll-restoration.ts" }]
+    },
+    {
       "name": "safe-area",
       "type": "registry:component",
       "title": "Safe Area",

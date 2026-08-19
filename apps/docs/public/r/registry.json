@@ -129,6 +129,19 @@
       "type": "registry:hook"
     },
     {
+      "name": "use-scroll-restoration",
+      "title": "useScrollRestoration",
+      "description": "Persist and restore scroll positions per consumer-owned view key.",
+      "files": [
+        {
+          "path": "registry/hooks/use-scroll-restoration.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-scroll-restoration.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
       "name": "safe-area",
       "title": "Safe Area",
       "description": "Explicit CSS environment-variable safe-area padding.",
