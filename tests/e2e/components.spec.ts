@@ -111,6 +111,28 @@ test("documents the priority-one install prompt composition", async ({ page }) =
   await expect(installation.getByRole("button", { name: "Copy hooks/use-install-prompt.ts" })).toBeVisible();
 });
 
+test("offers the manual install path only where the browser has no install prompt", async ({ page }) => {
+  await page.goto("/test-fixtures/install-prompt");
+
+  const onIOS = await page.evaluate(() => /iPad|iPhone|iPod/.test(navigator.userAgent));
+  const promptType = page.getByTestId("prompt-type");
+  const manualPrompt = page.getByRole("region", { name: "Install Field Notes" });
+
+  if (!onIOS) {
+    await expect(promptType).not.toHaveText("ios-manual");
+    await expect(page.getByRole("list")).toHaveCount(0);
+    return;
+  }
+
+  await expect(promptType).toHaveText("ios-manual");
+  await expect(manualPrompt).toHaveAttribute("data-mode", "manual");
+  await expect(manualPrompt.getByRole("listitem")).toHaveCount(3);
+  await expect(manualPrompt.getByRole("button")).toHaveCount(0);
+
+  const results = await new AxeBuilder({ page }).include('[data-slot="install-prompt"]').analyze();
+  expect(results.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
+});
+
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
   await page.goto("/components/bottom-sheet");
   await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();

@@ -11,6 +11,7 @@ Run this checklist against a production build. Record the device, OS/browser ver
 | Pending | Current Android device or emulator | Chrome | Browser | — | — | Required before stable |
 | Pending | Current Android device or emulator | Chrome | Installed | — | — | Required before stable |
 | Pending | Desktop | Chrome, Safari, Firefox | Browser | — | — | Narrow and wide viewports |
+| Pending | iPhone or iPad | Safari | Browser | — | — | InstallPrompt manual mode: Share → Add to Home Screen path (#24) |
 
 ## Required surfaces
 
@@ -50,6 +51,7 @@ Run this checklist against a production build. Record the device, OS/browser ver
 ## Installation, updates, and lifecycle
 
 - The install prompt appears only when the browser reports availability and after a user action.
+- On iOS, where no programmatic prompt exists, manual mode shows the Share → Add to Home Screen steps and they match the current Safari flow.
 - Accepting, dismissing, and completing installation each leave the interface in the correct state.
 - A waiting service worker displays one update prompt and never reloads without an explicit choice.
 - Applying an update activates the waiting worker; deferring it keeps the current session usable.
