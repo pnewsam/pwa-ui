@@ -77,3 +77,10 @@ Run this checklist against a production build. Record the device, OS/browser ver
 - Important controls have a visible focus ring and at least a 44px touch target.
 - VoiceOver/TalkBack can identify the active tab and all icon-only controls.
 - Reduce Motion removes nonessential transitions without hiding state changes.
+
+## Haptics
+
+- On Android Chrome, each demo preset requests one distinct, brief pattern only after its button is pressed.
+- Browser, device, low-power, and vibration settings that suppress feedback leave the interface fully understandable and operable.
+- On iOS/iPadOS Safari and unsupported desktop browsers, the demo says vibration is unavailable, disables its preset controls, and produces no error.
+- Tab and ActionSheet integrations use haptics only as reinforcement; the active, success, warning, or error state remains visible without it.

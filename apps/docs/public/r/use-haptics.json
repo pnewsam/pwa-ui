@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-haptics",
+  "title": "useHaptics",
+  "description": "Capability-detected vibration feedback with short, named presets.",
+  "files": [
+    {
+      "path": "registry/hooks/use-haptics.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport type Haptics = {\n  supported: boolean;\n  vibrate: (pattern: number | number[]) => boolean;\n  tap: () => boolean;\n  success: () => boolean;\n  warning: () => boolean;\n  error: () => boolean;\n};\n\nconst patterns = {\n  tap: 10,\n  success: [10, 40, 20],\n  warning: [30, 40, 30],\n  error: [40, 60, 40],\n} as const;\n\nfunction subscribe() {\n  return () => undefined;\n}\n\nfunction getSupportedSnapshot() {\n  return typeof navigator !== \"undefined\" && typeof navigator.vibrate === \"function\";\n}\n\nfunction getServerSnapshot() {\n  return false;\n}\n\nexport function useHaptics(): Haptics {\n  const supported = React.useSyncExternalStore(subscribe, getSupportedSnapshot, getServerSnapshot);\n\n  const vibrate = React.useCallback((pattern: number | number[]) => {\n    if (typeof navigator === \"undefined\" || typeof navigator.vibrate !== \"function\") return false;\n\n    try {\n      return navigator.vibrate(pattern);\n    } catch {\n      return false;\n    }\n  }, []);\n\n  const tap = React.useCallback(() => vibrate(patterns.tap), [vibrate]);\n  const success = React.useCallback(() => vibrate([...patterns.success]), [vibrate]);\n  const warning = React.useCallback(() => vibrate([...patterns.warning]), [vibrate]);\n  const error = React.useCallback(() => vibrate([...patterns.error]), [vibrate]);\n\n  return React.useMemo(() => ({ supported, vibrate, tap, success, warning, error }), [error, success, supported, tap, vibrate, warning]);\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-haptics.ts"
+    }
+  ],
+  "type": "registry:hook"
+}

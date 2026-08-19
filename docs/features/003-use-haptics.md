@@ -14,7 +14,7 @@
 
 - **ID:** 003
 - **Mode:** product
-- **Status:** draft
+- **Status:** complete
 - **Created:** 2026-08-19
 - **Last updated:** 2026-08-19
 - **Owner:** maintainer (pnewsam)
@@ -40,19 +40,19 @@ Tactile feedback on tap, success, and error is part of why installed apps feel p
 
 ### Must Have
 
-- [ ] `useHaptics` hook exists at `registry/hooks/use-haptics.ts` returning `{ supported: boolean, vibrate(pattern: number | number[]): boolean, tap(): boolean, success(): boolean, warning(): boolean, error(): boolean }`, where presets map to short documented patterns (e.g. tap = 10ms; success = 10-40-20; warning = 30; error = 40-60-40 — final values chosen and documented by the implementer).
-- [ ] `supported` is `false` and every method is a safe no-op returning `false` when `navigator.vibrate` is absent (iOS Safari, desktop Safari/Firefox where absent) or when the document is not allowed to vibrate; nothing ever throws.
-- [ ] SSR-safe: `supported` is `false` on the server and resolves after mount, matching the `unknown`-then-resolve pattern of existing hooks.
-- [ ] The hook respects user intent: methods called outside a user activation simply return `false` when the platform blocks them; docs state that calls should be tied to user gestures.
-- [ ] No user-agent sniffing anywhere in the item.
-- [ ] Registry entry in `registry/registry.json`; registry build + `scripts/test-registry-install.mjs` pass.
-- [ ] Docs entry in `apps/docs/lib/hook-docs.ts` with a support-matrix table (Android Chrome: yes; iOS Safari: no; desktop: mostly no) and a live demo that shows `supported` and fires presets; the demo visibly communicates the no-op case rather than appearing broken.
-- [ ] Unit tests in `apps/docs/test/hooks.test.tsx` covering supported/unsupported paths (mock `navigator.vibrate`), preset patterns, and SSR snapshot.
-- [ ] `docs/COMPONENTS.md` lifecycle-hooks section mentions the hook with the same honesty.
+- [x] `useHaptics` hook exists at `registry/hooks/use-haptics.ts` returning `{ supported: boolean, vibrate(pattern: number | number[]): boolean, tap(): boolean, success(): boolean, warning(): boolean, error(): boolean }`, where presets map to short documented patterns (e.g. tap = 10ms; success = 10-40-20; warning = 30; error = 40-60-40 — final values chosen and documented by the implementer).
+- [x] `supported` is `false` and every method is a safe no-op returning `false` when `navigator.vibrate` is absent (iOS Safari, desktop Safari/Firefox where absent) or when the document is not allowed to vibrate; nothing ever throws.
+- [x] SSR-safe: `supported` is `false` on the server and resolves after mount, matching the `unknown`-then-resolve pattern of existing hooks.
+- [x] The hook respects user intent: methods called outside a user activation simply return `false` when the platform blocks them; docs state that calls should be tied to user gestures.
+- [x] No user-agent sniffing anywhere in the item.
+- [x] Registry entry in `registry/registry.json`; registry build + `scripts/test-registry-install.mjs` pass.
+- [x] Docs entry in `apps/docs/lib/hook-docs.ts` with a support-matrix table (Android Chrome: yes; iOS Safari: no; desktop: mostly no) and a live demo that shows `supported` and fires presets; the demo visibly communicates the no-op case rather than appearing broken.
+- [x] Unit tests in `apps/docs/test/hooks.test.tsx` covering supported/unsupported paths (mock `navigator.vibrate`), preset patterns, and SSR snapshot.
+- [x] `docs/COMPONENTS.md` lifecycle-hooks section mentions the hook with the same honesty.
 
 ### Should Have
 
-- [ ] Guidance in the docs page on pairing with `TabBar`/`ActionSheet` (e.g. `tap()` on destructive `ActionSheet.Item`) — documentation only, no changes to those components.
+- [x] Guidance in the docs page on pairing with `TabBar`/`ActionSheet` (e.g. `tap()` on destructive `ActionSheet.Item`) — documentation only, no changes to those components.
 
 ## Out of Scope
 
@@ -82,17 +82,18 @@ Tactile feedback on tap, success, and error is part of why installed apps feel p
 
 ## Definition of Done
 
-- [ ] All must-have acceptance criteria pass.
-- [ ] Required invariants and guardrails hold (never throws, no UA sniffing).
-- [ ] Verification evidence is recorded.
-- [ ] No unrelated changes are included.
-- [ ] Relevant documentation is updated.
+- [x] All must-have acceptance criteria pass.
+- [x] Required invariants and guardrails hold (never throws, no UA sniffing).
+- [x] Verification evidence is recorded.
+- [x] No unrelated changes are included.
+- [x] Relevant documentation is updated.
 
 ## Tasks
 
-- [ ] Implement `use-haptics` with unit tests, registry entry, docs page with support matrix and demo, COMPONENTS.md note, and a DEVICE_QA.md row; run all checks and record evidence in one commit.
+- [x] Implement `use-haptics` with unit tests, registry entry, docs page with support matrix and demo, COMPONENTS.md note, and a DEVICE_QA.md row; run all checks and record evidence in one commit.
 
 ## Progress
 
 | Criterion or task | Status | Evidence | Notes |
 | --- | --- | --- | --- |
+| Hook, documentation, support matrix, demo, registry payload, and validation | complete | `pnpm check`; `pnpm test:e2e` (32 passed); clean `@pwa-ui/use-haptics` install | Presets: tap 10ms, success 10–40–20ms, warning 30–40–30ms, error 40–60–40ms. SSR and unsupported environments report false; the docs demo makes the no-op explicit. |

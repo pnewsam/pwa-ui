@@ -76,6 +76,13 @@
       "files": [{ "path": "hooks/use-scroll-restoration.ts", "type": "registry:hook", "target": "hooks/use-scroll-restoration.ts" }]
     },
     {
+      "name": "use-haptics",
+      "type": "registry:hook",
+      "title": "useHaptics",
+      "description": "Capability-detected vibration feedback with short, named presets.",
+      "files": [{ "path": "hooks/use-haptics.ts", "type": "registry:hook", "target": "hooks/use-haptics.ts" }]
+    },
+    {
       "name": "safe-area",
       "type": "registry:component",
       "title": "Safe Area",

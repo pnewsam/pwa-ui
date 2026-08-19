@@ -274,6 +274,46 @@ export function TabbedScreen() {
       "Document-level history navigation remains the browser's responsibility through history.scrollRestoration; virtualized lists should use their virtualizer's own restoration API.",
     ],
   },
+  {
+    slug: "use-haptics",
+    name: "useHaptics",
+    summary: "Add short, capability-detected vibration feedback without breaking unsupported platforms.",
+    description: "useHaptics wraps the web's narrow Vibration API in safe named presets. It reports support honestly, never throws, and remains a no-op on iOS and browsers without navigator.vibrate.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/use-haptics.json`,
+    usage: `"use client"
+
+import { useHaptics } from "@/hooks/use-haptics"
+
+export function SaveButton() {
+  const haptics = useHaptics()
+
+  function save() {
+    haptics.tap()
+    // Save from this same user gesture.
+  }
+
+  return <button onClick={save}>Save</button>
+}`,
+    returns: [
+      { name: "supported", description: "Whether navigator.vibrate is available. A true value means the API exists, not that the user necessarily felt feedback." },
+      { name: "vibrate(pattern)", description: "Requests a custom duration or vibration/pause sequence and returns whether the browser accepted it." },
+      { name: "tap()", description: "A single 10ms acknowledgement." },
+      { name: "success()", description: "A 10–40–20ms success sequence." },
+      { name: "warning()", description: "A 30–40–30ms warning sequence." },
+      { name: "error()", description: "A 40–60–40ms error sequence." },
+    ],
+    notes: [
+      "Call a preset from a click, press, or other user activation. Browsers may reject vibration requested from background or automatic work.",
+      "Use feedback sparingly: tap can acknowledge a deliberate TabBar selection; warning or error can reinforce a consequential ActionSheet choice. Do not wire every control by default.",
+      "The methods return false when unsupported, blocked, or rejected and never substitute audio or another workaround.",
+      "No preset is wired into existing components; consumers decide which actions deserve tactile feedback.",
+    ],
+    support: [
+      { platform: "Android Chrome", availability: "Yes", notes: "Usually available after a user gesture; device and browser settings can still suppress the motor." },
+      { platform: "iOS / iPadOS Safari", availability: "No", notes: "The Vibration API is not exposed, including in Home Screen apps." },
+      { platform: "Desktop browsers", availability: "Mostly no", notes: "Support is uncommon and hardware-dependent; treat it as an optional enhancement." },
+    ],
+  },
 ] as const;
 
 export type HookDoc = (typeof hookDocs)[number];

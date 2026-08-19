@@ -142,6 +142,19 @@
       "type": "registry:hook"
     },
     {
+      "name": "use-haptics",
+      "title": "useHaptics",
+      "description": "Capability-detected vibration feedback with short, named presets.",
+      "files": [
+        {
+          "path": "registry/hooks/use-haptics.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-haptics.ts"
+        }
+      ],
+      "type": "registry:hook"
+    },
+    {
       "name": "safe-area",
       "title": "Safe Area",
       "description": "Explicit CSS environment-variable safe-area padding.",

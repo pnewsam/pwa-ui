@@ -181,6 +181,18 @@ test("restores each tab's scroll position", async ({ page }) => {
   await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeLessThanOrEqual(241);
 });
 
+test("communicates the haptics no-op when vibration is unavailable", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: undefined });
+  });
+  await page.goto("/hooks/use-haptics");
+
+  await expect(page.getByRole("heading", { name: "useHaptics", exact: true })).toBeVisible();
+  await expect(page.getByText("Unavailable here", { exact: true })).toBeVisible();
+  await expect(page.getByText("This browser has no vibration capability, so every preset is a safe no-op.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tap" })).toBeDisabled();
+});
+
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
   await page.goto("/components/bottom-sheet");
   await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();

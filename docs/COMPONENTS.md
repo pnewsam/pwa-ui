@@ -207,6 +207,8 @@ return status === "offline" ? <OfflineBanner /> : null;
 
 `useScrollRestoration(key)` preserves an element scroll viewport by a consumer-owned tab, route, or stack-entry key. Attach its callback ref to the element that actually scrolls. A key change saves the old view and restores the new one, including a bounded retry for content that arrives later. It never reads history or controls routing. For a few inexpensive tabs, keeping each view mounted and toggling visibility is a reasonable alternative; virtualized lists should use their virtualizer's restoration API.
 
+`useHaptics()` exposes `tap`, `success`, `warning`, and `error` vibration presets plus a custom `vibrate` method. It is an optional Android enhancement: `navigator.vibrate` is unavailable on iOS/iPadOS Safari and most desktop setups. Every method safely returns `false` when unsupported or blocked. Call it sparingly from direct user gestures—for example, a deliberate tab selection or destructive ActionSheet confirmation—and never rely on tactile feedback as the only state cue.
+
 ## PWA base styles
 
 `pwa-base` installs conservative tokens for safe areas, dynamic viewport height, keyboard height, navigation and tab bars, touch targets, and opt-in full-screen root containment. It does not overwrite shadcn color tokens. Import `styles/pwa.css` once from the application stylesheet or layout, then mount `PWAProvider` once when application chrome should respond to the measured visual viewport and software keyboard.

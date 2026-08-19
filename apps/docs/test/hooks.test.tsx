@@ -1,8 +1,10 @@
 import React from "react";
+import { renderToString } from "react-dom/server";
 import { act, fireEvent, render, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useInstallPrompt } from "../../../registry/hooks/use-install-prompt";
+import { useHaptics } from "../../../registry/hooks/use-haptics";
 import { useMediaQuery } from "../../../registry/hooks/use-media-query";
 import { useNetworkStatus } from "../../../registry/hooks/use-network-status";
 import { usePageVisibility } from "../../../registry/hooks/use-page-visibility";
@@ -11,11 +13,14 @@ import { useScrollRestoration } from "../../../registry/hooks/use-scroll-restora
 
 const defaultMatchMedia = window.matchMedia;
 const defaultUserAgent = window.navigator.userAgent;
+const defaultVibrate = window.navigator.vibrate;
 
 afterEach(() => {
   Reflect.deleteProperty(window.navigator, "serviceWorker");
   Object.defineProperty(window, "matchMedia", { configurable: true, value: defaultMatchMedia });
   Object.defineProperty(window.navigator, "userAgent", { configurable: true, value: defaultUserAgent });
+  if (defaultVibrate) Object.defineProperty(window.navigator, "vibrate", { configurable: true, value: defaultVibrate });
+  else Reflect.deleteProperty(window.navigator, "vibrate");
 });
 
 function mockMatchMedia(matching: string) {
@@ -256,5 +261,40 @@ describe("PWA UI hooks", () => {
 
     Object.defineProperty(secondRegion, "scrollHeight", { configurable: true, value: 600 });
     await waitFor(() => expect(secondRegion.scrollTop).toBe(240));
+  });
+
+  it("returns safe no-ops when vibration is unsupported", () => {
+    Reflect.deleteProperty(window.navigator, "vibrate");
+    const { result } = renderHook(() => useHaptics());
+
+    expect(result.current.supported).toBe(false);
+    expect(result.current.vibrate(20)).toBe(false);
+    expect(result.current.tap()).toBe(false);
+    expect(result.current.success()).toBe(false);
+    expect(result.current.warning()).toBe(false);
+    expect(result.current.error()).toBe(false);
+  });
+
+  it("uses the documented vibration patterns when supported", () => {
+    const vibrate = vi.fn(() => true);
+    Object.defineProperty(window.navigator, "vibrate", { configurable: true, value: vibrate });
+    const { result } = renderHook(() => useHaptics());
+
+    expect(result.current.supported).toBe(true);
+    expect(result.current.tap()).toBe(true);
+    expect(result.current.success()).toBe(true);
+    expect(result.current.warning()).toBe(true);
+    expect(result.current.error()).toBe(true);
+    expect(vibrate.mock.calls).toEqual([[10], [[10, 40, 20]], [[30, 40, 30]], [[40, 60, 40]]]);
+  });
+
+  it("uses an unsupported snapshot during server rendering", () => {
+    Object.defineProperty(window.navigator, "vibrate", { configurable: true, value: vi.fn(() => true) });
+
+    function Probe() {
+      return <span>{useHaptics().supported ? "supported" : "unsupported"}</span>;
+    }
+
+    expect(renderToString(<Probe />)).toContain("unsupported");
   });
 });
