@@ -70,7 +70,7 @@ Listed in intended execution order (physics first to de-risk the pipeline, stack
 - [x] [002 `scroll-restoration`](../features/002-scroll-restoration.md) — `useScrollRestoration` hook with per-key persistence and a documented TabBar composition.
 - [x] [003 `use-haptics`](../features/003-use-haptics.md) — capability-detected haptic feedback hook with honest platform caveats.
 - [x] [004 `stack-navigator`](../features/004-stack-navigator.md) — router-agnostic stacked view container with View Transitions push/pop, fallback transitions, and focus management.
-- [ ] [005 `stack-back-gesture`](../features/005-stack-back-gesture.md) — Pointer Events edge-swipe back with gesture-tracked progress, layered on `stack-navigator` (depends on 004).
+- [x] [005 `stack-back-gesture`](../features/005-stack-back-gesture.md) — Pointer Events edge-swipe back with gesture-tracked progress, layered on `stack-navigator` (depends on 004).
 - [ ] [006 `showcase-demo`](../features/006-showcase-demo.md) — installable pwaui.com demo flow composing the full registry surface, plus docs-app manifest/service-worker installability (depends on 001–005).
 
 ## Dependencies & Risks
