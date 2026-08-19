@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...componentDocs.map(({ slug }) => `/components/${slug}`),
     ...hookDocs.map(({ slug }) => `/hooks/${slug}`),
     "/resources/browser-support",
+    "/resources/platform-limitations",
     "/resources/accessibility",
     "/resources/device-qa",
     "/resources/registry",
