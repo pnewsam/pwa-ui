@@ -1,14 +1,41 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import React from "react";
+import { act, render, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useInstallPrompt } from "../../../registry/hooks/use-install-prompt";
+import { useMediaQuery } from "../../../registry/hooks/use-media-query";
 import { useNetworkStatus } from "../../../registry/hooks/use-network-status";
 import { usePageVisibility } from "../../../registry/hooks/use-page-visibility";
 import { useServiceWorkerUpdate } from "../../../registry/hooks/use-service-worker-update";
 
+const defaultMatchMedia = window.matchMedia;
+
 afterEach(() => {
   Reflect.deleteProperty(window.navigator, "serviceWorker");
+  Object.defineProperty(window, "matchMedia", { configurable: true, value: defaultMatchMedia });
 });
+
+function mockMatchMedia(matching: string) {
+  const listeners = new Map<string, Set<() => void>>();
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: (query: string) => ({
+      matches: query === matching,
+      media: query,
+      addEventListener: (_type: string, listener: () => void) => {
+        const queryListeners = listeners.get(query) ?? new Set();
+        queryListeners.add(listener);
+        listeners.set(query, queryListeners);
+      },
+      removeEventListener: (_type: string, listener: () => void) => listeners.get(query)?.delete(listener),
+    }),
+  });
+
+  return (nextMatching: string) => {
+    matching = nextMatching;
+    act(() => listeners.forEach((queryListeners) => queryListeners.forEach((listener) => listener())));
+  };
+}
 
 describe("PWA UI hooks", () => {
   it("subscribes to browser network hints", () => {
@@ -104,5 +131,22 @@ describe("PWA UI hooks", () => {
 
     act(() => document.dispatchEvent(new Event("visibilitychange")));
     await waitFor(() => expect(registration.update).toHaveBeenCalledOnce());
+  });
+
+  it("resolves a media query in the first client render", () => {
+    const query = "(max-width: 47.999rem)";
+    const change = mockMatchMedia(query);
+    const renders: boolean[] = [];
+
+    function Probe() {
+      renders.push(useMediaQuery(query));
+      return null;
+    }
+
+    render(<Probe />);
+    expect(renders).toEqual([true]);
+
+    change("(min-width: 48rem)");
+    expect(renders.at(-1)).toBe(false);
   });
 });

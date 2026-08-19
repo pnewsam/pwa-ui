@@ -25,7 +25,7 @@
     },
     {
       "path": "registry/hooks/use-media-query.ts",
-      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport function useMediaQuery(query: string, defaultValue = false) {\n  const [matches, setMatches] = React.useState(defaultValue);\n\n  React.useEffect(() => {\n    const media = window.matchMedia(query);\n    const update = () => setMatches(media.matches);\n\n    update();\n    media.addEventListener(\"change\", update);\n    return () => media.removeEventListener(\"change\", update);\n  }, [query]);\n\n  return matches;\n}\n",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nexport function useMediaQuery(query: string, defaultValue = false) {\n  const subscribe = React.useCallback((onStoreChange: () => void) => {\n    const media = window.matchMedia(query);\n    media.addEventListener(\"change\", onStoreChange);\n    return () => media.removeEventListener(\"change\", onStoreChange);\n  }, [query]);\n\n  const getSnapshot = React.useCallback(() => window.matchMedia(query).matches, [query]);\n  const getServerSnapshot = React.useCallback(() => defaultValue, [defaultValue]);\n\n  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);\n}\n",
       "type": "registry:hook",
       "target": "hooks/use-media-query.ts"
     }

@@ -13,6 +13,10 @@ export default defineConfig({
         replacement: path.resolve(__dirname, "../../registry/components/bottom-sheet/bottom-sheet.tsx"),
       },
       {
+        find: "@/hooks/use-media-query",
+        replacement: path.resolve(__dirname, "../../registry/hooks/use-media-query.ts"),
+      },
+      {
         find: "@/hooks/use-visual-viewport",
         replacement: path.resolve(__dirname, "../../registry/hooks/use-visual-viewport.ts"),
       },
