@@ -215,6 +215,65 @@ export function RefreshOnReturn() {
       "Keep persistence work small because the browser may suspend or discard the page shortly after it becomes hidden.",
     ],
   },
+  {
+    slug: "use-scroll-restoration",
+    name: "useScrollRestoration",
+    summary: "Preserve each tab, route, or stack entry's scroll position by consumer-owned key.",
+    description: "useScrollRestoration gives any element-backed scroll viewport stateful, native-like return behavior without coupling the view to a router or browser history.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/use-scroll-restoration.json`,
+    usage: `"use client"
+
+import { AppShell } from "@/components/ui/app-shell"
+import { TabBar } from "@/components/ui/tab-bar"
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration"
+import { Bookmark, Home, User } from "lucide-react"
+import * as React from "react"
+
+const tabs = [
+  { label: "Feed", icon: <Home /> },
+  { label: "Saved", icon: <Bookmark /> },
+  { label: "Profile", icon: <User /> },
+] as const
+
+export function TabbedScreen() {
+  const [activeTab, setActiveTab] = React.useState<(typeof tabs)[number]["label"]>("Feed")
+  const scroll = useScrollRestoration(activeTab)
+
+  return (
+    <AppShell>
+      <AppShell.Main className="overflow-hidden">
+        <div ref={scroll.ref} className="h-full overflow-y-auto">
+          <TabContent tab={activeTab} />
+        </div>
+      </AppShell.Main>
+      <AppShell.Footer>
+        <TabBar>
+          {tabs.map(({ label, icon }) => (
+            <TabBar.Item
+              active={label === activeTab}
+              icon={icon}
+              key={label}
+              label={label}
+              onClick={() => setActiveTab(label)}
+            />
+          ))}
+        </TabBar>
+      </AppShell.Footer>
+    </AppShell>
+  )
+}`,
+    returns: [
+      { name: "ref", description: "Callback ref for the element that owns scrolling; changing the key saves the old position and restores the new one." },
+      { name: "save()", description: "Immediately records the current position for the active key." },
+      { name: "clear(key?)", description: "Clears one stored position, or every PWA UI scroll position when no key is supplied." },
+    ],
+    notes: [
+      "Memory storage is shared across mounted hook instances; choose session storage when positions should survive a reload in the same browser tab.",
+      "For a small number of inexpensive views, keeping every tab mounted and toggling visibility also preserves DOM state and can be simpler. Use this hook when views unmount, share one scroller, or are expensive to retain.",
+      "The hook retries for late content for up to two seconds and stops as soon as the user scrolls.",
+      "Document-level history navigation remains the browser's responsibility through history.scrollRestoration; virtualized lists should use their virtualizer's own restoration API.",
+    ],
+  },
 ] as const;
 
 export type HookDoc = (typeof hookDocs)[number];

@@ -205,6 +205,8 @@ return status === "offline" ? <OfflineBanner /> : null;
 
 `usePageVisibility` exposes foreground and background transitions so an application can pause expensive work, persist state, or refresh stale data. Like the other hooks, it preserves an `unknown` server-rendering state and attaches browser listeners only after mount.
 
+`useScrollRestoration(key)` preserves an element scroll viewport by a consumer-owned tab, route, or stack-entry key. Attach its callback ref to the element that actually scrolls. A key change saves the old view and restores the new one, including a bounded retry for content that arrives later. It never reads history or controls routing. For a few inexpensive tabs, keeping each view mounted and toggling visibility is a reasonable alternative; virtualized lists should use their virtualizer's restoration API.
+
 ## PWA base styles
 
 `pwa-base` installs conservative tokens for safe areas, dynamic viewport height, keyboard height, navigation and tab bars, touch targets, and opt-in full-screen root containment. It does not overwrite shadcn color tokens. Import `styles/pwa.css` once from the application stylesheet or layout, then mount `PWAProvider` once when application chrome should respond to the measured visual viewport and software keyboard.

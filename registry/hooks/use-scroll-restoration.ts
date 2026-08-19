@@ -116,8 +116,7 @@ export function useScrollRestoration(
   const restore = React.useCallback((node: HTMLElement) => {
     stopRestore();
     userInterruptedRef.current = false;
-    const target = readPosition(keyRef.current, storageRef.current);
-    if (target === undefined) return;
+    const target = readPosition(keyRef.current, storageRef.current) ?? 0;
 
     restoreDeadlineRef.current = performance.now() + retryWindow;
 

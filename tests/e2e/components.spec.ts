@@ -84,6 +84,7 @@ test("has no automatically detectable accessibility violations on core surfaces"
 
   await page.goto("/components/bottom-sheet");
   await page.getByRole("button", { name: "Open bottom sheet" }).click();
+  await expect(page.getByRole("dialog", { name: "Choose a workspace" })).toBeVisible();
   const overlayResults = await new AxeBuilder({ page }).include('[role="dialog"]').analyze();
   expect(overlayResults.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }))).toEqual([]);
 });
@@ -155,6 +156,29 @@ test("arms pull-to-refresh at the top and refreshes exactly once", async ({ page
   await region.dispatchEvent("pointermove", { pointerId: 2, pointerType: "touch", clientX: 30, clientY: 210 });
   await region.dispatchEvent("pointerup", { pointerId: 2, pointerType: "touch", clientX: 30, clientY: 210 });
   await expect(page.getByTestId("refresh-count")).toHaveText("Refreshes: 1");
+});
+
+test("restores each tab's scroll position", async ({ page }) => {
+  await page.goto("/test-fixtures/scroll-restoration");
+  const scroller = page.getByTestId("tab-scroller");
+
+  await page.getByRole("button", { name: "Saved" }).click();
+  await page.getByRole("button", { name: "Feed" }).click();
+
+  await scroller.evaluate((element) => {
+    element.scrollTop = 240;
+    element.dispatchEvent(new Event("scroll"));
+  });
+  await page.getByRole("button", { name: "Saved" }).click();
+  await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBe(0);
+
+  await scroller.evaluate((element) => {
+    element.scrollTop = 128;
+    element.dispatchEvent(new Event("scroll"));
+  });
+  await page.getByRole("button", { name: "Feed" }).click();
+  await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeGreaterThanOrEqual(239);
+  await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeLessThanOrEqual(241);
 });
 
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
