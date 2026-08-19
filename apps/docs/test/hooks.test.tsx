@@ -213,17 +213,18 @@ describe("PWA UI hooks", () => {
   });
 
   it("saves the old key and restores the new key on a live element", async () => {
-    const view = render(<ScrollRestorationProbe viewKey="tab-a" />);
+    const view = render(<ScrollRestorationProbe storage="session" viewKey="tab-a" />);
     let region = view.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
     region.scrollTop = 84;
     fireEvent.scroll(region);
 
-    view.rerender(<ScrollRestorationProbe viewKey="tab-b" />);
+    view.rerender(<ScrollRestorationProbe storage="session" viewKey="tab-b" />);
     region = view.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
+    expect(window.sessionStorage.getItem("pwa-ui:scroll:tab-a")).toBe("84");
     region.scrollTop = 26;
     fireEvent.scroll(region);
 
-    view.rerender(<ScrollRestorationProbe viewKey="tab-a" />);
+    view.rerender(<ScrollRestorationProbe storage="session" viewKey="tab-a" />);
     region = view.container.querySelector<HTMLElement>('[data-testid="scroll-region"]')!;
     await waitFor(() => expect(region.scrollTop).toBe(84));
   });

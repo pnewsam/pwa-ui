@@ -16,6 +16,7 @@ export type ScrollRestorationHandle = {
 const sessionPrefix = "pwa-ui:scroll:";
 const retryWindow = 2_000;
 const positions = new Map<string, number>();
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
 function sessionKey(key: string) {
   return `${sessionPrefix}${key}`;
@@ -80,6 +81,7 @@ export function useScrollRestoration(
   { storage = "memory", behavior = "instant" }: ScrollRestorationOptions = {},
 ): ScrollRestorationHandle {
   const nodeRef = React.useRef<HTMLElement | null>(null);
+  const lastPositionRef = React.useRef(0);
   const keyRef = React.useRef(key);
   const storageRef = React.useRef(storage);
   const behaviorRef = React.useRef(behavior);
@@ -102,7 +104,8 @@ export function useScrollRestoration(
   const save = React.useCallback(() => {
     const node = nodeRef.current;
     if (!node) return;
-    writePosition(keyRef.current, node.scrollTop, storageRef.current);
+    lastPositionRef.current = node.scrollTop;
+    writePosition(keyRef.current, lastPositionRef.current, storageRef.current);
   }, []);
 
   const scheduleSave = React.useCallback(() => {
@@ -132,6 +135,7 @@ export function useScrollRestoration(
       restoringRef.current = true;
       if (behaviorRef.current === "auto") node.scrollTo({ top: nextPosition, behavior: "auto" });
       else node.scrollTop = nextPosition;
+      lastPositionRef.current = node.scrollTop;
 
       window.requestAnimationFrame(() => {
         restoringRef.current = false;
@@ -169,9 +173,6 @@ export function useScrollRestoration(
     }
 
     nodeRef.current = node;
-    keyRef.current = key;
-    storageRef.current = storage;
-    behaviorRef.current = behavior;
     if (!node) return;
 
     const handleScroll = () => {
@@ -180,13 +181,42 @@ export function useScrollRestoration(
         userInterruptedRef.current = true;
         stopRestore();
       }
+      lastPositionRef.current = node.scrollTop;
       scheduleSave();
     };
 
     node.addEventListener("scroll", handleScroll, { passive: true });
     removeScrollListenerRef.current = () => node.removeEventListener("scroll", handleScroll);
     restore(node);
-  }, [behavior, key, restore, save, scheduleSave, stopRestore, storage]);
+  }, [restore, save, scheduleSave, stopRestore]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (
+      keyRef.current === key
+      && storageRef.current === storage
+      && behaviorRef.current === behavior
+    ) return;
+
+    const node = nodeRef.current;
+    if (node) {
+      const previousKey = keyRef.current;
+      const previousStorage = storageRef.current;
+      const previousPosition = lastPositionRef.current;
+      writePosition(previousKey, previousPosition, previousStorage);
+      stopRestore();
+      window.cancelAnimationFrame(scrollFrameRef.current);
+      scrollFrameRef.current = 0;
+
+      if (previousKey === key && previousStorage !== storage) {
+        writePosition(key, previousPosition, storage);
+      }
+    }
+
+    keyRef.current = key;
+    storageRef.current = storage;
+    behaviorRef.current = behavior;
+    if (node) restore(node);
+  }, [behavior, key, restore, save, stopRestore, storage]);
 
   const clear = React.useCallback((storedKey?: string) => {
     clearPositions(storedKey);
