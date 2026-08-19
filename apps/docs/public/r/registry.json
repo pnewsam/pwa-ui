@@ -227,6 +227,22 @@
       "type": "registry:component"
     },
     {
+      "name": "stack-navigator",
+      "title": "Stack Navigator",
+      "description": "A controlled, router-agnostic stack of mounted application views.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/components/stack-navigator/stack-navigator.tsx",
+          "type": "registry:component",
+          "target": "components/ui/stack-navigator.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
       "name": "navigation-bar",
       "title": "Navigation Bar",
       "description": "Router-composable top application chrome with a truly centered title.",

@@ -118,6 +118,14 @@
       "files": [{ "path": "components/pull-to-refresh/pull-to-refresh.tsx", "type": "registry:component", "target": "components/ui/pull-to-refresh.tsx" }]
     },
     {
+      "name": "stack-navigator",
+      "type": "registry:component",
+      "title": "Stack Navigator",
+      "description": "A controlled, router-agnostic stack of mounted application views.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "components/stack-navigator/stack-navigator.tsx", "type": "registry:component", "target": "components/ui/stack-navigator.tsx" }]
+    },
+    {
       "name": "navigation-bar",
       "type": "registry:component",
       "title": "Navigation Bar",

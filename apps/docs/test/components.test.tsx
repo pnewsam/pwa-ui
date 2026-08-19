@@ -13,6 +13,7 @@ import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provi
 import { PullToRefresh } from "../../../registry/components/pull-to-refresh/pull-to-refresh";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
+import { StackNavigator, useStackNavigator } from "../../../registry/components/stack-navigator/stack-navigator";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
 import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
 import { CodeBlock } from "@/components/code-block";
@@ -245,6 +246,68 @@ describe("PWA UI components", () => {
     expect(moved).toBe(true);
     expect(onRefresh).not.toHaveBeenCalled();
     expect(region).toHaveAttribute("data-state", "idle");
+  });
+
+  it("keeps covered stack views mounted and restores focus when they are revealed", async () => {
+    const user = userEvent.setup();
+    const popped = vi.fn();
+
+    function Detail() {
+      const { depth, canPop, pop } = useStackNavigator();
+      return <div><span>Depth {depth}</span><button data-autofocus onClick={pop}>Back</button><span>{canPop ? "Can pop" : "Root"}</span></div>;
+    }
+
+    function StackTest() {
+      const [showDetail, setShowDetail] = React.useState(false);
+      const entries = [
+        {
+          key: "list",
+          label: "Projects",
+          content: <div><input aria-label="Draft" /><button onClick={() => setShowDetail(true)}>Open project</button></div>,
+        },
+        ...(showDetail ? [{ key: "detail", label: "Project detail", content: <Detail /> }] : []),
+      ];
+
+      return <StackNavigator entries={entries} onPop={(key) => { popped(key); setShowDetail(false); }} />;
+    }
+
+    const view = render(<div className="h-80"><StackTest /></div>);
+    const scope = within(view.container);
+    const input = scope.getByRole("textbox", { name: "Draft" });
+    const listView = view.container.querySelector<HTMLElement>('[data-view-key="list"]')!;
+    listView.scrollTop = 96;
+    await user.type(input, "Preserved draft");
+
+    const trigger = scope.getByRole("button", { name: "Open project" });
+    await user.click(trigger);
+    const detailView = view.container.querySelector<HTMLElement>('[data-view-key="detail"]')!;
+    await waitFor(() => expect(detailView).not.toHaveAttribute("data-entering"));
+    expect(listView).toHaveAttribute("inert");
+    expect(listView).toHaveAttribute("aria-hidden", "true");
+    expect(scope.getByRole("button", { name: "Back" })).toHaveFocus();
+
+    await user.click(scope.getByRole("button", { name: "Back" }));
+    await waitFor(() => expect(listView).not.toHaveAttribute("inert"));
+    expect(popped).toHaveBeenCalledWith("detail");
+    expect(input).toHaveValue("Preserved draft");
+    expect(listView.scrollTop).toBe(96);
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it("animates only the top view when the controlled stack changes by multiple entries", () => {
+    const root = { key: "root", content: <span>Root</span> };
+    const second = { key: "second", content: <span>Second</span> };
+    const third = { key: "third", content: <span>Third</span> };
+    const view = render(<StackNavigator entries={[root]} onPop={() => undefined} />);
+
+    view.rerender(<StackNavigator entries={[root, second, third]} onPop={() => undefined} />);
+    expect(view.container.querySelectorAll('[data-slot="stack-view"]')).toHaveLength(3);
+    expect(view.container.querySelector('[data-view-key="third"]')).toHaveAttribute("data-entering");
+    expect(view.container.querySelector('[data-view-key="second"]')).not.toHaveAttribute("data-entering");
+
+    view.rerender(<StackNavigator entries={[root]} onPop={() => undefined} />);
+    expect(view.container.querySelector('[data-view-key="second"]')).not.toBeInTheDocument();
+    expect(view.container.querySelector('[data-view-key="third"]')).toHaveAttribute("data-exiting");
   });
 
   it("renders the responsive dialog in its mobile presentation below the breakpoint", () => {

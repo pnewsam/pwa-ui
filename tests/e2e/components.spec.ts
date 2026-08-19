@@ -193,6 +193,28 @@ test("communicates the haptics no-op when vibration is unavailable", async ({ pa
   await expect(page.getByRole("button", { name: "Tap" })).toBeDisabled();
 });
 
+test("preserves covered stack state, scroll, inertness, and focus", async ({ page }) => {
+  await page.goto("/test-fixtures/stack-navigator");
+  const listView = page.locator('[data-view-key="projects"]');
+  const trigger = page.getByRole("button", { name: "Open project" });
+
+  await page.getByRole("textbox", { name: "Project draft" }).fill("Preserved draft");
+  await listView.evaluate((element) => { element.scrollTop = 180; });
+  await trigger.click();
+
+  const detailView = page.locator('[data-view-key="project-detail"]');
+  await expect(detailView).not.toHaveAttribute("data-entering", "");
+  await expect(listView).toHaveAttribute("inert", "");
+  await expect(listView).toHaveAttribute("aria-hidden", "true");
+  await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+
+  await page.getByRole("button", { name: "Back to projects" }).click();
+  await expect(listView).not.toHaveAttribute("inert", "");
+  await expect(page.getByRole("textbox", { name: "Project draft" })).toHaveValue("Preserved draft");
+  await expect.poll(() => listView.evaluate((element) => element.scrollTop)).toBe(180);
+  await expect(trigger).toBeFocused();
+});
+
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
   await page.goto("/components/bottom-sheet");
   await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();
