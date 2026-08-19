@@ -60,6 +60,22 @@ Purpose: add a touch-driven refresh gesture to a list or feed without owning the
 
 `PullToRefresh` owns the vertical scroll viewport so its top-edge check has a single reliable boundary. When composing it with `AppShell.Main`, move scrolling to the component by setting Main to `overflow-hidden` and the refresh viewport to `h-full`. It exposes `data-state` and `--pwa-pull-distance` for styling, holds its status indicator while the returned promise is pending, and ignores mouse drags. Keep a conventional refresh action available for people who cannot perform the gesture.
 
+## StackNavigator
+
+Purpose: animate a consumer-controlled stack of mounted application views without owning URLs or browser history.
+
+```tsx
+<AppShell.Main className="overflow-hidden">
+  <StackNavigator
+    entries={entries}
+    onPop={(topKey) => removeEntry(topKey)}
+    onDepthChange={(depth) => setTabBarVisible(depth === 1)}
+  />
+</AppShell.Main>
+```
+
+Append an entry to push and remove the final entry to pop. Covered views remain mounted, inert, and hidden from the accessibility tree, so their DOM state and scroll survive. A detail entry can call `useStackNavigator().pop` from `NavigationBar.BackButton`; that request invokes the controlled `onPop` callback. Same-document View Transitions enhance supported browsers, while the component retains a transform/opacity fallback and an instant reduced-motion path. Router integrations must derive `entries` from router state and send `onPop` back through the router—the component itself never reads or writes a URL.
+
 ## SafeArea
 
 Purpose: apply selected platform safe-area insets without device detection.

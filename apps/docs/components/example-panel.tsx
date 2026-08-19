@@ -27,6 +27,7 @@ import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provi
 import { PullToRefresh } from "../../../registry/components/pull-to-refresh/pull-to-refresh";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
+import { StackNavigator, useStackNavigator, type StackNavigatorEntry } from "../../../registry/components/stack-navigator/stack-navigator";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
 import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
 import type { ComponentSlug } from "@/lib/component-docs";
@@ -126,6 +127,54 @@ function PullToRefreshDemo() {
           </div>
         </PullToRefresh>
       </div>
+    </DemoPhone>
+  );
+}
+
+function StackDetailDemo() {
+  const { pop } = useStackNavigator();
+
+  return (
+    <div className="min-h-full bg-background">
+      <NavigationBar>
+        <NavigationBar.Leading><NavigationBar.BackButton aria-label="Back to projects" data-autofocus onClick={pop} /></NavigationBar.Leading>
+        <NavigationBar.Title>Project</NavigationBar.Title>
+      </NavigationBar>
+      <div className="p-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">In progress</p>
+        <h3 className="mt-2 text-xl font-medium">Native feel layer</h3>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">Covered list state and scroll stay mounted behind this detail view.</p>
+      </div>
+    </div>
+  );
+}
+
+function StackNavigatorDemo() {
+  const [detailOpen, setDetailOpen] = React.useState(false);
+  const entries: StackNavigatorEntry[] = [
+    {
+      key: "projects",
+      label: "Projects",
+      content: (
+        <div className="min-h-full bg-background">
+          <NavigationBar><NavigationBar.Title>Projects</NavigationBar.Title></NavigationBar>
+          <div className="space-y-2 p-3">
+            {["Native feel layer", "Offline states", "Install flow", "Device QA"].map((project, index) => (
+              <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card p-3 text-left" key={project} onClick={() => index === 0 && setDetailOpen(true)} type="button">
+                <span><strong className="block text-sm font-medium">{project}</strong><small className="text-muted-foreground">{index + 2} tasks</small></span>
+                <span aria-hidden="true">›</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    ...(detailOpen ? [{ key: "project", label: "Project detail", content: <StackDetailDemo /> }] : []),
+  ];
+
+  return (
+    <DemoPhone className="demo-phone-tall">
+      <StackNavigator entries={entries} onPop={() => setDetailOpen(false)} />
     </DemoPhone>
   );
 }
@@ -297,6 +346,7 @@ function ComponentDemo({ slug }: { slug: ComponentSlug }) {
     case "app-shell": return <AppShellDemo />;
     case "safe-area": return <SafeAreaDemo />;
     case "pull-to-refresh": return <PullToRefreshDemo />;
+    case "stack-navigator": return <StackNavigatorDemo />;
     case "bottom-sheet": return <BottomSheetDemo />;
     case "responsive-dialog": return <ResponsiveDialogDemo />;
     case "action-sheet": return <ActionSheetDemo />;

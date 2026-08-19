@@ -60,7 +60,7 @@ test("keeps application chrome anchored while AppShell.Main scrolls", async ({ p
 });
 
 test("clips every phone example to its simulated device corners", async ({ page }) => {
-  for (const path of ["/components/app-shell", "/components/navigation-bar", "/components/tab-bar", "/components/keyboard-avoiding-view"]) {
+  for (const path of ["/components/app-shell", "/components/stack-navigator", "/components/navigation-bar", "/components/tab-bar", "/components/keyboard-avoiding-view"]) {
     await page.goto(path);
 
     const frame = page.locator(".demo-phone");
@@ -258,6 +258,25 @@ test("removes stack motion when reduced motion is requested", async ({ page }) =
   await expect(stack).toHaveAttribute("data-transition-mode", "reduced");
   await expect.poll(() => detail.evaluate((element) => Number.parseFloat(getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.001);
   await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+});
+
+test("documents the controlled stack and NavigationBar composition", async ({ page }) => {
+  await page.goto("/components/stack-navigator");
+  await expect(page.getByRole("heading", { name: "StackNavigator", exact: true })).toBeVisible();
+  await expect(page.locator("#installation").getByText("pnpm dlx shadcn@latest add https://pwaui.com/r/stack-navigator.json")).toBeVisible();
+
+  const preview = page.locator(".example-preview");
+  await preview.getByRole("button", { name: "Native feel layer" }).click();
+  await expect(preview.getByRole("button", { name: "Back to projects" })).toBeFocused();
+  await preview.getByRole("button", { name: "Back to projects" }).click();
+  await expect(preview.getByText("Projects", { exact: true })).toBeVisible();
+
+  await expect(async () => {
+    await page.goto("/guides/app-layout#stacked-navigation");
+    expect(new URL(page.url()).pathname).toBe("/guides/app-layout");
+  }).toPass();
+  await expect(page.getByRole("heading", { name: "Stacked navigation" })).toBeVisible();
+  await expect(page.getByText("Parallel-route slots preserve their active subpage during soft navigation", { exact: false })).toBeVisible();
 });
 
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {

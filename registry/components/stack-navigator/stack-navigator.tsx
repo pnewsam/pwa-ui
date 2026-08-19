@@ -113,6 +113,10 @@ export function StackNavigator({
     queueMicrotask(() => {
       if (cancelled) return;
       const nextState = nextRenderState(renderState, entries);
+      if (sameKeys(renderState.sourceEntries, entries)) {
+        setRenderState(nextState);
+        return;
+      }
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const transitionDocument = document as ViewTransitionDocument;
       const startViewTransition = transitionDocument.startViewTransition;
@@ -132,24 +136,29 @@ export function StackNavigator({
           : `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-old(${transitionName}){animation:pwa-stack-old-pop ${fallbackDuration}ms ease-out both}::view-transition-new(${transitionName}){animation:pwa-stack-new-pop ${fallbackDuration}ms ease-out both}@keyframes pwa-stack-old-pop{to{transform:translateX(100%);opacity:.96}}@keyframes pwa-stack-new-pop{from{transform:translateX(-12%);opacity:.92}to{transform:translateX(0);opacity:1}}`;
         document.head.append(styleElement);
 
-        const transition = startViewTransition.call(transitionDocument, () => new Promise<void>((resolve) => {
-          setRenderState(nextState);
-          window.setTimeout(() => {
-            previousView?.style.removeProperty("view-transition-name");
-            const nextTop = entries.at(-1);
-            const nextView = nextTop ? viewRefs.current.get(nextTop.key) : undefined;
-            nextView?.removeAttribute("data-entering");
-            if (nextState.exitingKey) viewRefs.current.get(nextState.exitingKey)?.removeAttribute("data-exiting");
-            if (nextView) nextView.style.viewTransitionName = transitionName;
-            resolve();
-          }, 0);
-        }));
+        try {
+          const transition = startViewTransition.call(transitionDocument, () => new Promise<void>((resolve) => {
+            setRenderState(nextState);
+            window.setTimeout(() => {
+              previousView?.style.removeProperty("view-transition-name");
+              const nextTop = entries.at(-1);
+              const nextView = nextTop ? viewRefs.current.get(nextTop.key) : undefined;
+              nextView?.removeAttribute("data-entering");
+              if (nextState.exitingKey) viewRefs.current.get(nextState.exitingKey)?.removeAttribute("data-exiting");
+              if (nextView) nextView.style.viewTransitionName = transitionName;
+              resolve();
+            }, 0);
+          }));
 
-        void transition.finished.catch(() => undefined).finally(() => {
-          viewRefs.current.forEach((view) => view.style.removeProperty("view-transition-name"));
+          void transition.finished.catch(() => undefined).finally(() => {
+            viewRefs.current.forEach((view) => view.style.removeProperty("view-transition-name"));
+            styleElement.remove();
+          });
+          return;
+        } catch {
+          previousView?.style.removeProperty("view-transition-name");
           styleElement.remove();
-        });
-        return;
+        }
       }
 
       root?.setAttribute("data-transition-mode", reducedMotion ? "reduced" : "fallback");

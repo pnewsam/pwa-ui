@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata = createPageMetadata(
   "App layout",
-  "Compose PWAProvider, AppShell, NavigationBar, TabBar, and SafeArea into a predictable full-screen application frame.",
+  "Compose PWAProvider, AppShell, StackNavigator, NavigationBar, TabBar, and SafeArea into a predictable full-screen application frame.",
   "/guides/app-layout",
 );
 
@@ -15,13 +15,14 @@ const composition = `PWAProvider
         ├── AppShell.Header
         │   └── NavigationBar
         ├── AppShell.Main
-        │   └── Routed screen content
+        │   └── StackNavigator or routed screen content
         └── AppShell.Footer
             └── TabBar`;
 
 const install = `pnpm dlx shadcn@latest add \\
   @pwa-ui/pwa-provider \\
   @pwa-ui/app-shell \\
+  @pwa-ui/stack-navigator \\
   @pwa-ui/navigation-bar \\
   @pwa-ui/tab-bar \\
   @pwa-ui/safe-area`;
@@ -86,11 +87,42 @@ export function ApplicationLayout({ children }) {
   )
 }`;
 
+const stateDrivenStack = `"use client"
+
+import * as React from "react"
+import { StackNavigator } from "@/components/ui/stack-navigator"
+
+export function Projects() {
+  const [selectedProject, setSelectedProject] = React.useState<string | null>(null)
+  const entries = [
+    { key: "projects", content: <ProjectList onSelect={setSelectedProject} /> },
+    ...(selectedProject ? [{ key: selectedProject, content: <Project id={selectedProject} /> }] : []),
+  ]
+
+  return <StackNavigator entries={entries} onPop={() => setSelectedProject(null)} />
+}`;
+
+const nextRoutedStack = `"use client"
+
+import { useRouter } from "next/navigation"
+import { StackNavigator } from "@/components/ui/stack-navigator"
+
+export function RoutedProjectStack({ list, detail, detailKey }) {
+  const router = useRouter()
+  const entries = [
+    { key: "projects", content: list },
+    ...(detail ? [{ key: detailKey, content: detail }] : []),
+  ]
+
+  return <StackNavigator entries={entries} onPop={() => router.back()} />
+}`;
+
 const responsibilities = [
   ["PWAProvider", "Viewport and keyboard measurements", "Document scrolling or visual chrome"],
   ["Application root", "Containing document scroll for full-screen apps", "Screen regions or navigation"],
   ["AppShell", "One visual-viewport frame and region placement", "Navigation appearance or routing"],
   ["AppShell.Main", "The application’s vertical scrolling", "Persistent header or footer chrome"],
+  ["StackNavigator", "Mounted view state, focus, and push/pop presentation", "URLs, history, route matching, or data loading"],
   ["NavigationBar", "Top navigation content and actions", "Safe-area placement or viewport height"],
   ["TabBar", "Primary destinations and active state", "Footer placement or document scrolling"],
   ["SafeArea", "Insets explicitly requested by custom layouts", "Insets AppShell already applies"],
@@ -166,6 +198,16 @@ export default function AppLayoutGuidePage() {
         <p>Mount PWAProvider and the application shell in a persistent router layout, then render the route outlet inside <code>AppShell.Main</code>. Pass the active route to TabBar and screen-specific titles or actions to NavigationBar without remounting the frame.</p>
       </section>
 
+      <section className="docs-section" id="stacked-navigation">
+        <h2>Stacked navigation</h2>
+        <p>Use StackNavigator for drill-in flows where a detail screen should cover a list and reveal it unchanged on back. The array is the complete source of truth: appending pushes, removing the last entry pops, and <code>onPop</code> only asks the consumer to make that change.</p>
+        <CodeBlock code={stateDrivenStack} language="tsx" label="State-driven stack" />
+        <h3>With Next.js App Router</h3>
+        <p>Keep route ownership in Next.js. A client wrapper can receive the list and optional detail slot as React nodes, map the rendered route state to entries, and call <code>router.back()</code> from <code>onPop</code>. Links or <code>router.push()</code> still perform navigation; StackNavigator only presents the result.</p>
+        <CodeBlock code={nextRoutedStack} language="tsx" label="Client route adapter" />
+        <p>Parallel-route slots preserve their active subpage during soft navigation, but a hard reload needs a matching <code>default.tsx</code> fallback. Intercepted routes are useful when the routed detail should overlay its originating context; they are not required for a normal state-driven stack. In either pattern, pass the router-rendered nodes into StackNavigator rather than adding pathname or history logic to the registry component.</p>
+      </section>
+
       <section className="docs-section" id="common-mistakes">
         <h2>Common mistakes</h2>
         <ul>
@@ -173,6 +215,7 @@ export default function AppLayoutGuidePage() {
           <li>Placing NavigationBar or TabBar beside AppShell instead of inside its Header or Footer.</li>
           <li>Applying the same safe-area edge in both AppShell and SafeArea.</li>
           <li>Mounting a separate AppShell for every route when the navigation chrome should persist.</li>
+          <li>Letting StackNavigator and the router both maintain separate navigation histories.</li>
           <li>Using <code>100vh</code> wrappers outside the shell that can exceed the usable mobile visual viewport.</li>
         </ul>
       </section>

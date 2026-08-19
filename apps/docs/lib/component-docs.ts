@@ -103,6 +103,53 @@ export function Inbox() {
     accessibility: "Refresh progress is announced through a polite status live region. The default spinner stops rotating when reduced motion is requested; keep a separate visible refresh action available for users who cannot perform the gesture.",
   },
   {
+    slug: "stack-navigator",
+    name: "StackNavigator",
+    summary: "A controlled stack of mounted views with native-enhanced push and pop transitions.",
+    description: "StackNavigator animates a consumer-owned list of views while preserving covered DOM state, scroll, and focus. It never reads a URL, writes history, or chooses what to navigate to.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/stack-navigator.json`,
+    usage: `"use client"
+
+import * as React from "react"
+import { NavigationBar } from "@/components/ui/navigation-bar"
+import { StackNavigator, useStackNavigator } from "@/components/ui/stack-navigator"
+
+function ProjectDetail() {
+  const { pop } = useStackNavigator()
+
+  return (
+    <>
+      <NavigationBar>
+        <NavigationBar.Leading>
+          <NavigationBar.BackButton data-autofocus onClick={pop} />
+        </NavigationBar.Leading>
+        <NavigationBar.Title>Project</NavigationBar.Title>
+      </NavigationBar>
+      <main>Project detail</main>
+    </>
+  )
+}
+
+export function ProjectStack() {
+  const [detailOpen, setDetailOpen] = React.useState(false)
+  const entries = [
+    { key: "projects", label: "Projects", content: <button onClick={() => setDetailOpen(true)}>Open project</button> },
+    ...(detailOpen ? [{ key: "project", label: "Project detail", content: <ProjectDetail /> }] : []),
+  ]
+
+  return <StackNavigator entries={entries} onPop={() => setDetailOpen(false)} />
+}`,
+    anatomy: ["StackNavigator", "stack view", "useStackNavigator", "entries", "onPop"],
+    notes: ["entries is the complete controlled stack. Append to push and remove from the end to pop; the component keeps no private navigation history.", "Covered views stay mounted but inert and aria-hidden, preserving uncontrolled input state and scroll without exposing hidden controls to keyboard or assistive-technology navigation.", "useStackNavigator exposes depth, canPop, and pop so a NavigationBar.BackButton inside the top entry can request onPop.", "onDepthChange can hide a persistent TabBar or update other shell chrome without querying the DOM.", "Keep stacks shallow enough that retaining covered DOM remains inexpensive. Each view owns its own scroll viewport."],
+    platformCaveats: ["Same-document View Transitions are a progressive enhancement. StackNavigator feature-detects the API and uses its transform/opacity fallback when unavailable; reduced-motion requests bypass sliding in either path.", "The component cannot synchronize deep links or browser back on its own. When a router owns entries, map router-rendered state into the controlled array and route onPop back through that router."],
+    support: [
+      { platform: "Chrome / Android WebView", availability: "Native enhancement", notes: "Same-document View Transitions from Chrome 111; older engines use the CSS fallback." },
+      { platform: "Safari / iOS", availability: "Native enhancement", notes: "Same-document View Transitions from Safari 18; older versions use the CSS fallback." },
+      { platform: "Firefox", availability: "Native enhancement", notes: "Same-document View Transitions from Firefox 139; older versions use the CSS fallback." },
+    ],
+    accessibility: "Only the active view is reachable. Push focuses an autofocus target or the new view container; pop returns focus to the pointer or keyboard trigger when it remains mounted, otherwise to the revealed view.",
+  },
+  {
     slug: "bottom-sheet",
     name: "BottomSheet",
     summary: "A swipeable, keyboard-aware mobile bottom sheet built on Base UI Drawer.",

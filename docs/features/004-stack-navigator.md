@@ -14,7 +14,7 @@
 
 - **ID:** 004
 - **Mode:** product
-- **Status:** in_progress
+- **Status:** complete
 - **Created:** 2026-08-19
 - **Last updated:** 2026-08-19
 - **Owner:** maintainer (pnewsam)
@@ -48,9 +48,9 @@ This is the largest identified gap between "mobile chrome kit" and "native-feel 
 - [x] Focus management: on push, focus moves into the new view (first autofocus element, else the view container with `tabindex="-1"`); on pop, focus returns to the element that triggered the push when it still exists, else the revealed view container. Keyboard-only traversal cannot reach covered views.
 - [x] Styling follows library conventions: `data-slot` attributes, `--pwa-*` variables where sizing is exposed, works inside `AppShell.Main` and as a full-shell child; z-order plays correctly with `AppShell.Header`/`Footer` (top view slides under fixed chrome, matching native behavior).
 - [x] Registry entry in `registry/registry.json` (component + any co-located hook file); registry build and `scripts/test-registry-install.mjs` pass.
-- [ ] Docs: `component-docs.ts` entry with a live list→detail example composing `NavigationBar.BackButton` via `useStackNavigator`, a support-matrix note for View Transitions, and a guide section ("Stacked navigation") explaining router integration patterns (Next.js parallel/intercepted routes or state-driven stacks) as documentation only.
+- [x] Docs: `component-docs.ts` entry with a live list→detail example composing `NavigationBar.BackButton` via `useStackNavigator`, a support-matrix note for View Transitions, and a guide section ("Stacked navigation") explaining router integration patterns (Next.js parallel/intercepted routes or state-driven stacks) as documentation only.
 - [x] Unit tests plus a Playwright fixture at `apps/docs/app/test-fixtures/stack-navigator/page.tsx` covering push/pop state, inert/focus behavior, fallback path (force-disable `startViewTransition` in one test), and reduced motion.
-- [ ] [DEVICE_QA.md](../DEVICE_QA.md) gains a stacked-navigation section (transition smoothness, state preservation, focus, rotation mid-transition).
+- [x] [DEVICE_QA.md](../DEVICE_QA.md) gains a stacked-navigation section (transition smoothness, state preservation, focus, rotation mid-transition).
 
 ### Should Have
 
@@ -96,17 +96,17 @@ This is the largest identified gap between "mobile chrome kit" and "native-feel 
 
 ## Definition of Done
 
-- [ ] All must-have acceptance criteria pass.
-- [ ] Required invariants and guardrails hold (no routing ownership; covered-view state preserved).
-- [ ] Verification evidence is recorded.
-- [ ] No unrelated changes are included.
-- [ ] Relevant documentation is updated (docs page, guide section, COMPONENTS.md, DEVICE_QA.md).
+- [x] All must-have acceptance criteria pass.
+- [x] Required invariants and guardrails hold (no routing ownership; covered-view state preserved).
+- [x] Verification evidence is recorded.
+- [x] No unrelated changes are included.
+- [x] Relevant documentation is updated (docs page, guide section, COMPONENTS.md, DEVICE_QA.md).
 
 ## Tasks
 
 - [x] Implement the core `StackNavigator` with the controlled API, mounted/inert covered views, focus management, and the CSS fallback transition; land with unit tests, the Playwright fixture, e2e coverage of push/pop/inert/focus, and the registry entry verified by clean install.
 - [x] Add the View Transitions path with feature detection, scoped `view-transition-name` handling, reduced-motion behavior in both paths, and forced-fallback + reduced-motion e2e specs.
-- [ ] Write the docs page and "Stacked navigation" guide (including `NavigationBar.BackButton` composition and router-integration patterns as docs only), update `docs/COMPONENTS.md` and DEVICE_QA.md, run full checks, and record evidence.
+- [x] Write the docs page and "Stacked navigation" guide (including `NavigationBar.BackButton` composition and router-integration patterns as docs only), update `docs/COMPONENTS.md` and DEVICE_QA.md, run full checks, and record evidence.
 
 ## Progress
 
@@ -114,3 +114,4 @@ This is the largest identified gap between "mobile chrome kit" and "native-feel 
 | --- | --- | --- | --- |
 | Controlled stack core, fallback motion, mounted/inert views, focus, registry payload, and tests | complete | focused component unit suite (21 passed); focused Playwright spec in Chromium + WebKit; `pnpm lint`; `pnpm typecheck`; `pnpm registry:validate`; `pnpm registry:build`; clean `@pwa-ui/stack-navigator` install | The component retains only the prior top during pop, snaps intermediate entries on multi-entry changes, and records recent pointer triggers so WebKit can restore focus even though pointer-clicked buttons do not receive focus there. |
 | View Transitions enhancement, forced fallback, and reduced motion | complete | focused StackNavigator Playwright set (8 passed in Chromium + WebKit); component unit suite (21 passed); lint, typecheck, registry validation/build | Participating views receive one instance-scoped `view-transition-name` only during the transition; reduced motion bypasses native View Transitions and normalizes to an effectively zero CSS duration. |
+| Documentation, composition guide, support matrix, and release verification | complete | `pnpm check` (36 unit tests, 24 registry items, 41 static pages); full Playwright suite (42 passed in Chromium + WebKit); clean local registry install; visual inspection of the docs example | The guide keeps URL ownership with the host router, documents state-driven stacks and Next.js parallel/intercepted routes, and the component now ignores stable-key content refreshes for transition purposes while falling back safely if `startViewTransition` throws. |

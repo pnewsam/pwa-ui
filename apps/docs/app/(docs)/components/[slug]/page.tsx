@@ -7,7 +7,7 @@ import { ExamplePanel } from "@/components/example-panel";
 import { componentDocs, getComponentDoc } from "@/lib/component-docs";
 import { createPageMetadata } from "@/lib/site-metadata";
 
-const layoutComponentSlugs = new Set(["pwa-provider", "app-shell", "safe-area", "pull-to-refresh", "navigation-bar", "tab-bar"]);
+const layoutComponentSlugs = new Set(["pwa-provider", "app-shell", "safe-area", "pull-to-refresh", "stack-navigator", "navigation-bar", "tab-bar"]);
 
 function renderCaveat(caveat: string) {
   return caveat.split(/`([^`]+)`/).map((part, index) => index % 2 === 1 ? <code key={index}>{part}</code> : part);
@@ -80,6 +80,18 @@ export default async function ComponentPage({ params }: PageProps<"/components/[
           <ul>{component.platformCaveats.map((caveat) => <li key={caveat}>{renderCaveat(caveat)}</li>)}</ul>
         </div>
       </section>
+
+      {"support" in component ? (
+        <section className="docs-section" id="support">
+          <h2>Transition support</h2>
+          <div className="docs-table-wrap" tabIndex={0} aria-label={`${component.name} transition support; scroll horizontally to see every column`}>
+            <table className="docs-table">
+              <thead><tr><th>Platform</th><th>Path</th><th>Notes</th></tr></thead>
+              <tbody>{component.support.map((item) => <tr key={item.platform}><td>{item.platform}</td><td>{item.availability}</td><td>{item.notes}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
 
       <section className="docs-section" id="accessibility">
         <h2>Accessibility</h2>

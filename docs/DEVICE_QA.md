@@ -51,6 +51,16 @@ Run this checklist against a production build. Record the device, OS/browser ver
 - Repeat the top-edge and scrolled-list cases on iOS Safari, iOS Home Screen, Android Chrome, and installed Android.
 - With Reduce Motion enabled, the state remains understandable without spinner rotation or nonessential movement.
 
+## Stacked navigation
+
+- Push a detail view and confirm it enters from the trailing edge beneath persistent AppShell header/footer chrome without flashing or exposing the covered view.
+- Pop with NavigationBar.BackButton and confirm the outgoing view moves toward the trailing edge while the prior view is revealed.
+- Type in a list field and scroll the list before pushing; both value and exact scroll position survive the round trip.
+- Covered controls are unreachable by keyboard and VoiceOver/TalkBack; focus moves into the new view and returns to the initiating control on pop.
+- Repeat with Reduce Motion enabled: the view changes without sliding and focus/state behavior remains identical.
+- Rotate during or immediately after push/pop; the active view fills the recovered viewport and no stale transition layer remains.
+- Verify both the native View Transitions path on a current browser and the CSS fallback on an older or disabled engine.
+
 ## Software keyboard
 
 - Focus every field in the mobile form and BottomSheet form.
