@@ -15,6 +15,16 @@ export default function IntroductionPage() {
         <p>PWA UI is a source-owned React component layer for the interaction and layout problems unique to mobile-first web applications.</p>
       </header>
 
+      <section className="docs-demo-callout" aria-labelledby="demo-callout-title">
+        <div className="docs-demo-callout-icon"><Smartphone size={19} /></div>
+        <div>
+          <p>Interactive showcase</p>
+          <h2 id="demo-callout-title">Feel the components working together.</h2>
+          <span>Open the phone-first mini-app, pull to refresh, push a detail, switch tabs, and try the install path.</span>
+        </div>
+        <a href="/demo">Try the demo <ArrowRight size={15} /></a>
+      </section>
+
       <section className="docs-section" id="why">
         <h2>Why PWA UI?</h2>
         <p>Accessible primitives already solve dialogs, focus management, and keyboard interaction. PWA UI composes those foundations with safe areas, dynamic viewports, mobile navigation chrome, software keyboard behavior, and touch-first presentation.</p>

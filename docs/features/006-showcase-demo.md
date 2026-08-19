@@ -42,17 +42,17 @@ The docs site currently documents components individually; a visitor cannot *fee
 
 - [x] The docs app registers a minimal, readable app-local service worker (precache of the app shell or a network-first pass-through — smallest thing that yields installability plus a demonstrable update flow) that handles the `SKIP_WAITING` message contract expected by `useServiceWorkerUpdate`.
 - [x] The deployed site passes installability: valid manifest (name, icons incl. maskable, `display: standalone`, start URL scoped to the app), service worker in scope, verified by a Lighthouse (or equivalent) installability audit wired into CI or the e2e suite.
-- [ ] A `/demo` route renders a full-screen mini-app using the documented containment pattern (`data-pwa-app-root`/`data-pwa-app-mount` scoped so ordinary docs pages keep normal scrolling), composing at minimum: `AppShell` + `NavigationBar` + `TabBar` (≥3 tabs), `StackNavigator` list→detail with back gesture where enabled, `useScrollRestoration` on the tabs, `PullToRefresh` on the list (refresh visibly changes data), `BottomSheet`/`ResponsiveDialog` with a `KeyboardAvoidingView` or drawer-keyboard form, `InstallPrompt` (native and iOS manual modes as appropriate), `UpdatePrompt`, and `OfflineBanner`.
-- [ ] Demo components are imported from the canonical `registry/` source like the rest of the docs app — the demo must not fork or restyle registry internals beyond what a consumer could do with documented props.
-- [ ] The home page presents the demo prominently ("Try the demo" affordance near the top) and the demo includes a path back to the docs.
-- [ ] The demo is responsive: on desktop widths it remains usable (e.g. framed at mobile width) rather than broken.
+- [x] A `/demo` route renders a full-screen mini-app using the documented containment pattern (`data-pwa-app-root`/`data-pwa-app-mount` scoped so ordinary docs pages keep normal scrolling), composing at minimum: `AppShell` + `NavigationBar` + `TabBar` (≥3 tabs), `StackNavigator` list→detail with back gesture where enabled, `useScrollRestoration` on the tabs, `PullToRefresh` on the list (refresh visibly changes data), `BottomSheet`/`ResponsiveDialog` with a `KeyboardAvoidingView` or drawer-keyboard form, `InstallPrompt` (native and iOS manual modes as appropriate), `UpdatePrompt`, and `OfflineBanner`.
+- [x] Demo components are imported from the canonical `registry/` source like the rest of the docs app — the demo must not fork or restyle registry internals beyond what a consumer could do with documented props.
+- [x] The home page presents the demo prominently ("Try the demo" affordance near the top) and the demo includes a path back to the docs.
+- [x] The demo is responsive: on desktop widths it remains usable (e.g. framed at mobile width) rather than broken.
 - [ ] A Playwright e2e spec drives the core flow on a mobile-sized viewport: open demo → pull-to-refresh updates list → push detail → back → tab switch and return restores scroll → open sheet form and focus input → offline simulation shows the banner. All assertions on real behavior, not screenshots alone.
 - [x] The service worker does not interfere with docs development or existing e2e (`pnpm dev` unaffected; worker registered only in production builds or guarded appropriately) and does not cache the registry payloads under `public/r` in a way that could serve stale component source.
 - [ ] DEVICE_QA.md gains a showcase section: install from the demo page on iOS (manual steps) and Android (native prompt), launch installed, verify the flow standalone.
 
 ### Should Have
 
-- [ ] A visible "what you're feeling" annotation layer or short captions in the demo linking each interaction to its component docs page.
+- [x] A visible "what you're feeling" annotation layer or short captions in the demo linking each interaction to its component docs page.
 - [ ] Update-flow demonstration note in RELEASING.md (deploying a new version should surface `UpdatePrompt` in installed copies).
 
 ## Out of Scope
@@ -102,7 +102,7 @@ The docs site currently documents components individually; a visitor cannot *fee
 ## Tasks
 
 - [x] Make the docs app a real PWA: app-local service worker with the `SKIP_WAITING` contract, production-gated registration, manifest completeness, installability audit wired into CI, and the `/r/*` no-stale guarantee tested.
-- [ ] Build the `/demo` route: containment-scoped layout, the composed mini-app flow with demo data, home-page affordance, and desktop framing; include the docs-scroll regression assertion.
+- [x] Build the `/demo` route: containment-scoped layout, the composed mini-app flow with demo data, home-page affordance, and desktop framing; include the docs-scroll regression assertion.
 - [ ] Add the end-to-end demo-flow spec (refresh, push/pop, scroll restoration, sheet + keyboard, offline banner), DEVICE_QA.md showcase section, and RELEASING.md update note; run full checks and record evidence.
 
 ## Progress
@@ -110,3 +110,4 @@ The docs site currently documents components individually; a visitor cannot *fee
 | Criterion or task | Status | Evidence | Notes |
 | --- | --- | --- | --- |
 | Production PWA foundation and installability audit | complete | `pnpm check` (39 unit tests, 24 registry items, 41 static pages); `pnpm test:pwa` (production Chromium audit passed); CI and deploy workflows run the audit | The version-stamped worker is production-only, passes network requests through without a cache, explicitly excludes `/r/*`, responds to `SKIP_WAITING`, and ships with no-store/security/scope headers. The manifest starts at `/demo` and includes 192px and 512px PNG icons with a maskable 512px entry. |
+| Composed `/demo`, route-scoped containment, and discovery | complete | `pnpm check` (39 unit tests, 24 registry items, 42 static pages); focused showcase structural suite (2 passed in Chromium and WebKit); production PWA audit passed with `/demo` start URL; iPhone-sized visual inspection | The demo imports registry source directly and composes app chrome, three tabs, stack navigation, pull-to-refresh, tab scroll restoration, haptics, keyboard-aware sheet form, platform-honest install UI, live service-worker updates, and offline feedback. Desktop framing stays at 432px while the Docs link restores ordinary page scrolling after client navigation. |

@@ -100,6 +100,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
 .docs-page-header h1 { margin: 0; font-size: clamp(38px, 5vw, 49px); font-weight: 570; line-height: 1.1; letter-spacing: -.038em; }
 .component-header h1 { font-size: clamp(36px, 4.5vw, 44px); }
 .docs-page-header > p:last-child { max-width: 690px; margin: 23px 0 0; color: #62626a; font-size: 17px; line-height: 1.72; letter-spacing: -.006em; }
+.docs-demo-callout { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; margin-top: 32px; border: 1px solid var(--docs-line); border-radius: 12px; background: #fff; padding: 18px; }
+.docs-demo-callout-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 11px; background: #f0f0f1; color: #3f3f46; }
+.docs-demo-callout p, .docs-demo-callout h2, .docs-demo-callout span { margin: 0; }
+.docs-demo-callout p { color: #71717a; font: 550 10px var(--font-mono); letter-spacing: .07em; text-transform: uppercase; }
+.docs-demo-callout h2 { margin-top: 4px; font-size: 16px; font-weight: 580; letter-spacing: -.018em; }
+.docs-demo-callout span { display: block; margin-top: 4px; color: #71717a; font-size: 12px; line-height: 1.5; }
+.docs-demo-callout > a { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; border-radius: 9px; background: #27272a; padding: 0 14px; color: #fff; font-size: 12px; font-weight: 580; }
+.docs-demo-callout > a:hover { background: #3f3f46; }
 
 .docs-section { padding-top: 52px; scroll-margin-top: calc(var(--docs-header-height) + 22px); }
 .docs-section h2 { margin: 0 0 17px; font-size: 24px; font-weight: 570; letter-spacing: -.024em; }
@@ -309,6 +317,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, pre:focus-visible { 
   .docs-page-header { padding-bottom: 40px; }
   .docs-page-header h1 { font-size: 37px; }
   .docs-page-header > p:last-child { margin-top: 18px; font-size: 16px; line-height: 1.65; }
+  .docs-demo-callout { grid-template-columns: auto minmax(0, 1fr); }
+  .docs-demo-callout > a { grid-column: 1 / -1; justify-content: center; }
   .docs-section { padding-top: 42px; }
   .docs-section h2 { font-size: 22px; }
   .docs-principles { grid-template-columns: 1fr; }

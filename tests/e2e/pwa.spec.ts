@@ -19,6 +19,7 @@ test.describe("production PWA installability", () => {
       expect.objectContaining({ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }),
       expect.objectContaining({ src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: expect.stringContaining("maskable") }),
     ]));
+    expect((await request.get(manifest.start_url)).ok()).toBe(true);
 
     for (const icon of ["/icons/icon-192.png", "/icons/icon-512.png"]) {
       const response = await request.get(icon);
