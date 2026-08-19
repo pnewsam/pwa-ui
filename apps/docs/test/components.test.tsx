@@ -294,20 +294,20 @@ describe("PWA UI components", () => {
     await waitFor(() => expect(trigger).toHaveFocus());
   });
 
-  it("animates only the top view when the controlled stack changes by multiple entries", () => {
+  it("animates only the top view when the controlled stack changes by multiple entries", async () => {
     const root = { key: "root", content: <span>Root</span> };
     const second = { key: "second", content: <span>Second</span> };
     const third = { key: "third", content: <span>Third</span> };
     const view = render(<StackNavigator entries={[root]} onPop={() => undefined} />);
 
     view.rerender(<StackNavigator entries={[root, second, third]} onPop={() => undefined} />);
-    expect(view.container.querySelectorAll('[data-slot="stack-view"]')).toHaveLength(3);
+    await waitFor(() => expect(view.container.querySelectorAll('[data-slot="stack-view"]')).toHaveLength(3));
     expect(view.container.querySelector('[data-view-key="third"]')).toHaveAttribute("data-entering");
     expect(view.container.querySelector('[data-view-key="second"]')).not.toHaveAttribute("data-entering");
 
     view.rerender(<StackNavigator entries={[root]} onPop={() => undefined} />);
-    expect(view.container.querySelector('[data-view-key="second"]')).not.toBeInTheDocument();
-    expect(view.container.querySelector('[data-view-key="third"]')).toHaveAttribute("data-exiting");
+    await waitFor(() => expect(view.container.querySelector('[data-view-key="second"]')).not.toBeInTheDocument());
+    await waitFor(() => expect(view.container.querySelector('[data-view-key="third"]')).toHaveAttribute("data-exiting"));
   });
 
   it("renders the responsive dialog in its mobile presentation below the breakpoint", () => {

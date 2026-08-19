@@ -215,6 +215,51 @@ test("preserves covered stack state, scroll, inertness, and focus", async ({ pag
   await expect(trigger).toBeFocused();
 });
 
+test("uses the View Transitions enhancement when the platform exposes it", async ({ page }) => {
+  await page.addInitScript(() => {
+    Reflect.set(window, "__pwaViewTransitionCalls", 0);
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: (update: () => void | Promise<void>) => {
+        Reflect.set(window, "__pwaViewTransitionCalls", Number(Reflect.get(window, "__pwaViewTransitionCalls")) + 1);
+        return { finished: Promise.resolve().then(update) };
+      },
+    });
+  });
+  await page.goto("/test-fixtures/stack-navigator");
+  await page.getByRole("button", { name: "Open project" }).click();
+
+  await expect(page.locator('[data-slot="stack-navigator"]')).toHaveAttribute("data-transition-mode", "view");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "__pwaViewTransitionCalls"))).toBe(1);
+  await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+});
+
+test("uses the CSS stack fallback without View Transitions", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(document, "startViewTransition", { configurable: true, value: undefined });
+  });
+  await page.goto("/test-fixtures/stack-navigator");
+  await page.getByRole("button", { name: "Open project" }).click();
+
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  const detail = page.locator('[data-view-key="project-detail"]');
+  await expect(stack).toHaveAttribute("data-transition-mode", "fallback");
+  await expect(detail).not.toHaveAttribute("data-entering", "");
+  await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+});
+
+test("removes stack motion when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/test-fixtures/stack-navigator");
+  await page.getByRole("button", { name: "Open project" }).click();
+
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  const detail = page.locator('[data-view-key="project-detail"]');
+  await expect(stack).toHaveAttribute("data-transition-mode", "reduced");
+  await expect.poll(() => detail.evaluate((element) => Number.parseFloat(getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.001);
+  await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+});
+
 test("opens and dismisses the keyboard-aware bottom sheet", async ({ page }) => {
   await page.goto("/components/bottom-sheet");
   await expect(page.getByRole("heading", { name: "BottomSheet", exact: true })).toBeVisible();

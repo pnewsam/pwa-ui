@@ -33,6 +33,10 @@ type RenderState = {
 const StackNavigatorContext = React.createContext<StackNavigatorContextValue | null>(null);
 const fallbackDuration = 280;
 
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (update: () => void | Promise<void>) => { finished: Promise<void> };
+};
+
 function sameKeys(a: StackNavigatorEntry[], b: StackNavigatorEntry[]) {
   return a.length === b.length && a.every((entry, index) => entry.key === b[index]?.key);
 }
@@ -95,22 +99,75 @@ export function StackNavigator({
     exitingKey: null,
     transitionId: 0,
   }));
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
   const viewRefs = React.useRef(new Map<string, HTMLElement>());
   const focusTargets = React.useRef(new Map<string, HTMLElement>());
   const lastInteractionRef = React.useRef<{ target: HTMLElement; at: number } | null>(null);
   const transitionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const transitionName = `${React.useId().replaceAll(":", "")}-pwa-stack-view`;
 
-  if (entries !== renderState.sourceEntries) {
-    setRenderState((current) => nextRenderState(current, entries));
-  }
+  React.useEffect(() => {
+    if (entries === renderState.sourceEntries) return;
+    let cancelled = false;
 
-  const activeKey = entries.at(-1)?.key;
-  const depth = entries.length;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const nextState = nextRenderState(renderState, entries);
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const transitionDocument = document as ViewTransitionDocument;
+      const startViewTransition = transitionDocument.startViewTransition;
+      const root = rootRef.current;
+
+      if (!reducedMotion && startViewTransition) {
+        root?.setAttribute("data-transition-mode", "view");
+        const previousTop = renderState.sourceEntries.at(-1);
+        const previousView = previousTop ? viewRefs.current.get(previousTop.key) : undefined;
+        if (previousView) previousView.style.viewTransitionName = transitionName;
+
+        const direction = entries.length < renderState.sourceEntries.length ? "pop" : "push";
+        const styleElement = document.createElement("style");
+        styleElement.dataset.pwaStackTransition = transitionName;
+        styleElement.textContent = direction === "push"
+          ? `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-old(${transitionName}){animation:pwa-stack-old-push ${fallbackDuration}ms ease-out both}::view-transition-new(${transitionName}){animation:pwa-stack-new-push ${fallbackDuration}ms ease-out both}@keyframes pwa-stack-old-push{to{transform:translateX(-12%);opacity:.92}}@keyframes pwa-stack-new-push{from{transform:translateX(100%);opacity:.96}to{transform:translateX(0);opacity:1}}`
+          : `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-old(${transitionName}){animation:pwa-stack-old-pop ${fallbackDuration}ms ease-out both}::view-transition-new(${transitionName}){animation:pwa-stack-new-pop ${fallbackDuration}ms ease-out both}@keyframes pwa-stack-old-pop{to{transform:translateX(100%);opacity:.96}}@keyframes pwa-stack-new-pop{from{transform:translateX(-12%);opacity:.92}to{transform:translateX(0);opacity:1}}`;
+        document.head.append(styleElement);
+
+        const transition = startViewTransition.call(transitionDocument, () => new Promise<void>((resolve) => {
+          setRenderState(nextState);
+          window.setTimeout(() => {
+            previousView?.style.removeProperty("view-transition-name");
+            const nextTop = entries.at(-1);
+            const nextView = nextTop ? viewRefs.current.get(nextTop.key) : undefined;
+            nextView?.removeAttribute("data-entering");
+            if (nextState.exitingKey) viewRefs.current.get(nextState.exitingKey)?.removeAttribute("data-exiting");
+            if (nextView) nextView.style.viewTransitionName = transitionName;
+            resolve();
+          }, 0);
+        }));
+
+        void transition.finished.catch(() => undefined).finally(() => {
+          viewRefs.current.forEach((view) => view.style.removeProperty("view-transition-name"));
+          styleElement.remove();
+        });
+        return;
+      }
+
+      root?.setAttribute("data-transition-mode", reducedMotion ? "reduced" : "fallback");
+      setRenderState(nextState);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [entries, renderState, transitionName]);
+
+  const activeKey = renderState.sourceEntries.at(-1)?.key;
+  const depth = renderState.sourceEntries.length;
   const canPop = depth > 1;
   const pop = React.useCallback(() => {
-    const top = entries.at(-1);
-    if (entries.length > 1 && top) onPop(top.key);
-  }, [entries, onPop]);
+    const top = renderState.sourceEntries.at(-1);
+    if (renderState.sourceEntries.length > 1 && top) onPop(top.key);
+  }, [onPop, renderState.sourceEntries]);
 
   React.useEffect(() => {
     onDepthChange?.(depth);
@@ -177,6 +234,7 @@ export function StackNavigator({
   return (
     <StackNavigatorContext.Provider value={context}>
       <div
+        ref={rootRef}
         data-slot="stack-navigator"
         data-depth={depth}
         className={cn("relative isolate h-full min-h-0 overflow-hidden bg-background", className)}
