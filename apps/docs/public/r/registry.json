@@ -231,13 +231,19 @@
       "title": "Stack Navigator",
       "description": "A controlled, router-agnostic stack of mounted application views.",
       "registryDependencies": [
-        "utils"
+        "utils",
+        "https://pwaui.com/r/use-display-mode.json"
       ],
       "files": [
         {
           "path": "registry/components/stack-navigator/stack-navigator.tsx",
           "type": "registry:component",
           "target": "components/ui/stack-navigator.tsx"
+        },
+        {
+          "path": "registry/components/stack-navigator/use-stack-back-gesture.ts",
+          "type": "registry:hook",
+          "target": "components/ui/use-stack-back-gesture.ts"
         }
       ],
       "type": "registry:component"

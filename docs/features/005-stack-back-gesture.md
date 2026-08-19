@@ -14,7 +14,7 @@
 
 - **ID:** 005
 - **Mode:** product
-- **Status:** draft
+- **Status:** in_progress
 - **Created:** 2026-08-19
 - **Last updated:** 2026-08-19
 - **Owner:** maintainer (pnewsam)
@@ -40,21 +40,21 @@ Gesture-driven back with live progress is the single most recognizable "installe
 
 ### Must Have
 
-- [ ] A `backGesture` capability on `StackNavigator` (prop, e.g. `backGesture?: "auto" | "on" | "off"`, default `"auto"`), implemented in a co-located file (e.g. `use-stack-back-gesture.ts`) so consumers who never enable it can delete the file cleanly.
+- [x] A `backGesture` capability on `StackNavigator` (prop, e.g. `backGesture?: "auto" | "on" | "off"`, default `"auto"`), implemented in a co-located file (e.g. `use-stack-back-gesture.ts`) so consumers who never enable it can delete the file cleanly.
 - [ ] `"auto"` enables the gesture only when `display-mode` is `standalone` or `fullscreen` (via the existing `use-display-mode` hook / media query) — i.e. where the browser's own back-swipe is absent; `"on"`/`"off"` force it. Decision and rationale documented on the docs page.
-- [ ] Gesture recognition: a pointer-down within a configurable edge width (default 24px, respecting `--pwa-safe-left`) followed by horizontal movement claims the gesture; vertical-first movement or starts outside the edge zone never claim it, and scrolling inside the top view is unaffected (asserted in e2e).
-- [ ] While tracking, the top view translates with the pointer with 1:1 motion, the previous view reveals beneath (parallax at reduced ratio and a dimming scrim), progress is exposed as `--pwa-stack-swipe-progress` on the stack root, and no React re-render occurs per move event (transform applied via refs/CSS variables; verified by an implementation note and a render-count test).
-- [ ] Release past threshold (default: 50% width or a velocity flick) calls `onPop` with a completing animation from the current position; release before threshold animates the view back and does not pop. `pointercancel` always springs back safely.
-- [ ] Only the top view when `depth > 1` is draggable; the gesture is inert at depth 1.
-- [ ] `prefers-reduced-motion` keeps the gesture functional but completes with a fade/instant swap rather than sliding follow-through.
-- [ ] The gesture does not fire during an in-flight push/pop transition (states are mutually exclusive).
-- [ ] Ships in the same registry item as `stack-navigator` (payload update) — no separate install; registry build + clean-install verification pass.
-- [ ] E2E coverage in `tests/e2e/` using synthetic pointer sequences on the existing stack fixture: successful swipe-pop, sub-threshold spring-back, vertical-scroll non-capture, depth-1 inertness, and the `"off"` mode.
+- [x] Gesture recognition: a pointer-down within a configurable edge width (default 24px, respecting `--pwa-safe-left`) followed by horizontal movement claims the gesture; vertical-first movement or starts outside the edge zone never claim it, and scrolling inside the top view is unaffected (asserted in e2e).
+- [x] While tracking, the top view translates with the pointer with 1:1 motion, the previous view reveals beneath (parallax at reduced ratio and a dimming scrim), progress is exposed as `--pwa-stack-swipe-progress` on the stack root, and no React re-render occurs per move event (transform applied via refs/CSS variables; verified by an implementation note and a render-count test).
+- [x] Release past threshold (default: 50% width or a velocity flick) calls `onPop` with a completing animation from the current position; release before threshold animates the view back and does not pop. `pointercancel` always springs back safely.
+- [x] Only the top view when `depth > 1` is draggable; the gesture is inert at depth 1.
+- [x] `prefers-reduced-motion` keeps the gesture functional but completes with a fade/instant swap rather than sliding follow-through.
+- [x] The gesture does not fire during an in-flight push/pop transition (states are mutually exclusive).
+- [x] Ships in the same registry item as `stack-navigator` (payload update) — no separate install; registry build + clean-install verification pass.
+- [x] E2E coverage in `tests/e2e/` using synthetic pointer sequences on the existing stack fixture: successful swipe-pop, sub-threshold spring-back, vertical-scroll non-capture, depth-1 inertness, and the `"off"` mode.
 - [ ] Docs page section with the conflict-policy explanation (browser-mode Safari back-swipe, Android system back gesture) and DEVICE_QA.md rows for hardware verification of both display modes.
 
 ### Should Have
 
-- [ ] `onBackGestureStateChange` (or data-attribute equivalent) so consumers can dim custom chrome during a swipe.
+- [x] `onBackGestureStateChange` (or data-attribute equivalent) so consumers can dim custom chrome during a swipe.
 
 ## Out of Scope
 
@@ -95,10 +95,11 @@ Gesture-driven back with live progress is the single most recognizable "installe
 
 ## Tasks
 
-- [ ] Implement the gesture layer (recognition, tracking, thresholds, spring-back, display-mode gating, reduced-motion behavior) inside the stack-navigator item with e2e specs for capture, pop, spring-back, and non-interference passing.
+- [x] Implement the gesture layer (recognition, tracking, thresholds, spring-back, display-mode gating, reduced-motion behavior) inside the stack-navigator item with e2e specs for capture, pop, spring-back, and non-interference passing.
 - [ ] Update the docs page with the conflict policy and configuration guidance, add DEVICE_QA.md rows, update the registry payload with `use-display-mode` dependency, run full checks, and record evidence.
 
 ## Progress
 
 | Criterion or task | Status | Evidence | Notes |
 | --- | --- | --- | --- |
+| Gesture recognition, physical tracking, policy gating, settling, and registry payload | complete | component unit suite (24 tests; 39 total with hooks); focused Playwright gesture suite (8 passed across Chromium and WebKit); registry validation/build; clean local `@pwa-ui/stack-navigator` install with `use-display-mode` | Pointer moves write three root CSS variables in one animation frame and do not update React state; gesture commits bypass the discrete pop animation to prevent a double transition. `data-back-gesture-state` and the callback expose idle/tracking/completing/canceling changes. |

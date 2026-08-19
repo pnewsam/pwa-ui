@@ -3,6 +3,11 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import {
+  useStackBackGesture,
+  type StackBackGestureMode,
+  type StackBackGestureState,
+} from "./use-stack-back-gesture";
 
 export type StackNavigatorEntry = {
   key: string;
@@ -14,6 +19,10 @@ export type StackNavigatorProps = Omit<React.ComponentPropsWithoutRef<"div">, "c
   entries: StackNavigatorEntry[];
   onPop: (key: string) => void;
   onDepthChange?: (depth: number) => void;
+  backGesture?: StackBackGestureMode;
+  backGestureEdgeWidth?: number;
+  backGestureThreshold?: number;
+  onBackGestureStateChange?: (state: StackBackGestureState) => void;
 };
 
 type StackNavigatorContextValue = {
@@ -87,9 +96,17 @@ export function StackNavigator({
   entries,
   onPop,
   onDepthChange,
+  backGesture = "auto",
+  backGestureEdgeWidth = 24,
+  backGestureThreshold = 0.5,
+  onBackGestureStateChange,
   className,
   style,
   onPointerDownCapture,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
   ...props
 }: StackNavigatorProps) {
   const [renderState, setRenderState] = React.useState<RenderState>(() => ({
@@ -100,10 +117,12 @@ export function StackNavigator({
     transitionId: 0,
   }));
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const scrimRef = React.useRef<HTMLDivElement | null>(null);
   const viewRefs = React.useRef(new Map<string, HTMLElement>());
   const focusTargets = React.useRef(new Map<string, HTMLElement>());
   const lastInteractionRef = React.useRef<{ target: HTMLElement; at: number } | null>(null);
   const transitionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const gesturePopKeyRef = React.useRef<string | null>(null);
   const transitionName = `${React.useId().replaceAll(":", "")}-pwa-stack-view`;
 
   React.useEffect(() => {
@@ -117,6 +136,18 @@ export function StackNavigator({
         setRenderState(nextState);
         return;
       }
+      const previousTop = renderState.sourceEntries.at(-1);
+      if (previousTop?.key === gesturePopKeyRef.current && entries.length < renderState.sourceEntries.length) {
+        gesturePopKeyRef.current = null;
+        setRenderState({
+          sourceEntries: entries,
+          renderedEntries: entries,
+          enteringKey: null,
+          exitingKey: previousTop.key,
+          transitionId: renderState.transitionId + 1,
+        });
+        return;
+      }
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const transitionDocument = document as ViewTransitionDocument;
       const startViewTransition = transitionDocument.startViewTransition;
@@ -124,7 +155,6 @@ export function StackNavigator({
 
       if (!reducedMotion && startViewTransition) {
         root?.setAttribute("data-transition-mode", "view");
-        const previousTop = renderState.sourceEntries.at(-1);
         const previousView = previousTop ? viewRefs.current.get(previousTop.key) : undefined;
         if (previousView) previousView.style.viewTransitionName = transitionName;
 
@@ -171,6 +201,7 @@ export function StackNavigator({
   }, [entries, renderState, transitionName]);
 
   const activeKey = renderState.sourceEntries.at(-1)?.key;
+  const previousKey = renderState.sourceEntries.at(-2)?.key;
   const depth = renderState.sourceEntries.length;
   const canPop = depth > 1;
   const pop = React.useCallback(() => {
@@ -239,6 +270,25 @@ export function StackNavigator({
   }, [activeKey, renderState.enteringKey, renderState.exitingKey, renderState.transitionId]);
 
   const context = React.useMemo<StackNavigatorContextValue>(() => ({ depth, canPop, pop }), [canPop, depth, pop]);
+  const getView = React.useCallback((key: string) => viewRefs.current.get(key), []);
+  const gesture = useStackBackGesture({
+    mode: backGesture,
+    depth,
+    activeKey,
+    transitioning: Boolean(renderState.enteringKey || renderState.exitingKey),
+    edgeWidth: backGestureEdgeWidth,
+    threshold: backGestureThreshold,
+    rootRef,
+    scrimRef,
+    getView,
+    previousKey,
+    onCommit: (key) => {
+      gesturePopKeyRef.current = key;
+      onPop(key);
+    },
+    onStateChange: onBackGestureStateChange,
+  });
+  const activeIndex = renderState.renderedEntries.findIndex((entry) => entry.key === activeKey);
 
   return (
     <StackNavigatorContext.Provider value={context}>
@@ -246,14 +296,47 @@ export function StackNavigator({
         ref={rootRef}
         data-slot="stack-navigator"
         data-depth={depth}
+        data-back-gesture-state="idle"
         className={cn("relative isolate h-full min-h-0 overflow-hidden bg-background", className)}
-        style={{ "--pwa-stack-transition-duration": `${fallbackDuration}ms`, ...style } as React.CSSProperties}
+        style={{
+          "--pwa-stack-transition-duration": `${fallbackDuration}ms`,
+          "--pwa-stack-swipe-progress": "0",
+          "--pwa-stack-swipe-x": "0px",
+          "--pwa-stack-swipe-under-x": "-12%",
+          ...style,
+        } as React.CSSProperties}
         onPointerDownCapture={(event) => {
           if (event.target instanceof HTMLElement) lastInteractionRef.current = { target: event.target, at: performance.now() };
           onPointerDownCapture?.(event);
         }}
+        onPointerDown={(event) => {
+          onPointerDown?.(event);
+          if (!event.defaultPrevented) gesture.onPointerDown(event);
+        }}
+        onPointerMove={(event) => {
+          onPointerMove?.(event);
+          if (!event.defaultPrevented) gesture.onPointerMove(event);
+        }}
+        onPointerUp={(event) => {
+          gesture.onPointerUp(event);
+          onPointerUp?.(event);
+        }}
+        onPointerCancel={(event) => {
+          gesture.onPointerCancel(event);
+          onPointerCancel?.(event);
+        }}
         {...props}
       >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 hidden bg-black data-[active]:block"
+          data-slot="stack-swipe-scrim"
+          ref={scrimRef}
+          style={{
+            opacity: "calc((1 - var(--pwa-stack-swipe-progress, 0)) * 0.18)",
+            zIndex: Math.max(0, activeIndex * 2),
+          }}
+        />
         {renderState.renderedEntries.map((entry, index) => {
           const entering = entry.key === renderState.enteringKey;
           const exiting = entry.key === renderState.exitingKey;
@@ -267,6 +350,8 @@ export function StackNavigator({
                 "absolute inset-0 min-h-0 overflow-y-auto bg-background outline-none will-change-transform transition-[transform,opacity] duration-[var(--pwa-stack-transition-duration,280ms)] ease-out",
                 "data-[entering]:translate-x-full data-[entering]:opacity-95 data-[exiting]:translate-x-full data-[exiting]:opacity-95",
                 "data-[covered]:invisible data-[covered]:pointer-events-none data-[exiting]:visible",
+                "data-[swipe-active]:!translate-x-[var(--pwa-stack-swipe-x)] data-[swipe-active]:!transition-none",
+                "data-[swipe-under]:!visible data-[swipe-under]:!translate-x-[var(--pwa-stack-swipe-under-x)] data-[swipe-under]:!transition-none",
                 "motion-reduce:transition-none",
               )}
               data-covered={covered ? "" : undefined}
@@ -281,7 +366,7 @@ export function StackNavigator({
                 else viewRefs.current.delete(entry.key);
               }}
               role={entry.label ? "group" : undefined}
-              style={{ zIndex: index + 1 }}
+              style={{ zIndex: index * 2 + 1 }}
               tabIndex={-1}
             >
               {entry.content}

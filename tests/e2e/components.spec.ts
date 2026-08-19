@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 test.beforeEach(async ({ page }) => {
@@ -7,6 +8,25 @@ test.beforeEach(async ({ page }) => {
     if (message.type() === "error") console.error(`BROWSER ERROR: ${message.text()}`);
   });
 });
+
+async function dispatchSwipe(stack: Locator, ratio: number, options: { cancel?: boolean; vertical?: boolean; settleVelocity?: boolean } = {}) {
+  const box = await stack.boundingBox();
+  if (!box) throw new Error("StackNavigator is not visible.");
+  const pointerId = 41;
+  const startX = box.x + 4;
+  const startY = box.y + Math.min(180, box.height / 2);
+  const endX = options.vertical ? startX + 3 : startX + box.width * ratio;
+  const endY = options.vertical ? startY + 120 : startY + 3;
+  const init = { pointerId, pointerType: "touch", isPrimary: true, button: 0, buttons: 1 };
+
+  await stack.dispatchEvent("pointerdown", { ...init, clientX: startX, clientY: startY });
+  await stack.dispatchEvent("pointermove", { ...init, clientX: endX, clientY: endY });
+  if (options.settleVelocity) {
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    await stack.dispatchEvent("pointermove", { ...init, clientX: endX, clientY: endY });
+  }
+  await stack.dispatchEvent(options.cancel ? "pointercancel" : "pointerup", { ...init, buttons: 0, clientX: endX, clientY: endY });
+}
 
 test("renders the documentation index with component and hook links", async ({ page, isMobile }) => {
   await page.goto("/");
@@ -258,6 +278,86 @@ test("removes stack motion when reduced motion is requested", async ({ page }) =
   await expect(stack).toHaveAttribute("data-transition-mode", "reduced");
   await expect.poll(() => detail.evaluate((element) => Number.parseFloat(getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.001);
   await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+});
+
+test("tracks an edge swipe without rerendering and pops after the distance threshold", async ({ page }) => {
+  await page.goto("/test-fixtures/stack-navigator");
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  await page.getByRole("button", { name: "Open project" }).click();
+  await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+  await page.waitForTimeout(320);
+
+  const renderCount = await page.getByTestId("detail-render-count").textContent();
+  const box = await stack.boundingBox();
+  if (!box) throw new Error("StackNavigator is not visible.");
+  const pointer = { pointerId: 51, pointerType: "touch", isPrimary: true, button: 0, buttons: 1 };
+  await stack.dispatchEvent("pointerdown", { ...pointer, clientX: box.x + 4, clientY: box.y + 160 });
+  await stack.dispatchEvent("pointermove", { ...pointer, clientX: box.x + box.width * 0.3, clientY: box.y + 162 });
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "tracking");
+  await expect.poll(() => stack.evaluate((element) => Number.parseFloat(getComputedStyle(element).getPropertyValue("--pwa-stack-swipe-progress")))).toBeGreaterThan(0.2);
+  await expect(page.getByTestId("detail-render-count")).toHaveText(renderCount ?? "");
+  await stack.dispatchEvent("pointermove", { ...pointer, clientX: box.x + box.width * 0.68, clientY: box.y + 163 });
+  await stack.dispatchEvent("pointerup", { ...pointer, buttons: 0, clientX: box.x + box.width * 0.68, clientY: box.y + 163 });
+
+  await expect(page.locator('[data-view-key="project-detail"]')).not.toBeAttached();
+  await expect(stack).toHaveAttribute("data-depth", "1");
+});
+
+test("springs back below the swipe threshold and cancels safely", async ({ page }) => {
+  await page.goto("/test-fixtures/stack-navigator");
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  await page.getByRole("button", { name: "Open project" }).click();
+  await page.waitForTimeout(320);
+
+  await dispatchSwipe(stack, 0.3, { settleVelocity: true });
+
+  await expect(page.locator('[data-view-key="project-detail"]')).toBeAttached();
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
+  await expect.poll(() => stack.evaluate((element) => element.style.getPropertyValue("--pwa-stack-swipe-progress"))).toBe("0");
+
+  await dispatchSwipe(stack, 0.65, { cancel: true });
+  await expect(page.locator('[data-view-key="project-detail"]')).toBeAttached();
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
+});
+
+test("keeps edge swipes inert during transitions and honors reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/test-fixtures/stack-navigator");
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  const detail = page.locator('[data-view-key="project-detail"]');
+
+  await page.getByRole("button", { name: "Open project" }).click();
+  await dispatchSwipe(stack, 0.7);
+  await expect(detail).toBeAttached();
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
+
+  await page.waitForTimeout(320);
+  await dispatchSwipe(stack, 0.7);
+  await expect(detail).not.toBeAttached();
+  await expect(stack).toHaveAttribute("data-depth", "1");
+});
+
+test("does not capture vertical intent, root depth, or an explicitly disabled gesture", async ({ page }) => {
+  await page.goto("/test-fixtures/stack-navigator");
+  const stack = page.locator('[data-slot="stack-navigator"]');
+
+  await dispatchSwipe(stack, 0.7);
+  await expect(stack).toHaveAttribute("data-depth", "1");
+
+  await page.getByRole("button", { name: "Open project" }).click();
+  await page.waitForTimeout(320);
+  const detail = page.locator('[data-view-key="project-detail"]');
+  await detail.evaluate((element) => { element.scrollTop = 80; });
+  await dispatchSwipe(stack, 0, { vertical: true });
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
+  await expect.poll(() => detail.evaluate((element) => element.scrollTop)).toBe(80);
+
+  await page.getByRole("button", { name: "Gesture on" }).click();
+  await expect(page.getByRole("button", { name: "Gesture off" })).toBeVisible();
+  await expect(stack).toHaveAttribute("data-back-gesture-enabled", "false");
+  await dispatchSwipe(stack, 0.7);
+  await expect(detail).toBeAttached();
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
 });
 
 test("documents the controlled stack and NavigationBar composition", async ({ page }) => {

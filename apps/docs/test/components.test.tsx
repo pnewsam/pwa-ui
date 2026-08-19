@@ -310,6 +310,80 @@ describe("PWA UI components", () => {
     await waitFor(() => expect(view.container.querySelector('[data-view-key="third"]')).toHaveAttribute("data-exiting"));
   });
 
+  it("tracks a back gesture with CSS variables without rendering on pointer moves", async () => {
+    let detailRenders = 0;
+    function Detail() {
+      detailRenders += 1;
+      return <span>Detail</span>;
+    }
+
+    const view = render(
+      <StackNavigator
+        backGesture="on"
+        entries={[
+          { key: "root", content: <span>Root</span> },
+          { key: "detail", content: <Detail /> },
+        ]}
+        onPop={() => undefined}
+      />,
+    );
+    const root = view.container.querySelector<HTMLElement>('[data-slot="stack-navigator"]')!;
+    Object.defineProperty(root, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({ x: 0, y: 0, left: 0, top: 0, right: 320, bottom: 480, width: 320, height: 480, toJSON: () => ({}) }),
+    });
+    Object.defineProperty(root, "setPointerCapture", { configurable: true, value: () => undefined });
+    Object.defineProperty(root, "hasPointerCapture", { configurable: true, value: () => false });
+    const initialRenders = detailRenders;
+
+    fireEvent.pointerDown(root, { pointerId: 9, pointerType: "touch", clientX: 4, clientY: 120 });
+    fireEvent.pointerMove(root, { pointerId: 9, pointerType: "touch", clientX: 70, clientY: 122 });
+    fireEvent.pointerMove(root, { pointerId: 9, pointerType: "touch", clientX: 120, clientY: 124 });
+
+    await waitFor(() => expect(Number(root.style.getPropertyValue("--pwa-stack-swipe-progress"))).toBeGreaterThan(0));
+    expect(root).toHaveAttribute("data-back-gesture-state", "tracking");
+    expect(detailRenders).toBe(initialRenders);
+
+    fireEvent.pointerCancel(root, { pointerId: 9, pointerType: "touch", clientX: 120, clientY: 124 });
+    await waitFor(() => expect(root).toHaveAttribute("data-back-gesture-state", "idle"));
+  });
+
+  it("keeps automatic back gestures disabled in a browser tab", async () => {
+    const view = render(
+      <StackNavigator
+        entries={[{ key: "root", content: <span>Root</span> }, { key: "detail", content: <span>Detail</span> }]}
+        onPop={() => undefined}
+      />,
+    );
+    const root = view.container.querySelector<HTMLElement>('[data-slot="stack-navigator"]')!;
+
+    await waitFor(() => expect(root).toHaveAttribute("data-back-gesture-enabled", "false"));
+    fireEvent.pointerDown(root, { pointerId: 10, pointerType: "touch", clientX: 2, clientY: 80 });
+    fireEvent.pointerMove(root, { pointerId: 10, pointerType: "touch", clientX: 180, clientY: 82 });
+    expect(root).toHaveAttribute("data-back-gesture-state", "idle");
+  });
+
+  it("enables automatic back gestures in standalone display mode", async () => {
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: (query: string) => ({
+        matches: query === "(display-mode: standalone)",
+        media: query,
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      }),
+    });
+    const view = render(
+      <StackNavigator
+        entries={[{ key: "root", content: <span>Root</span> }, { key: "detail", content: <span>Detail</span> }]}
+        onPop={() => undefined}
+      />,
+    );
+    const root = view.container.querySelector<HTMLElement>('[data-slot="stack-navigator"]')!;
+
+    await waitFor(() => expect(root).toHaveAttribute("data-back-gesture-enabled", "true"));
+  });
+
   it("renders the responsive dialog in its mobile presentation below the breakpoint", () => {
     const breakpoint = "(max-width: 47.999rem)";
     Object.defineProperty(window, "matchMedia", {

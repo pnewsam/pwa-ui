@@ -6,6 +6,7 @@
     "paths": {
       "@/*": ["./*"],
       "@/components/ui/bottom-sheet": ["../../registry/components/bottom-sheet/bottom-sheet.tsx"],
+      "@/hooks/use-display-mode": ["../../registry/hooks/use-display-mode.ts"],
       "@/hooks/use-media-query": ["../../registry/hooks/use-media-query.ts"],
       "@/hooks/use-visual-viewport": ["../../registry/hooks/use-visual-viewport.ts"]
     }
