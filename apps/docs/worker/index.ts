@@ -5,6 +5,17 @@ import {
 } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 
+interface HTMLRewriterElement {
+  setAttribute(name: string, value: string): HTMLRewriterElement;
+}
+
+interface HTMLRewriterInstance {
+  on(selector: string, handlers: { element(element: HTMLRewriterElement): void }): HTMLRewriterInstance;
+  transform(response: Response): Response;
+}
+
+declare const HTMLRewriter: { new(): HTMLRewriterInstance };
+
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
   IMAGES: {
@@ -20,6 +31,8 @@ interface ExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
   passThroughOnException(): void;
 }
+
+const viewportContent = "width=device-width, initial-scale=1, viewport-fit=cover";
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -58,11 +71,23 @@ const worker = {
       headers.set("Cache-Control", "public, max-age=0, must-revalidate");
     }
 
-    return new Response(response.body, {
+    const outgoingResponse = new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers,
     });
+
+    if (headers.get("content-type")?.includes("text/html")) {
+      return new HTMLRewriter()
+        .on('meta[name="viewport"]', {
+          element(element) {
+            element.setAttribute("content", viewportContent);
+          },
+        })
+        .transform(outgoingResponse);
+    }
+
+    return outgoingResponse;
   },
 };
 

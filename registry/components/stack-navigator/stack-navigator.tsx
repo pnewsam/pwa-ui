@@ -41,6 +41,7 @@ type RenderState = {
 
 const StackNavigatorContext = React.createContext<StackNavigatorContextValue | null>(null);
 const fallbackDuration = 280;
+const transitionEasing = "cubic-bezier(.4,0,.2,1)";
 
 type ViewTransitionDocument = Document & {
   startViewTransition?: (update: () => void | Promise<void>) => { finished: Promise<void> };
@@ -122,6 +123,7 @@ export function StackNavigator({
   const focusTargets = React.useRef(new Map<string, HTMLElement>());
   const lastInteractionRef = React.useRef<{ target: HTMLElement; at: number } | null>(null);
   const transitionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const nativeTransitionIdsRef = React.useRef(new Set<number>());
   const gesturePopKeyRef = React.useRef<string | null>(null);
   const transitionName = `${React.useId().replaceAll(":", "")}-pwa-stack-view`;
 
@@ -154,6 +156,7 @@ export function StackNavigator({
       const root = rootRef.current;
 
       if (!reducedMotion && startViewTransition) {
+        nativeTransitionIdsRef.current.add(nextState.transitionId);
         root?.setAttribute("data-transition-mode", "view");
         const previousView = previousTop ? viewRefs.current.get(previousTop.key) : undefined;
         if (previousView) previousView.style.viewTransitionName = transitionName;
@@ -162,8 +165,8 @@ export function StackNavigator({
         const styleElement = document.createElement("style");
         styleElement.dataset.pwaStackTransition = transitionName;
         styleElement.textContent = direction === "push"
-          ? `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-image-pair(${transitionName}){isolation:isolate}::view-transition-old(${transitionName}){z-index:1;animation:pwa-stack-old-push ${fallbackDuration}ms cubic-bezier(.22,1,.36,1) both}::view-transition-new(${transitionName}){z-index:2;animation:pwa-stack-new-push ${fallbackDuration}ms cubic-bezier(.22,1,.36,1) both}@keyframes pwa-stack-old-push{to{transform:translateX(-12%)}}@keyframes pwa-stack-new-push{from{transform:translateX(100%)}to{transform:translateX(0)}}`
-          : `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-image-pair(${transitionName}){isolation:isolate}::view-transition-old(${transitionName}){z-index:2;animation:pwa-stack-old-pop ${fallbackDuration}ms cubic-bezier(.22,1,.36,1) both}::view-transition-new(${transitionName}){z-index:1;animation:pwa-stack-new-pop ${fallbackDuration}ms cubic-bezier(.22,1,.36,1) both}@keyframes pwa-stack-old-pop{to{transform:translateX(100%)}}@keyframes pwa-stack-new-pop{from{transform:translateX(-12%)}to{transform:translateX(0)}}`;
+          ? `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-image-pair(${transitionName}){isolation:isolate}::view-transition-old(${transitionName}){z-index:1;animation:pwa-stack-old-push ${fallbackDuration}ms ${transitionEasing} both}::view-transition-new(${transitionName}){z-index:2;animation:pwa-stack-new-push ${fallbackDuration}ms ${transitionEasing} both}@keyframes pwa-stack-old-push{to{transform:translateX(-12%)}}@keyframes pwa-stack-new-push{from{transform:translateX(100%)}to{transform:translateX(0)}}`
+          : `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-image-pair(${transitionName}){isolation:isolate}::view-transition-old(${transitionName}){z-index:2;animation:pwa-stack-old-pop ${fallbackDuration}ms ${transitionEasing} both}::view-transition-new(${transitionName}){z-index:1;animation:pwa-stack-new-pop ${fallbackDuration}ms ${transitionEasing} both}@keyframes pwa-stack-old-pop{to{transform:translateX(100%)}}@keyframes pwa-stack-new-pop{from{transform:translateX(-12%)}to{transform:translateX(0)}}`;
         document.head.append(styleElement);
 
         try {
@@ -181,11 +184,16 @@ export function StackNavigator({
           }));
 
           void transition.finished.catch(() => undefined).finally(() => {
+            nativeTransitionIdsRef.current.delete(nextState.transitionId);
             viewRefs.current.forEach((view) => view.style.removeProperty("view-transition-name"));
             styleElement.remove();
+            setRenderState((current) => current.transitionId === nextState.transitionId
+              ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
+              : current);
           });
           return;
         } catch {
+          nativeTransitionIdsRef.current.delete(nextState.transitionId);
           previousView?.style.removeProperty("view-transition-name");
           styleElement.remove();
         }
@@ -217,6 +225,7 @@ export function StackNavigator({
     if (!renderState.transitionId) return;
     const enteringKey = renderState.enteringKey;
     const exitingKey = renderState.exitingKey;
+    const nativeTransition = nativeTransitionIdsRef.current.has(renderState.transitionId);
     const activeElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     if (enteringKey) {
@@ -233,11 +242,13 @@ export function StackNavigator({
           enteringView?.removeAttribute("data-entering");
         });
       });
-      transitionTimerRef.current = setTimeout(() => {
-        setRenderState((current) => current.transitionId === renderState.transitionId
-          ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
-          : current);
-      }, fallbackDuration);
+      if (!nativeTransition) {
+        transitionTimerRef.current = setTimeout(() => {
+          setRenderState((current) => current.transitionId === renderState.transitionId
+            ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
+            : current);
+        }, fallbackDuration);
+      }
       return () => {
         window.cancelAnimationFrame(firstFrame);
         window.cancelAnimationFrame(secondFrame);
@@ -251,11 +262,13 @@ export function StackNavigator({
       if (target?.isConnected) target.focus({ preventScroll: true });
       else focusView(revealedView);
       focusTargets.current.delete(exitingKey);
-      transitionTimerRef.current = setTimeout(() => {
-        setRenderState((current) => current.transitionId === renderState.transitionId
-          ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
-          : current);
-      }, fallbackDuration);
+      if (!nativeTransition) {
+        transitionTimerRef.current = setTimeout(() => {
+          setRenderState((current) => current.transitionId === renderState.transitionId
+            ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
+            : current);
+        }, fallbackDuration);
+      }
       return () => {
         if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
       };
