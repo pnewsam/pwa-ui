@@ -36,6 +36,7 @@ test.describe("production PWA installability", () => {
     expect(workerSource).toContain('url.pathname.startsWith("/r/")');
 
     await page.goto("/");
+    await expect(page.locator('meta[name="viewport"]')).toHaveAttribute("content", /viewport-fit=cover/);
     const registration = await page.evaluate(async () => {
       const ready = await navigator.serviceWorker.ready;
       return { scope: ready.scope, scriptURL: ready.active?.scriptURL ?? "" };
