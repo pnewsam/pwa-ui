@@ -8,7 +8,7 @@ export function TabBarRoot({ className, ...props }: React.ComponentPropsWithoutR
     <nav
       aria-label="Primary"
       data-slot="tab-bar"
-      className={cn("grid min-h-[var(--pwa-tab-bar-height,4rem)] auto-cols-fr grid-flow-col items-center gap-1 border-t border-border/70 bg-background/94 px-2 py-1.5 backdrop-blur-xl", className)}
+      className={cn("grid min-h-[var(--pwa-tab-bar-height,4rem)] auto-cols-fr grid-flow-col items-center gap-1 border-t border-border/70 bg-background/94 px-3 py-2 backdrop-blur-xl", className)}
       {...props}
     />
   );

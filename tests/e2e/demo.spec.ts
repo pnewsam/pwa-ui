@@ -24,6 +24,9 @@ test("promotes a responsive showcase without leaking app containment into docs",
   const frame = await page.getByTestId("demo-frame").boundingBox();
   expect(frame?.width).toBeLessThanOrEqual(433);
   expect(frame?.height).toBeLessThanOrEqual(833);
+  const homeTab = await page.getByRole("button", { name: "Home" }).boundingBox();
+  expect(homeTab && frame ? homeTab.x - frame.x : 0).toBeGreaterThanOrEqual(12);
+  expect(homeTab && frame ? frame.y + frame.height - homeTab.y - homeTab.height : 0).toBeGreaterThanOrEqual(8);
 
   await page.getByRole("link", { name: "Docs", exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
@@ -42,10 +45,13 @@ test("drives the native-feel showcase flow on a phone viewport", async ({ page, 
   await expect(page.getByRole("button", { name: /Fresh from refresh 1/ })).toBeVisible();
 
   const project = page.getByRole("button", { name: /Native feel layer/ });
-  await project.click();
   const stack = page.locator('[data-slot="stack-navigator"]');
+  const homeStackHeight = await stack.evaluate((element) => element.getBoundingClientRect().height);
+  await project.click();
   await expect(stack).toHaveAttribute("data-depth", "2");
   await expect(page.locator('[data-view-key="native-feel"]')).toBeFocused();
+  await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
+  await expect.poll(() => stack.evaluate((element) => element.getBoundingClientRect().height)).toBe(homeStackHeight);
   await page.waitForTimeout(320);
   await page.getByRole("button", { name: "Back to projects" }).click();
   await expect(stack).toHaveAttribute("data-depth", "1");

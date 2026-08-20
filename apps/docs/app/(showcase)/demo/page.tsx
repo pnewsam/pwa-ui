@@ -249,15 +249,13 @@ export default function DemoPage() {
             </section>
           )}
         </AppShell.Main>
-        {!selected ? (
-          <AppShell.Footer keyboardBehavior="hide" className="bg-background">
-            <TabBar>
-              <TabBar.Item active={tab === "home"} icon={<Home />} label="Home" onClick={() => selectTab("home")} />
-              <TabBar.Item active={tab === "activity"} icon={<Inbox />} label="Activity" onClick={() => selectTab("activity")} />
-              <TabBar.Item active={tab === "settings"} icon={<Settings />} label="Settings" onClick={() => selectTab("settings")} />
-            </TabBar>
-          </AppShell.Footer>
-        ) : null}
+        <AppShell.Footer keyboardBehavior="hide" className="bg-background">
+          <TabBar>
+            <TabBar.Item active={tab === "home"} icon={<Home />} label="Home" onClick={() => selectTab("home")} />
+            <TabBar.Item active={tab === "activity"} icon={<Inbox />} label="Activity" onClick={() => selectTab("activity")} />
+            <TabBar.Item active={tab === "settings"} icon={<Settings />} label="Settings" onClick={() => selectTab("settings")} />
+          </TabBar>
+        </AppShell.Footer>
       </AppShell>
       <UpdateExperience />
     </div>
