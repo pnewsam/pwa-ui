@@ -257,7 +257,11 @@ test("uses the View Transitions enhancement when the platform exposes it", async
       configurable: true,
       value: (update: () => void | Promise<void>) => {
         Reflect.set(window, "__pwaViewTransitionCalls", Number(Reflect.get(window, "__pwaViewTransitionCalls")) + 1);
-        return { finished: Promise.resolve().then(update) };
+        return {
+          finished: Promise.resolve()
+            .then(update)
+            .then(() => new Promise<void>((resolve) => window.setTimeout(resolve, 1_000))),
+        };
       },
     });
   });
@@ -267,6 +271,12 @@ test("uses the View Transitions enhancement when the platform exposes it", async
   await expect(page.locator('[data-slot="stack-navigator"]')).toHaveAttribute("data-transition-mode", "view");
   await expect.poll(() => page.evaluate(() => Reflect.get(window, "__pwaViewTransitionCalls"))).toBe(1);
   await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+  const transitionStyles = page.locator("style[data-pwa-stack-transition]");
+  await expect(transitionStyles).toHaveCount(1);
+  const transitionCss = await transitionStyles.textContent();
+  expect(transitionCss).toContain("view-transition-image-pair");
+  expect(transitionCss).toContain("z-index:2");
+  expect(transitionCss).not.toContain("opacity");
 });
 
 test("uses the CSS stack fallback without View Transitions", async ({ page }) => {
