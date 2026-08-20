@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
-    "build:sites": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "build:worker": "node ../../scripts/build-service-worker.mjs",
+    "build": "pnpm build:worker && next build --webpack",
+    "build:sites": "pnpm build:worker && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "deploy:cloudflare": "pnpm build:sites && wrangler deploy",
     "start": "next start",
     "lint": "eslint .",

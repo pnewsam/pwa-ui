@@ -34,6 +34,8 @@ test.describe("production PWA installability", () => {
     const workerSource = await workerResponse.text();
     expect(workerSource).toContain('event.data?.type === "SKIP_WAITING"');
     expect(workerSource).toContain('url.pathname.startsWith("/r/")');
+    expect(workerSource).toMatch(/const WORKER_VERSION = "[A-Za-z0-9._-]+";/);
+    expect(workerSource).not.toContain("__PWA_UI_BUILD_ID__");
 
     await page.goto("/");
     await expect(page.locator('meta[name="viewport"]')).toHaveAttribute("content", /viewport-fit=cover/);

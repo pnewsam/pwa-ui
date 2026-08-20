@@ -250,64 +250,37 @@ test("moves stack focus independently of throttled animation frames", async ({ p
   await expect(trigger).toBeFocused();
 });
 
-test("uses the View Transitions enhancement when the platform exposes it", async ({ page }) => {
+test("uses interruptible live-view transitions when the platform exposes View Transitions", async ({ page }) => {
   await page.addInitScript(() => {
     Reflect.set(window, "__pwaViewTransitionCalls", 0);
-    Reflect.set(window, "__finishPwaViewTransition", undefined);
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
-      value: (update: () => void | Promise<void>) => {
+      value: () => {
         Reflect.set(window, "__pwaViewTransitionCalls", Number(Reflect.get(window, "__pwaViewTransitionCalls")) + 1);
-        return {
-          finished: Promise.resolve()
-            .then(update)
-            .then(() => new Promise<void>((resolve) => {
-              Reflect.set(window, "__finishPwaViewTransition", resolve);
-            })),
-        };
+        throw new Error("StackNavigator must not capture document snapshots.");
       },
     });
   });
   await page.goto("/test-fixtures/stack-navigator");
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  const list = page.locator('[data-view-key="projects"]');
   await page.getByRole("button", { name: "Open project" }).click();
 
-  await expect(page.locator('[data-slot="stack-navigator"]')).toHaveAttribute("data-transition-mode", "view");
-  await expect.poll(() => page.evaluate(() => Reflect.get(window, "__pwaViewTransitionCalls"))).toBe(1);
+  await expect(stack).toHaveAttribute("data-transition-mode", "css");
+  await expect(list).toHaveAttribute("data-under", "");
+  await expect(list).toHaveAttribute("inert", "");
+  await expect.poll(() => list.evaluate((element) => getComputedStyle(element).visibility)).toBe("visible");
+  expect(await page.evaluate(() => Reflect.get(window, "__pwaViewTransitionCalls"))).toBe(0);
+  const detail = page.locator('[data-view-key="project-detail"]');
+  await expect.poll(() => detail.evaluate((element) => element.getAnimations().length)).toBeGreaterThan(0);
+  await expect.poll(() => list.evaluate((element) => element.getAnimations().length)).toBeGreaterThan(0);
   await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
-  const transitionStyles = page.locator("style[data-pwa-stack-transition]");
-  await expect(transitionStyles).toHaveCount(1);
-  const transitionCss = await transitionStyles.textContent();
-  expect(transitionCss).toContain("view-transition-image-pair");
-  expect(transitionCss).toContain("z-index:2");
-  expect(transitionCss).toContain("cubic-bezier(.4,0,.2,1)");
-  expect(transitionCss).not.toContain("opacity");
-  await page.waitForTimeout(320);
-  await expect(page.locator('[data-slot="stack-navigator"]')).toHaveAttribute("data-transitioning", "");
-
-  await page.evaluate(() => {
-    const finish = Reflect.get(window, "__finishPwaViewTransition");
-    if (typeof finish !== "function") throw new Error("View Transition finish callback was not captured.");
-    finish();
-  });
-  await expect(page.locator('[data-slot="stack-navigator"]')).not.toHaveAttribute("data-transitioning", "");
-  await expect(transitionStyles).toHaveCount(0);
+  await expect(stack).not.toHaveAttribute("data-transitioning", "");
+  await expect(list).not.toHaveAttribute("data-under", "");
+  await expect.poll(() => list.evaluate((element) => getComputedStyle(element).visibility)).toBe("hidden");
 });
 
-test("settles consecutive native stack transitions without carrying state forward", async ({ page }) => {
-  await page.addInitScript(() => {
-    Reflect.set(window, "__pwaViewTransitionCalls", 0);
-    Object.defineProperty(document, "startViewTransition", {
-      configurable: true,
-      value: (update: () => void | Promise<void>) => {
-        Reflect.set(window, "__pwaViewTransitionCalls", Number(Reflect.get(window, "__pwaViewTransitionCalls")) + 1);
-        return {
-          finished: Promise.resolve()
-            .then(update)
-            .then(() => new Promise<void>((resolve) => window.setTimeout(resolve, 40))),
-        };
-      },
-    });
-  });
+test("settles consecutive live-view stack transitions without carrying state forward", async ({ page }) => {
   await page.goto("/test-fixtures/stack-navigator");
 
   const stack = page.locator('[data-slot="stack-navigator"]');
@@ -318,12 +291,10 @@ test("settles consecutive native stack transitions without carrying state forwar
     await expect(stack).not.toHaveAttribute("data-transitioning", "");
   }
 
-  await expect.poll(() => page.evaluate(() => Reflect.get(window, "__pwaViewTransitionCalls"))).toBe(6);
-  await expect(page.locator("style[data-pwa-stack-transition]")).toHaveCount(0);
   await expect(page.locator('[data-view-key="project-detail"]')).not.toBeAttached();
 });
 
-test("uses the CSS stack fallback without View Transitions", async ({ page }) => {
+test("uses the same live-view transition without the View Transitions API", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(document, "startViewTransition", { configurable: true, value: undefined });
   });
@@ -332,9 +303,24 @@ test("uses the CSS stack fallback without View Transitions", async ({ page }) =>
 
   const stack = page.locator('[data-slot="stack-navigator"]');
   const detail = page.locator('[data-view-key="project-detail"]');
-  await expect(stack).toHaveAttribute("data-transition-mode", "fallback");
+  await expect(stack).toHaveAttribute("data-transition-mode", "css");
   await expect(detail).not.toHaveAttribute("data-entering", "");
   await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+});
+
+test("reverses an in-flight stack push without waiting for its animation", async ({ page }) => {
+  await page.goto("/test-fixtures/stack-navigator");
+
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  const list = page.locator('[data-view-key="projects"]');
+  await page.getByRole("button", { name: "Open project" }).click();
+  await expect(stack).toHaveAttribute("data-transitioning", "");
+  await page.getByRole("button", { name: "Back to projects" }).dispatchEvent("click");
+
+  await expect(stack).not.toHaveAttribute("data-transitioning", "");
+  await expect(list).not.toHaveAttribute("inert", "");
+  await expect(page.locator('[data-view-key="project-detail"]')).not.toBeAttached();
+  await expect(page.getByRole("button", { name: "Open project" })).toBeFocused();
 });
 
 test("removes stack motion when reduced motion is requested", async ({ page }) => {

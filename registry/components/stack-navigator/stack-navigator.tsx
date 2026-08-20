@@ -36,16 +36,13 @@ type RenderState = {
   renderedEntries: StackNavigatorEntry[];
   enteringKey: string | null;
   exitingKey: string | null;
+  underKey: string | null;
+  revealingKey: string | null;
   transitionId: number;
 };
 
 const StackNavigatorContext = React.createContext<StackNavigatorContextValue | null>(null);
-const fallbackDuration = 280;
-const transitionEasing = "cubic-bezier(.4,0,.2,1)";
-
-type ViewTransitionDocument = Document & {
-  startViewTransition?: (update: () => void | Promise<void>) => { finished: Promise<void> };
-};
+const transitionDuration = 240;
 
 function sameKeys(a: StackNavigatorEntry[], b: StackNavigatorEntry[]) {
   return a.length === b.length && a.every((entry, index) => entry.key === b[index]?.key);
@@ -74,6 +71,8 @@ function nextRenderState(current: RenderState, entries: StackNavigatorEntry[]): 
       renderedEntries: [...entries, previousTop],
       enteringKey: null,
       exitingKey: previousTop.key,
+      underKey: null,
+      revealingKey: nextTop?.key ?? null,
       transitionId: current.transitionId + 1,
     };
   }
@@ -83,6 +82,8 @@ function nextRenderState(current: RenderState, entries: StackNavigatorEntry[]): 
     renderedEntries: entries,
     enteringKey: nextTop?.key ?? null,
     exitingKey: null,
+    underKey: previousTop?.key ?? null,
+    revealingKey: null,
     transitionId: current.transitionId + 1,
   };
 }
@@ -115,6 +116,8 @@ export function StackNavigator({
     renderedEntries: entries,
     enteringKey: null,
     exitingKey: null,
+    underKey: null,
+    revealingKey: null,
     transitionId: 0,
   }));
   const rootRef = React.useRef<HTMLDivElement | null>(null);
@@ -123,9 +126,7 @@ export function StackNavigator({
   const focusTargets = React.useRef(new Map<string, HTMLElement>());
   const lastInteractionRef = React.useRef<{ target: HTMLElement; at: number } | null>(null);
   const transitionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const nativeTransitionIdsRef = React.useRef(new Set<number>());
   const gesturePopKeyRef = React.useRef<string | null>(null);
-  const transitionName = `${React.useId().replaceAll(":", "")}-pwa-stack-view`;
 
   React.useEffect(() => {
     if (entries === renderState.sourceEntries) return;
@@ -146,67 +147,23 @@ export function StackNavigator({
           renderedEntries: entries,
           enteringKey: null,
           exitingKey: previousTop.key,
+          underKey: null,
+          revealingKey: null,
           transitionId: renderState.transitionId + 1,
         });
         return;
       }
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const transitionDocument = document as ViewTransitionDocument;
-      const startViewTransition = transitionDocument.startViewTransition;
       const root = rootRef.current;
 
-      if (!reducedMotion && startViewTransition) {
-        nativeTransitionIdsRef.current.add(nextState.transitionId);
-        root?.setAttribute("data-transition-mode", "view");
-        const previousView = previousTop ? viewRefs.current.get(previousTop.key) : undefined;
-        if (previousView) previousView.style.viewTransitionName = transitionName;
-
-        const direction = entries.length < renderState.sourceEntries.length ? "pop" : "push";
-        const styleElement = document.createElement("style");
-        styleElement.dataset.pwaStackTransition = transitionName;
-        styleElement.textContent = direction === "push"
-          ? `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-image-pair(${transitionName}){isolation:isolate}::view-transition-old(${transitionName}){z-index:1;animation:pwa-stack-old-push ${fallbackDuration}ms ${transitionEasing} both}::view-transition-new(${transitionName}){z-index:2;animation:pwa-stack-new-push ${fallbackDuration}ms ${transitionEasing} both}@keyframes pwa-stack-old-push{to{transform:translateX(-12%)}}@keyframes pwa-stack-new-push{from{transform:translateX(100%)}to{transform:translateX(0)}}`
-          : `::view-transition-group(${transitionName}){animation-duration:${fallbackDuration}ms}::view-transition-image-pair(${transitionName}){isolation:isolate}::view-transition-old(${transitionName}){z-index:2;animation:pwa-stack-old-pop ${fallbackDuration}ms ${transitionEasing} both}::view-transition-new(${transitionName}){z-index:1;animation:pwa-stack-new-pop ${fallbackDuration}ms ${transitionEasing} both}@keyframes pwa-stack-old-pop{to{transform:translateX(100%)}}@keyframes pwa-stack-new-pop{from{transform:translateX(-12%)}to{transform:translateX(0)}}`;
-        document.head.append(styleElement);
-
-        try {
-          const transition = startViewTransition.call(transitionDocument, () => new Promise<void>((resolve) => {
-            setRenderState(nextState);
-            window.setTimeout(() => {
-              previousView?.style.removeProperty("view-transition-name");
-              const nextTop = entries.at(-1);
-              const nextView = nextTop ? viewRefs.current.get(nextTop.key) : undefined;
-              nextView?.removeAttribute("data-entering");
-              if (nextState.exitingKey) viewRefs.current.get(nextState.exitingKey)?.removeAttribute("data-exiting");
-              if (nextView) nextView.style.viewTransitionName = transitionName;
-              resolve();
-            }, 0);
-          }));
-
-          void transition.finished.catch(() => undefined).finally(() => {
-            nativeTransitionIdsRef.current.delete(nextState.transitionId);
-            viewRefs.current.forEach((view) => view.style.removeProperty("view-transition-name"));
-            styleElement.remove();
-            setRenderState((current) => current.transitionId === nextState.transitionId
-              ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
-              : current);
-          });
-          return;
-        } catch {
-          nativeTransitionIdsRef.current.delete(nextState.transitionId);
-          previousView?.style.removeProperty("view-transition-name");
-          styleElement.remove();
-        }
-      }
-
-      root?.setAttribute("data-transition-mode", reducedMotion ? "reduced" : "fallback");
+      root?.setAttribute("data-transition-mode", reducedMotion ? "reduced" : "css");
       setRenderState(nextState);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [entries, renderState, transitionName]);
+  }, [entries, renderState]);
 
   const activeKey = renderState.sourceEntries.at(-1)?.key;
   const previousKey = renderState.sourceEntries.at(-2)?.key;
@@ -225,7 +182,8 @@ export function StackNavigator({
     if (!renderState.transitionId) return;
     const enteringKey = renderState.enteringKey;
     const exitingKey = renderState.exitingKey;
-    const nativeTransition = nativeTransitionIdsRef.current.has(renderState.transitionId);
+    const reducedMotion = rootRef.current?.dataset.transitionMode === "reduced";
+    const settleDelay = reducedMotion ? 0 : transitionDuration;
     const activeElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     if (enteringKey) {
@@ -242,13 +200,11 @@ export function StackNavigator({
           enteringView?.removeAttribute("data-entering");
         });
       });
-      if (!nativeTransition) {
-        transitionTimerRef.current = setTimeout(() => {
-          setRenderState((current) => current.transitionId === renderState.transitionId
-            ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
-            : current);
-        }, fallbackDuration);
-      }
+      transitionTimerRef.current = setTimeout(() => {
+        setRenderState((current) => current.transitionId === renderState.transitionId
+          ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null, underKey: null, revealingKey: null }
+          : current);
+      }, settleDelay);
       return () => {
         window.cancelAnimationFrame(firstFrame);
         window.cancelAnimationFrame(secondFrame);
@@ -262,14 +218,20 @@ export function StackNavigator({
       if (target?.isConnected) target.focus({ preventScroll: true });
       else focusView(revealedView);
       focusTargets.current.delete(exitingKey);
-      if (!nativeTransition) {
-        transitionTimerRef.current = setTimeout(() => {
-          setRenderState((current) => current.transitionId === renderState.transitionId
-            ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null }
-            : current);
-        }, fallbackDuration);
-      }
+      let secondFrame = 0;
+      const firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => {
+          revealedView?.removeAttribute("data-revealing");
+        });
+      });
+      transitionTimerRef.current = setTimeout(() => {
+        setRenderState((current) => current.transitionId === renderState.transitionId
+          ? { ...current, renderedEntries: current.sourceEntries, enteringKey: null, exitingKey: null, underKey: null, revealingKey: null }
+          : current);
+      }, settleDelay);
       return () => {
+        window.cancelAnimationFrame(firstFrame);
+        window.cancelAnimationFrame(secondFrame);
         if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
       };
     }
@@ -306,7 +268,7 @@ export function StackNavigator({
         data-transitioning={renderState.enteringKey || renderState.exitingKey ? "" : undefined}
         className={cn("relative isolate h-full min-h-0 overflow-hidden bg-background", className)}
         style={{
-          "--pwa-stack-transition-duration": `${fallbackDuration}ms`,
+          "--pwa-stack-transition-duration": `${transitionDuration}ms`,
           "--pwa-stack-swipe-progress": "0",
           "--pwa-stack-swipe-x": "0px",
           "--pwa-stack-swipe-under-x": "-12%",
@@ -347,6 +309,9 @@ export function StackNavigator({
         {renderState.renderedEntries.map((entry, index) => {
           const entering = entry.key === renderState.enteringKey;
           const exiting = entry.key === renderState.exitingKey;
+          const under = entry.key === renderState.underKey;
+          const revealing = entry.key === renderState.revealingKey;
+          const animating = entering || exiting || under || revealing;
           const covered = entry.key !== activeKey;
 
           return (
@@ -354,16 +319,20 @@ export function StackNavigator({
               aria-hidden={covered || undefined}
               aria-label={entry.label}
               className={cn(
-                "absolute inset-0 min-h-0 overflow-y-auto bg-background outline-none will-change-transform transition-[transform,opacity] duration-[var(--pwa-stack-transition-duration,280ms)] ease-out",
-                "data-[entering]:translate-x-full data-[entering]:opacity-95 data-[exiting]:translate-x-full data-[exiting]:opacity-95",
-                "data-[covered]:invisible data-[covered]:pointer-events-none data-[exiting]:visible",
+                "absolute inset-0 min-h-0 overflow-y-auto bg-background outline-none transition-transform duration-[var(--pwa-stack-transition-duration,240ms)] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                "data-[animating]:will-change-transform data-[entering]:translate-x-full data-[exiting]:translate-x-full",
+                "data-[under]:-translate-x-[12%] data-[revealing]:-translate-x-[12%]",
+                "data-[covered]:invisible data-[covered]:pointer-events-none data-[exiting]:!visible data-[under]:!visible",
                 "data-[swipe-active]:!translate-x-[var(--pwa-stack-swipe-x)] data-[swipe-active]:!transition-none",
                 "data-[swipe-under]:!visible data-[swipe-under]:!translate-x-[var(--pwa-stack-swipe-under-x)] data-[swipe-under]:!transition-none",
                 "motion-reduce:transition-none",
               )}
               data-covered={covered ? "" : undefined}
+              data-animating={animating ? "" : undefined}
               data-entering={entering ? "" : undefined}
               data-exiting={exiting ? "" : undefined}
+              data-under={under ? "" : undefined}
+              data-revealing={revealing ? "" : undefined}
               data-slot="stack-view"
               data-view-key={entry.key}
               inert={covered || undefined}
