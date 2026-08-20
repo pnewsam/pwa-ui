@@ -28,6 +28,7 @@ jobs:
       - run: pnpm check
       - run: pnpm exec playwright install --with-deps chromium webkit
       - run: pnpm test:e2e
+      - run: pnpm test:pwa
       - run: pnpm --filter @pwa-ui/docs build:sites
       - name: Deploy to Cloudflare Workers
         run: pnpm --filter @pwa-ui/docs exec wrangler deploy

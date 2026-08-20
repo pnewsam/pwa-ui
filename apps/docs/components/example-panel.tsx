@@ -24,8 +24,10 @@ import { InstallPrompt } from "../../../registry/components/install-prompt/insta
 import { NavigationBar } from "../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../registry/components/offline-banner/offline-banner";
 import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
+import { PullToRefresh } from "../../../registry/components/pull-to-refresh/pull-to-refresh";
 import { ResponsiveDialog } from "../../../registry/components/responsive-dialog/responsive-dialog";
 import { SafeArea } from "../../../registry/components/safe-area/safe-area";
+import { StackNavigator, useStackNavigator, type StackNavigatorEntry } from "../../../registry/components/stack-navigator/stack-navigator";
 import { TabBar } from "../../../registry/components/tab-bar/tab-bar";
 import { UpdatePrompt } from "../../../registry/components/update-prompt/update-prompt";
 import type { ComponentSlug } from "@/lib/component-docs";
@@ -96,6 +98,84 @@ function SafeAreaDemo() {
         <span className="inset-label inset-label-bottom">bottom</span>
       </div>
     </div>
+  );
+}
+
+function PullToRefreshDemo() {
+  const [refreshes, setRefreshes] = React.useState(0);
+
+  async function refresh() {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    setRefreshes((count) => count + 1);
+  }
+
+  return (
+    <DemoPhone className="demo-phone-tall">
+      <div className="flex h-full min-h-0 flex-col bg-background">
+        <div className="shrink-0 border-b border-border px-5 py-4">
+          <strong className="text-sm">Inbox</strong>
+          <p className="mt-1 text-xs text-muted-foreground">Pull the list down to refresh · {refreshes} complete</p>
+        </div>
+        <PullToRefresh className="min-h-0 flex-1" onRefresh={refresh}>
+          <div className="space-y-2 p-3">
+            {["Design review", "Release checklist", "Device QA", "Offline states", "Install flow"].map((label, index) => (
+              <div className="rounded-xl border border-border bg-card p-3" key={label}>
+                <strong className="block text-sm font-medium">{label}</strong>
+                <span className="text-xs text-muted-foreground">Updated {index + 2} minutes ago</span>
+              </div>
+            ))}
+          </div>
+        </PullToRefresh>
+      </div>
+    </DemoPhone>
+  );
+}
+
+function StackDetailDemo() {
+  const { pop } = useStackNavigator();
+
+  return (
+    <div className="min-h-full bg-background">
+      <NavigationBar>
+        <NavigationBar.Leading><NavigationBar.BackButton aria-label="Back to projects" data-autofocus onClick={pop} /></NavigationBar.Leading>
+        <NavigationBar.Title>Project</NavigationBar.Title>
+      </NavigationBar>
+      <div className="p-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">In progress</p>
+        <h3 className="mt-2 text-xl font-medium">Native feel layer</h3>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">Covered list state and scroll stay mounted behind this detail view.</p>
+      </div>
+    </div>
+  );
+}
+
+function StackNavigatorDemo() {
+  const [detailOpen, setDetailOpen] = React.useState(false);
+  const entries: StackNavigatorEntry[] = [
+    {
+      key: "projects",
+      label: "Projects",
+      content: (
+        <div className="min-h-full bg-background">
+          <NavigationBar><NavigationBar.Title>Projects</NavigationBar.Title></NavigationBar>
+          <div className="space-y-2 p-3">
+            {["Native feel layer", "Offline states", "Install flow", "Device QA"].map((project, index) => (
+              <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card p-3 text-left" key={project} onClick={() => index === 0 && setDetailOpen(true)} type="button">
+                <span><strong className="block text-sm font-medium">{project}</strong><small className="text-muted-foreground">{index + 2} tasks</small></span>
+                <span aria-hidden="true">›</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    ...(detailOpen ? [{ key: "project", label: "Project detail", content: <StackDetailDemo /> }] : []),
+  ];
+
+  return (
+    <DemoPhone className="demo-phone-tall">
+      <StackNavigator backGesture="auto" entries={entries} onPop={() => setDetailOpen(false)} />
+    </DemoPhone>
   );
 }
 
@@ -265,6 +345,8 @@ function ComponentDemo({ slug }: { slug: ComponentSlug }) {
     case "pwa-provider": return <PWAProviderDemo />;
     case "app-shell": return <AppShellDemo />;
     case "safe-area": return <SafeAreaDemo />;
+    case "pull-to-refresh": return <PullToRefreshDemo />;
+    case "stack-navigator": return <StackNavigatorDemo />;
     case "bottom-sheet": return <BottomSheetDemo />;
     case "responsive-dialog": return <ResponsiveDialogDemo />;
     case "action-sheet": return <ActionSheetDemo />;

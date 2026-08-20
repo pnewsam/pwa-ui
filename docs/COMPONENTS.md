@@ -46,6 +46,39 @@ For a full-screen application, import `pwa-base` and opt into document containme
 
 Leave these attributes off ordinary document pages and embedded component examples that should retain normal page scrolling.
 
+## PullToRefresh
+
+Purpose: add a touch-driven refresh gesture to a list or feed without owning the data request.
+
+```tsx
+<AppShell.Main className="overflow-hidden">
+  <PullToRefresh className="h-full" onRefresh={refresh}>
+    <MessageList />
+  </PullToRefresh>
+</AppShell.Main>
+```
+
+`PullToRefresh` owns the vertical scroll viewport so its top-edge check has a single reliable boundary. When composing it with `AppShell.Main`, move scrolling to the component by setting Main to `overflow-hidden` and the refresh viewport to `h-full`. It exposes `data-state` and `--pwa-pull-distance` for styling, holds its status indicator while the returned promise is pending, and ignores mouse drags. Keep a conventional refresh action available for people who cannot perform the gesture.
+
+## StackNavigator
+
+Purpose: animate a consumer-controlled stack of mounted application views without owning URLs or browser history.
+
+```tsx
+<AppShell.Main className="overflow-hidden">
+  <StackNavigator
+    backGesture="auto"
+    entries={entries}
+    onPop={(topKey) => removeEntry(topKey)}
+    onDepthChange={(depth) => setTabBarVisible(depth === 1)}
+  />
+</AppShell.Main>
+```
+
+Append an entry to push and remove the final entry to pop. Covered views remain mounted, inert, and hidden from the accessibility tree, so their DOM state and scroll survive. A detail entry can call `useStackNavigator().pop` from `NavigationBar.BackButton`; that request invokes the controlled `onPop` callback. Same-document View Transitions enhance supported browsers, while the component retains a transform/opacity fallback and an instant reduced-motion path. Router integrations must derive `entries` from router state and send `onPop` back through the router—the component itself never reads or writes a URL.
+
+`backGesture="auto"` enables the left-edge swipe only in standalone or fullscreen display mode, avoiding Safari's browser-history gesture by default. `"on"` and `"off"` are explicit overrides. The edge width and completion threshold are configurable; tracking exposes `--pwa-stack-swipe-progress`, `data-back-gesture-state`, and `onBackGestureStateChange` for custom chrome. Vertical-first movement is not captured, reduced motion swaps without sliding follow-through, and Android system Back remains the router's responsibility. Right-edge/RTL mirroring is not yet implemented.
+
 ## SafeArea
 
 Purpose: apply selected platform safe-area insets without device detection.
@@ -190,6 +223,10 @@ return status === "offline" ? <OfflineBanner /> : null;
 ## Lifecycle hooks
 
 `usePageVisibility` exposes foreground and background transitions so an application can pause expensive work, persist state, or refresh stale data. Like the other hooks, it preserves an `unknown` server-rendering state and attaches browser listeners only after mount.
+
+`useScrollRestoration(key)` preserves an element scroll viewport by a consumer-owned tab, route, or stack-entry key. Attach its callback ref to the element that actually scrolls. A key change saves the old view and restores the new one, including a bounded retry for content that arrives later. It never reads history or controls routing. For a few inexpensive tabs, keeping each view mounted and toggling visibility is a reasonable alternative; virtualized lists should use their virtualizer's restoration API.
+
+`useHaptics()` exposes `tap`, `success`, `warning`, and `error` vibration presets plus a custom `vibrate` method. It is an optional Android enhancement: `navigator.vibrate` is unavailable on iOS/iPadOS Safari and most desktop setups. Every method safely returns `false` when unsupported or blocked. Call it sparingly from direct user gestures—for example, a deliberate tab selection or destructive ActionSheet confirmation—and never rely on tactile feedback as the only state cue.
 
 ## PWA base styles
 

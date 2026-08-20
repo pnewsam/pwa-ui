@@ -77,6 +77,79 @@ export function Footer() {
     accessibility: "SafeArea is a layout-only div and does not alter the semantics of its children.",
   },
   {
+    slug: "pull-to-refresh",
+    name: "PullToRefresh",
+    summary: "A resistant, touch-driven refresh viewport for list and feed screens.",
+    description: "PullToRefresh owns a scroll viewport, arms only at its top edge, and keeps the refresh indicator visible until your asynchronous refresh work settles.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/pull-to-refresh.json`,
+    usage: `"use client"
+
+import { PullToRefresh } from "@/components/ui/pull-to-refresh"
+
+export function Inbox() {
+  async function refresh() {
+    await fetch("/api/messages", { cache: "no-store" })
+  }
+
+  return (
+    <PullToRefresh className="h-full" onRefresh={refresh}>
+      <ol>{/* messages */}</ol>
+    </PullToRefresh>
+  )
+}`,
+    anatomy: ["PullToRefresh", "indicator", "scroll viewport", "content"],
+    notes: ["The component owns its scroll viewport so it can determine reliably when scrollTop is zero.", "Inside AppShell, place PullToRefresh in AppShell.Main and move vertical overflow from Main to PullToRefresh: use overflow-hidden on Main and h-full on PullToRefresh.", "The state contract is exposed through data-state=idle, pulling, armed, or refreshing and --pwa-pull-distance.", "Mouse dragging is ignored. Desktop users refresh through your ordinary visible controls or browser command.", "Use the controlled refreshing prop when another state owner determines when the refresh has finished."],
+    platformCaveats: ["Browser-mode Safari and Chrome may already provide page-level pull-to-refresh. Keep the application root overscroll-contained so the browser gesture does not compete with this viewport; installed standalone PWAs generally need the custom control.", "Pointer-derived touch behavior still varies at platform boundaries. Verify both browser and installed display modes on real iOS and Android hardware before treating the gesture as stable."],
+    accessibility: "Refresh progress is announced through a polite status live region. The default spinner stops rotating when reduced motion is requested; keep a separate visible refresh action available for users who cannot perform the gesture.",
+  },
+  {
+    slug: "stack-navigator",
+    name: "StackNavigator",
+    summary: "A controlled stack of mounted views with native-enhanced push and pop transitions.",
+    description: "StackNavigator animates a consumer-owned list of views while preserving covered DOM state, scroll, and focus. It never reads a URL, writes history, or chooses what to navigate to.",
+    install: `pnpm dlx shadcn@latest add ${registryUrl}/stack-navigator.json`,
+    usage: `"use client"
+
+import * as React from "react"
+import { NavigationBar } from "@/components/ui/navigation-bar"
+import { StackNavigator, useStackNavigator } from "@/components/ui/stack-navigator"
+
+function ProjectDetail() {
+  const { pop } = useStackNavigator()
+
+  return (
+    <>
+      <NavigationBar>
+        <NavigationBar.Leading>
+          <NavigationBar.BackButton data-autofocus onClick={pop} />
+        </NavigationBar.Leading>
+        <NavigationBar.Title>Project</NavigationBar.Title>
+      </NavigationBar>
+      <main>Project detail</main>
+    </>
+  )
+}
+
+export function ProjectStack() {
+  const [detailOpen, setDetailOpen] = React.useState(false)
+  const entries = [
+    { key: "projects", label: "Projects", content: <button onClick={() => setDetailOpen(true)}>Open project</button> },
+    ...(detailOpen ? [{ key: "project", label: "Project detail", content: <ProjectDetail /> }] : []),
+  ]
+
+  return <StackNavigator backGesture="auto" entries={entries} onPop={() => setDetailOpen(false)} />
+}`,
+    anatomy: ["StackNavigator", "stack view", "edge-swipe layer", "useStackNavigator", "entries", "onPop"],
+    notes: ["entries is the complete controlled stack. Append to push and remove from the end to pop; the component keeps no private navigation history.", "Covered views stay mounted but inert and aria-hidden, preserving uncontrolled input state and scroll without exposing hidden controls to keyboard or assistive-technology navigation.", "useStackNavigator exposes depth, canPop, and pop so a NavigationBar.BackButton inside the top entry can request onPop.", "backGesture defaults to auto: it enables only in standalone or fullscreen display mode. Use on only on a surface where you have verified that the browser or operating system does not own the leading edge; use off to disable it completely.", "backGestureEdgeWidth defaults to 24 pixels and backGestureThreshold defaults to half the stack width. Tracking publishes --pwa-stack-swipe-progress and data-back-gesture-state without rerendering React on pointer moves.", "onDepthChange can hide a persistent TabBar or update other shell chrome without querying the DOM.", "Keep stacks shallow enough that retaining covered DOM remains inexpensive. Each view owns its own scroll viewport."],
+    platformCaveats: ["Same-document View Transitions are a progressive enhancement. StackNavigator feature-detects the API and uses its transform/opacity fallback when unavailable; reduced-motion requests bypass sliding in either path.", "Safari browser tabs already reserve the screen edge for browser history, so auto deliberately disables the custom gesture there. Installed iOS and Android behavior still requires device QA; auto is a conservative policy, not proof that every OS configuration leaves the edge free.", "Android system Back does not arrive as this pointer gesture. Route hardware or system back through your router, then derive entries from that route state.", "The gesture currently starts from the physical left edge. RTL leading-edge mirroring is a known follow-up; set backGesture to off for RTL surfaces that require a right-edge gesture.", "The component cannot synchronize deep links or browser back on its own. When a router owns entries, map router-rendered state into the controlled array and route onPop back through that router."],
+    support: [
+      { platform: "Chrome / Android WebView", availability: "Native enhancement", notes: "Same-document View Transitions from Chrome 111; older engines use the CSS fallback." },
+      { platform: "Safari / iOS", availability: "Native enhancement", notes: "Same-document View Transitions from Safari 18; older versions use the CSS fallback." },
+      { platform: "Firefox", availability: "Native enhancement", notes: "Same-document View Transitions from Firefox 139; older versions use the CSS fallback." },
+    ],
+    accessibility: "Only the active view is reachable. Push focuses an autofocus target or the new view container; pop returns focus to the pointer or keyboard trigger when it remains mounted, otherwise to the revealed view.",
+  },
+  {
     slug: "bottom-sheet",
     name: "BottomSheet",
     summary: "A swipeable, keyboard-aware mobile bottom sheet built on Base UI Drawer.",

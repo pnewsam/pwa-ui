@@ -6,10 +6,12 @@ import { CodeBlock } from "@/components/code-block";
 import type { HookSlug } from "@/lib/hook-docs";
 import { useDisplayMode } from "../../../registry/hooks/use-display-mode";
 import { useInstallPrompt } from "../../../registry/hooks/use-install-prompt";
+import { useHaptics } from "../../../registry/hooks/use-haptics";
 import { useMediaQuery } from "../../../registry/hooks/use-media-query";
 import { useNetworkStatus } from "../../../registry/hooks/use-network-status";
 import { usePageVisibility } from "../../../registry/hooks/use-page-visibility";
 import { useServiceWorkerUpdate } from "../../../registry/hooks/use-service-worker-update";
+import { useScrollRestoration } from "../../../registry/hooks/use-scroll-restoration";
 import { useVisualViewport } from "../../../registry/hooks/use-visual-viewport";
 
 function DisplayModeDemo() {
@@ -101,6 +103,73 @@ function PageVisibilityDemo() {
   return <HookStatusDemo label="Current page lifecycle" values={values} note="Switch tabs or minimize the browser to change the visibility state." />;
 }
 
+function ScrollRestorationDemo() {
+  const tabs = ["Feed", "Saved", "Profile"] as const;
+  const [activeTab, setActiveTab] = React.useState<(typeof tabs)[number]>("Feed");
+  const { ref } = useScrollRestoration(activeTab);
+
+  return (
+    <div className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
+      <div className="border-b border-border px-4 py-3">
+        <span className="text-xs text-muted-foreground">Each view remembers its place</span>
+        <strong className="mt-1 block text-sm">{activeTab}</strong>
+      </div>
+      <div className="h-56 overflow-y-auto p-3" ref={ref}>
+        <div className="space-y-2">
+          {Array.from({ length: 14 }, (_, index) => (
+            <div className="rounded-xl bg-muted px-3 py-4 text-sm" key={`${activeTab}-${index}`}>
+              {activeTab} item {index + 1}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-1 border-t border-border p-2">
+        {tabs.map((tab) => (
+          <button
+            aria-pressed={tab === activeTab}
+            className="min-h-11 rounded-lg px-2 text-xs aria-pressed:bg-accent aria-pressed:text-foreground"
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            type="button"
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HapticsDemo() {
+  const haptics = useHaptics();
+  const [lastRequest, setLastRequest] = React.useState("None yet");
+  const presets = [
+    ["Tap", haptics.tap],
+    ["Success", haptics.success],
+    ["Warning", haptics.warning],
+    ["Error", haptics.error],
+  ] as const;
+
+  function request(label: string, run: () => boolean) {
+    setLastRequest(run() ? `${label} accepted` : `${label} was not available`);
+  }
+
+  return (
+    <div className="hook-demo hook-demo-wide">
+      <span className="hook-demo-label">Vibration API</span>
+      <output>{haptics.supported ? "Supported" : "Unavailable here"}</output>
+      <div className="grid w-full grid-cols-2 gap-2">
+        {presets.map(([label, run]) => (
+          <button className="min-h-11 rounded-lg border border-border px-3 text-sm disabled:cursor-not-allowed disabled:opacity-45" disabled={!haptics.supported} key={label} onClick={() => request(label, run)} type="button">
+            {label}
+          </button>
+        ))}
+      </div>
+      <p>{haptics.supported ? `${lastRequest}. Try a preset from this user gesture.` : "This browser has no vibration capability, so every preset is a safe no-op."}</p>
+    </div>
+  );
+}
+
 function HookStatusDemo({ label, values, note }: { label: string; values: string[][]; note: string }) {
   return (
     <div className="hook-demo hook-demo-wide">
@@ -122,6 +191,8 @@ function HookDemo({ slug }: { slug: HookSlug }) {
     case "use-service-worker-update": return <ServiceWorkerUpdateDemo />;
     case "use-network-status": return <NetworkStatusDemo />;
     case "use-page-visibility": return <PageVisibilityDemo />;
+    case "use-scroll-restoration": return <ScrollRestorationDemo />;
+    case "use-haptics": return <HapticsDemo />;
   }
 }
 

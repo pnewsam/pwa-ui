@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { PWAProvider } from "../../../registry/components/pwa-provider/pwa-provider";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icons/icon.svg",
-    apple: "/icons/icon.svg",
+    apple: "/icons/icon-192.png",
   },
 };
 
@@ -43,8 +44,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body><PWAProvider>{children}</PWAProvider></body>
+    <html data-scroll-behavior="smooth" lang="en">
+      <body><PWAProvider>{children}</PWAProvider><ServiceWorkerRegistration /></body>
     </html>
   );
 }

@@ -62,6 +62,20 @@ export default async function HookPage({ params }: PageProps<"/hooks/[slug]">) {
         <ul>{hook.notes.map((note) => <li key={note}>{note}</li>)}</ul>
       </section>
 
+      {"support" in hook ? (
+        <section className="docs-section" id="support">
+          <h2>Platform support</h2>
+          <div className="docs-table-wrap" tabIndex={0} aria-label={`${hook.name} platform support; scroll horizontally to see every column`}>
+            <table className="docs-table">
+              <thead><tr><th>Platform</th><th>Available</th><th>Notes</th></tr></thead>
+              <tbody>
+                {hook.support.map((item) => <tr key={item.platform}><td>{item.platform}</td><td>{item.availability}</td><td>{item.notes}</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
       <nav className="docs-pagination" aria-label="Hook documentation pagination">
         {previous ? <a href={`/hooks/${previous.slug}`}><small>Previous</small><strong>← {previous.name}</strong></a> : <span />}
         {next ? <a href={`/hooks/${next.slug}`}><small>Next</small><strong>{next.name} →</strong></a> : <span />}
