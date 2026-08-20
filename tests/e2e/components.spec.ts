@@ -235,6 +235,21 @@ test("preserves covered stack state, scroll, inertness, and focus", async ({ pag
   await expect(trigger).toBeFocused();
 });
 
+test("moves stack focus independently of throttled animation frames", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.requestAnimationFrame = (callback) => window.setTimeout(() => callback(performance.now()), 400);
+    window.cancelAnimationFrame = (handle) => window.clearTimeout(handle);
+  });
+  await page.goto("/test-fixtures/stack-navigator");
+
+  const trigger = page.getByRole("button", { name: "Open project" });
+  await trigger.click();
+  await expect(page.getByRole("button", { name: "Back to projects" })).toBeFocused();
+
+  await page.getByRole("button", { name: "Back to projects" }).click();
+  await expect(trigger).toBeFocused();
+});
+
 test("uses the View Transitions enhancement when the platform exposes it", async ({ page }) => {
   await page.addInitScript(() => {
     Reflect.set(window, "__pwaViewTransitionCalls", 0);

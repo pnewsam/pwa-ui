@@ -113,6 +113,6 @@ Listed in intended execution order (physics first to de-risk the pipeline, stack
 
 - All six child features are complete and independently documented.
 - `pnpm check` passes with 39 unit tests, a valid 24-item registry, and 42 statically generated documentation pages.
-- The full Playwright regression passes in Chromium and WebKit (56 passed; 2 production-only checks intentionally skipped), while `pnpm test:pwa` separately passes the built-app installability and service-worker contract.
+- The full Playwright regression passes in Chromium and WebKit (58 passed; 2 production-only checks intentionally skipped), while `pnpm test:pwa` separately passes the built-app installability and service-worker contract.
 - The clean-consumer registry installation smoke test passes, and the automated axe surface scan includes `/demo` with no detected violations.
 - Physical iOS/Android installation and a live two-deploy update check remain recorded release gates in `docs/DEVICE_QA.md` and `docs/RELEASING.md`; they are not implementation blockers under this epic’s stated out-of-scope policy.

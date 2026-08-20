@@ -226,11 +226,11 @@ export function StackNavigator({
         : activeElement && activeElement !== document.body ? activeElement : null;
       if (returnTarget?.isConnected) focusTargets.current.set(enteringKey, returnTarget);
       const enteringView = viewRefs.current.get(enteringKey);
+      focusView(enteringView);
       let secondFrame = 0;
       const firstFrame = window.requestAnimationFrame(() => {
         secondFrame = window.requestAnimationFrame(() => {
           enteringView?.removeAttribute("data-entering");
-          focusView(enteringView);
         });
       });
       transitionTimerRef.current = setTimeout(() => {
@@ -248,13 +248,8 @@ export function StackNavigator({
     if (exitingKey) {
       const target = focusTargets.current.get(exitingKey);
       const revealedView = activeKey ? viewRefs.current.get(activeKey) : undefined;
-      let focusFrame = 0;
-      const revealFrame = window.requestAnimationFrame(() => {
-        focusFrame = window.requestAnimationFrame(() => {
-          if (target?.isConnected) target.focus({ preventScroll: true });
-          else focusView(revealedView);
-        });
-      });
+      if (target?.isConnected) target.focus({ preventScroll: true });
+      else focusView(revealedView);
       focusTargets.current.delete(exitingKey);
       transitionTimerRef.current = setTimeout(() => {
         setRenderState((current) => current.transitionId === renderState.transitionId
@@ -262,8 +257,6 @@ export function StackNavigator({
           : current);
       }, fallbackDuration);
       return () => {
-        window.cancelAnimationFrame(revealFrame);
-        window.cancelAnimationFrame(focusFrame);
         if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
       };
     }

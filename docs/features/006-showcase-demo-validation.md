@@ -11,7 +11,7 @@
 | Check | Result |
 |-------|--------|
 | Targeted showcase checks | PASS — 6/6 Playwright cases in Chromium and WebKit |
-| Regression suite | PASS — 56 passed, 2 production-only cases skipped in the development-server run |
+| Regression suite | PASS — 58 passed, 2 production-only cases skipped in the development-server run |
 | Production PWA audit | PASS — 1/1 Chromium installability and worker-contract test |
 | Unit tests | PASS — 39/39 |
 | Registry validation and build | PASS — 24 items; 42 static pages |
@@ -41,7 +41,7 @@
 |-----------------|--------|-------|
 | `pnpm check` | PASS | Lint, typecheck, 39 unit tests, registry validation/build, and 42-page production build. |
 | `pnpm exec playwright test tests/e2e/demo.spec.ts --workers=1` | PASS | 6/6 across Chromium and WebKit, including reduced motion. |
-| `pnpm exec playwright test --workers=1` | PASS | 56 passed; the two production-PWA cases are intentionally skipped outside `PWA_UI_E2E_PRODUCTION=1`. |
+| `pnpm exec playwright test --workers=2` | PASS | 58 passed; the two production-PWA cases are intentionally skipped outside `PWA_UI_E2E_PRODUCTION=1`. |
 | `pnpm test:pwa` | PASS | Production manifest, start URL, worker scope/control, no-cache behavior, and security headers. |
 | `pnpm test:install` | PASS | Existing clean-consumer namespace smoke test. |
 | axe scan including `/demo` | PASS | No automatically detectable accessibility violations. |
@@ -59,6 +59,7 @@
 ## Issues found and resolved
 
 - The composed flow exposed a live-element session-storage edge case in `useScrollRestoration`: changing tab content could clamp the element to zero before the old key was saved. The hook now tracks the last observed position and handles key changes in layout, with unit and cross-browser regression coverage.
+- The initial two-worker WebKit CI run exposed focus transfer being coupled to two animation frames that transition cleanup could cancel first. Stack focus now moves during layout while frames control only visual state; a deliberately throttled-frame regression covers push and pop focus.
 - The production PWA runner could reuse an unrelated development server locally. Production audits now always start their own built server.
 
 ## Coverage gaps
