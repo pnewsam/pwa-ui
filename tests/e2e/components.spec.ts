@@ -373,8 +373,7 @@ test("springs back below the swipe threshold and cancels safely", async ({ page 
   await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
 });
 
-test("keeps edge swipes inert during transitions and honors reduced motion", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
+test("keeps edge swipes inert during live-view transitions", async ({ page }) => {
   await page.goto("/test-fixtures/stack-navigator");
   const stack = page.locator('[data-slot="stack-navigator"]');
   const detail = page.locator('[data-view-key="project-detail"]');
@@ -388,6 +387,22 @@ test("keeps edge swipes inert during transitions and honors reduced motion", asy
   await page.waitForTimeout(320);
   await dispatchSwipe(stack, 0.7);
   await expect(detail).not.toBeAttached();
+  await expect(stack).toHaveAttribute("data-depth", "1");
+});
+
+test("settles an edge swipe without animation when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/test-fixtures/stack-navigator");
+  const stack = page.locator('[data-slot="stack-navigator"]');
+  const detail = page.locator('[data-view-key="project-detail"]');
+
+  await page.getByRole("button", { name: "Open project" }).click();
+  await expect(stack).toHaveAttribute("data-transition-mode", "reduced");
+  await expect(stack).not.toHaveAttribute("data-transitioning", "");
+  await dispatchSwipe(stack, 0.7);
+
+  await expect(detail).not.toBeAttached();
+  await expect(stack).toHaveAttribute("data-back-gesture-state", "idle");
   await expect(stack).toHaveAttribute("data-depth", "1");
 });
 
