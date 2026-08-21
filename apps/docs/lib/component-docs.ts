@@ -171,7 +171,7 @@ export function Filters() {
   )
 }`,
     anatomy: ["BottomSheet", "Trigger", "Content", "Header", "Title", "Description", "Footer", "Close"],
-    notes: ["Supports controlled and uncontrolled open state.", "Snap points and swipe dismissal are inherited from Base UI Drawer.", "VirtualKeyboardProvider keeps form controls visible above software keyboards."],
+    notes: ["Supports controlled and uncontrolled open state.", "Snap points and swipe dismissal are inherited from Base UI Drawer.", "VirtualKeyboardProvider keeps form controls visible above software keyboards.", "Do not wrap sheet contents in KeyboardAvoidingView: BottomSheet already owns keyboard-aware focus and scrolling, and nested avoidance will double the keyboard inset."],
     platformCaveats: ["Gesture physics, snap points, and focus management come from Base UI's Drawer, an external behavioral dependency. Pin the `@base-ui/react` version you tested and re-check drag and snap behavior when you upgrade it.", "Provide a visible Close, or rely on Escape and backdrop dismissal, for users who cannot perform the drag gesture. The drag handle is decorative and is not operable by assistive technology."],
     accessibility: "Always include a Title. Include a Description when it adds meaningful context. Escape, focus trapping, restoration, and backdrop dismissal are provided by Base UI.",
   },
@@ -369,7 +369,7 @@ export function AppUpdatePrompt() {
   )
 }`,
     anatomy: ["UpdatePrompt", "title", "status description", "update action", "optional defer action"],
-    notes: ["Use a persistent inline notice because the update remains available until activated.", "reload is opt-in so the application can protect unsaved work.", "The service worker must respond to the SKIP_WAITING message."],
+    notes: ["Use a persistent inline notice because the update remains available until activated.", "Set updating while activation is in progress to disable repeat clicks and show the built-in spinner.", "reload is opt-in so the application can protect unsaved work. For a less abrupt handoff, activate without automatic reload, show a brief app-level update state, then reload after status becomes updated.", "The service worker must respond to the SKIP_WAITING message."],
     platformCaveats: ["Requires a registered service worker that honors the `SKIP_WAITING` message. iOS PWAs can evict storage and constrain background work, so an update may not apply until the next foreground launch."],
     accessibility: "Status changes are announced politely, actions remain available to keyboard and touch users, and the notice does not steal focus.",
   },

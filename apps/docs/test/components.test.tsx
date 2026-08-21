@@ -169,6 +169,25 @@ describe("PWA UI components", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("does not apply the virtual keyboard inset to an action-only sheet footer", () => {
+    const view = render(
+      <BottomSheet defaultOpen>
+        <BottomSheet.Content>
+          <BottomSheet.Title>New note</BottomSheet.Title>
+          <BottomSheet.Footer>
+            <BottomSheet.Close>Cancel</BottomSheet.Close>
+            <BottomSheet.Close>Save</BottomSheet.Close>
+          </BottomSheet.Footer>
+        </BottomSheet.Content>
+      </BottomSheet>,
+    );
+
+    const footer = view.baseElement.querySelector<HTMLElement>('[data-slot="bottom-sheet-footer"]');
+    expect(footer).toHaveClass("sticky");
+    expect(footer?.className).toContain("bottom-[var(--drawer-keyboard-inset,0px)]");
+    expect(footer?.className).not.toContain("pb-[var(--drawer-keyboard-inset");
+  });
+
   it("preserves functional class names on wrapped Base UI parts", () => {
     render(
       <BottomSheet>
@@ -203,6 +222,7 @@ describe("PWA UI components", () => {
     const prompt = within(view.container);
     expect(prompt.getByRole("status")).toHaveTextContent("Applying the update");
     expect(prompt.getByRole("button", { name: "Updating…" })).toBeDisabled();
+    expect(view.container.querySelector('[data-slot="update-prompt-spinner"]')).toBeInTheDocument();
   });
 
   it("renders offline feedback as a persistent status", () => {
