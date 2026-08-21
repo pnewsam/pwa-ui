@@ -42,7 +42,7 @@ type RenderState = {
 };
 
 const StackNavigatorContext = React.createContext<StackNavigatorContextValue | null>(null);
-const transitionDuration = 240;
+const transitionDuration = 280;
 
 function sameKeys(a: StackNavigatorEntry[], b: StackNavigatorEntry[]) {
   return a.length === b.length && a.every((entry, index) => entry.key === b[index]?.key);
@@ -319,7 +319,7 @@ export function StackNavigator({
               aria-hidden={covered || undefined}
               aria-label={entry.label}
               className={cn(
-                "absolute inset-0 min-h-0 overflow-y-auto bg-background outline-none transition-transform duration-[var(--pwa-stack-transition-duration,240ms)] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                "absolute inset-0 min-h-0 overflow-y-auto bg-background outline-none transition-transform duration-[var(--pwa-stack-transition-duration,280ms)] ease-[cubic-bezier(0.4,0,0.2,1)]",
                 "data-[animating]:will-change-transform data-[entering]:translate-x-full data-[exiting]:translate-x-full",
                 "data-[under]:-translate-x-[12%] data-[revealing]:-translate-x-[12%]",
                 "data-[covered]:invisible data-[covered]:pointer-events-none data-[exiting]:!visible data-[under]:!visible",

@@ -79,6 +79,15 @@ test("drives the native-feel showcase flow on a phone viewport", async ({ page, 
   const noteTitle = page.getByRole("textbox", { name: "Note title" });
   await noteTitle.fill("Hardware QA observations");
   await expect(noteTitle).toBeFocused();
+  const sheetViewport = page.locator('[data-slot="bottom-sheet-viewport"]');
+  const sheetFooter = page.locator('[data-slot="bottom-sheet-footer"]');
+  await sheetViewport.evaluate((element) => element.style.setProperty("--drawer-keyboard-inset", "320px"));
+  await expect.poll(() => sheetFooter.evaluate((element) => Number.parseFloat(getComputedStyle(element).paddingBottom))).toBeLessThan(32);
+  await expect.poll(() => sheetFooter.evaluate((element) => Number.parseFloat(getComputedStyle(element).bottom))).toBe(320);
+  await expect.poll(() => sheetFooter.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThan(96);
+  await expect(dialog.locator('[data-slot="keyboard-avoiding-view"]')).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Cancel" })).toHaveCSS("border-top-width", "1px");
+  await sheetViewport.evaluate((element) => element.style.removeProperty("--drawer-keyboard-inset"));
   await page.getByRole("button", { name: "Save note" }).click();
   await expect(dialog).toBeHidden();
 

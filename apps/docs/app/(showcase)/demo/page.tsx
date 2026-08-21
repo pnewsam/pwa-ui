@@ -1,13 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { BookOpen, ChevronRight, Home, Inbox, Plus, Settings, SlidersHorizontal, Sparkles } from "lucide-react";
+import { BookOpen, ChevronRight, Home, Inbox, LoaderCircle, Plus, Settings, SlidersHorizontal, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { AppShell } from "../../../../../registry/components/app-shell/app-shell";
 import { BottomSheet } from "../../../../../registry/components/bottom-sheet/bottom-sheet";
 import { InstallPrompt } from "../../../../../registry/components/install-prompt/install-prompt";
-import { KeyboardAvoidingView } from "../../../../../registry/components/keyboard-avoiding-view/keyboard-avoiding-view";
 import { NavigationBar } from "../../../../../registry/components/navigation-bar/navigation-bar";
 import { OfflineBanner } from "../../../../../registry/components/offline-banner/offline-banner";
 import { PullToRefresh } from "../../../../../registry/components/pull-to-refresh/pull-to-refresh";
@@ -147,20 +146,18 @@ function NoteSheet() {
         <ChevronRight className="ml-auto size-4 text-muted-foreground" />
       </BottomSheet.Trigger>
       <BottomSheet.Content>
-        <KeyboardAvoidingView>
-          <BottomSheet.Header>
-            <BottomSheet.Title>New project note</BottomSheet.Title>
-            <BottomSheet.Description>The sheet follows the software keyboard instead of covering the field.</BottomSheet.Description>
-          </BottomSheet.Header>
-          <label className="grid gap-2 text-sm font-medium">
-            Note title
-            <input className="min-h-12 rounded-xl border border-input bg-background px-3 outline-none focus:ring-2 focus:ring-ring" onChange={(event) => setTitle(event.target.value)} placeholder="Device QA observations" value={title} />
-          </label>
-          <BottomSheet.Footer>
-            <BottomSheet.Close className="min-h-11 rounded-xl px-4 text-sm font-medium text-muted-foreground">Cancel</BottomSheet.Close>
-            <BottomSheet.Close className="min-h-11 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">Save note</BottomSheet.Close>
-          </BottomSheet.Footer>
-        </KeyboardAvoidingView>
+        <BottomSheet.Header>
+          <BottomSheet.Title>New project note</BottomSheet.Title>
+          <BottomSheet.Description>The sheet follows the software keyboard instead of covering the field.</BottomSheet.Description>
+        </BottomSheet.Header>
+        <label className="grid gap-2 text-sm font-medium">
+          Note title
+          <input className="min-h-12 rounded-xl border border-input bg-background px-3 outline-none focus:ring-2 focus:ring-ring" onChange={(event) => setTitle(event.target.value)} placeholder="Device QA observations" value={title} />
+        </label>
+        <BottomSheet.Footer>
+          <BottomSheet.Close className="min-h-11 rounded-xl border border-border bg-muted/65 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:ring-offset-2">Cancel</BottomSheet.Close>
+          <BottomSheet.Close className="min-h-11 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100">Save note</BottomSheet.Close>
+        </BottomSheet.Footer>
       </BottomSheet.Content>
     </BottomSheet>
   );
@@ -186,10 +183,52 @@ function SettingsTab() {
 
 function UpdateExperience() {
   const update = useServiceWorkerUpdate({ scope: "/", checkOnMount: true });
-  if (update.status !== "waiting" && update.status !== "activating") return null;
+  const [phase, setPhase] = React.useState<"idle" | "applying" | "handoff">("idle");
+  const startedAtRef = React.useRef(0);
+  const handoffTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reloadTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => () => {
+    if (handoffTimerRef.current) clearTimeout(handoffTimerRef.current);
+    if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
+  }, []);
+
+  React.useEffect(() => {
+    if (phase === "idle" || update.status !== "updated") return;
+    const elapsed = performance.now() - startedAtRef.current;
+    reloadTimerRef.current = setTimeout(() => window.location.reload(), Math.max(0, 900 - elapsed));
+    return () => {
+      if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
+    };
+  }, [phase, update.status]);
+
+  function applyUpdate() {
+    if (phase !== "idle") return;
+    startedAtRef.current = performance.now();
+    setPhase("applying");
+    if (!update.applyUpdate()) {
+      setPhase("idle");
+      return;
+    }
+    handoffTimerRef.current = setTimeout(() => setPhase("handoff"), 420);
+  }
+
+  if (phase === "handoff") {
+    return (
+      <div className="absolute inset-0 z-[60] grid place-items-center bg-background px-8 text-center" data-testid="update-handoff" role="status" aria-live="polite">
+        <div>
+          <LoaderCircle aria-hidden="true" className="mx-auto size-7 animate-spin text-muted-foreground motion-reduce:animate-none" />
+          <p className="mt-4 text-base font-medium">Updating PWA UI</p>
+          <p className="mt-1 text-sm text-muted-foreground">Reopening with the latest version…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (update.status !== "waiting" && update.status !== "activating" && phase === "idle") return null;
   return (
     <div className="absolute inset-x-3 bottom-3 z-40">
-      <UpdatePrompt updating={update.status === "activating"} onUpdate={() => update.applyUpdate({ reload: true })} />
+      <UpdatePrompt updating={phase === "applying" || update.status === "activating"} onUpdate={applyUpdate} />
     </div>
   );
 }

@@ -91,7 +91,7 @@ export function BottomSheetHeader({ className, ...props }: React.ComponentPropsW
 }
 
 export function BottomSheetFooter({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
-  return <div data-slot="bottom-sheet-footer" className={cn("sticky bottom-0 mt-5 flex flex-col-reverse gap-2 bg-background pb-[var(--drawer-keyboard-inset,0px)] sm:flex-row sm:justify-end", className)} {...props} />;
+  return <div data-slot="bottom-sheet-footer" className={cn("sticky bottom-[var(--drawer-keyboard-inset,0px)] mt-5 flex flex-row gap-2 bg-background py-2 [&>*]:min-w-0 [&>*]:flex-1 sm:justify-end sm:[&>*]:flex-none", className)} {...props} />;
 }
 
 export function BottomSheetTitle({ className, ...props }: Drawer.Title.Props) {
