@@ -12,3 +12,4 @@ test-results
 *.tsbuildinfo
 .env*
 !.env.example
+apps/docs/public/sw.js

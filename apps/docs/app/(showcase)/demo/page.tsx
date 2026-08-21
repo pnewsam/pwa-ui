@@ -185,7 +185,7 @@ function SettingsTab() {
 }
 
 function UpdateExperience() {
-  const update = useServiceWorkerUpdate({ scope: "/" });
+  const update = useServiceWorkerUpdate({ scope: "/", checkOnMount: true });
   if (update.status !== "waiting" && update.status !== "activating") return null;
   return (
     <div className="absolute inset-x-3 bottom-3 z-40">

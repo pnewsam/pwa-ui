@@ -1,13 +1,12 @@
 /*
- * PWA UI docs worker — 2026-08-19.1
+ * PWA UI docs worker
  *
- * This worker exists to make the docs installable and to exercise the library's
- * explicit update flow. It intentionally caches nothing, especially /r/*
- * registry source. If a release ever needs an emergency rollback, publish a
- * replacement worker that calls self.registration.unregister() during activate.
+ * The production build replaces the token below with the deployed commit so
+ * browsers can detect each release and offer it through UpdatePrompt.
+ * This worker intentionally caches nothing, especially /r/* registry source.
  */
 
-const WORKER_VERSION = "2026-08-19.1";
+const WORKER_VERSION = "__PWA_UI_BUILD_ID__";
 
 self.addEventListener("install", () => {
   // Do not skip waiting here: UpdatePrompt gives the user control over reloads.
