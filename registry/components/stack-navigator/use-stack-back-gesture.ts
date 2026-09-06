@@ -155,7 +155,7 @@ export function useStackBackGesture({
     }
 
     const duration = commit ? Math.max(100, 220 * (1 - fromProgress)) : Math.max(100, 220 * fromProgress);
-    const easing = commit ? "cubic-bezier(.2,.8,.2,1)" : "cubic-bezier(.2,.8,.2,1)";
+    const easing = "cubic-bezier(0.32,0.72,0,1)";
     const animations = [
       top.animate(
         [{ transform: `translateX(${fromX}px)` }, { transform: `translateX(${commit ? width : 0}px)` }],
