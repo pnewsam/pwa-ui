@@ -19,8 +19,8 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm registry:validate && pnpm build"
   },
   "dependencies": {
-    "@base-ui/react": "^1.8.0",
-    "react": "^19.3.0"
+    "@base-ui/react": "^1.9.0",
+    "react": "^19.3.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
